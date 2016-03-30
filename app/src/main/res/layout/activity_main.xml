@@ -9,8 +9,152 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context="edu.cs65.don.myruns.MainActivity">
 
+    <EditText
+        android:id="@+id/name_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/input_name_text"
+        android:hint="@+id/name_text"
+        android:layout_below="@+id/name_label"
+        android:layout_alignParentStart="true"
+        android:layout_alignEnd="@+id/change_photo" />
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/button_change"
+        android:id="@+id/change_photo"
+        android:layout_alignTop="@+id/prof_photo"
+        android:layout_alignParentEnd="true" />
+
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Hello World!" />
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:text="@string/profile_photo_label"
+        android:id="@+id/textView"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentStart="true" />
+
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/prof_photo"
+        android:layout_below="@+id/textView"
+        android:layout_alignParentStart="true"
+        android:layout_marginStart="50dp"
+        android:layout_marginTop="30dp" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:text="@string/name_label"
+        android:id="@+id/name_label"
+        android:layout_below="@+id/change_photo"
+        android:layout_alignParentStart="true" />
+
+    <EditText
+        android:id="@+id/email_text"
+        android:inputType="textEmailAddress"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/input_email_text"
+        android:hint="@+id/name_text"
+        android:layout_below="@+id/email_label"
+        android:layout_alignParentStart="true"
+        android:layout_alignEnd="@+id/change_photo" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:text="@string/email_label"
+        android:id="@+id/email_label"
+        android:layout_below="@+id/name_text"
+        android:layout_alignParentStart="true" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:text="@string/phone_label"
+        android:id="@+id/phone_label"
+        android:layout_below="@+id/email_text"
+        android:layout_alignParentStart="true" />
+
+    <EditText
+        android:id="@+id/phone_num_text"
+        android:inputType="phone"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/input_phone_text"
+        android:hint="@+id/name_text"
+        android:layout_below="@+id/phone_label"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentEnd="true" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:text="@string/gender_label"
+        android:id="@+id/gender_label"
+        android:layout_below="@+id/phone_num_text"
+        android:layout_alignParentStart="true" />
+
+    <RadioButton
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/female"
+        android:id="@+id/female_check"
+        android:layout_below="@+id/gender_label"
+        android:layout_alignParentStart="true"
+        android:checked="false" />
+
+    <RadioButton
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/male"
+        android:id="@+id/Male_check"
+        android:checked="false"
+        android:layout_alignTop="@+id/female_check"
+        android:layout_toStartOf="@+id/change_photo" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:text="@string/class_label"
+        android:id="@+id/class_label"
+        android:layout_below="@+id/female_check"
+        android:layout_alignParentStart="true" />
+
+    <EditText
+        android:id="@+id/class_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/input_class_text"
+        android:hint="@+id/name_text"
+        android:layout_below="@+id/class_label"
+        android:layout_alignEnd="@+id/change_photo"
+        android:layout_alignParentStart="true" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:text="@string/major_label"
+        android:id="@+id/major_label"
+        android:layout_below="@+id/class_text"
+        android:layout_alignParentStart="true" />
+
+    <EditText
+        android:id="@+id/major_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/input_major_text"
+        android:hint="@+id/name_text"
+        android:layout_below="@+id/major_label"
+        android:layout_alignParentStart="true"
+        android:layout_alignEnd="@+id/class_text" />
 </RelativeLayout>
