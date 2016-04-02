@@ -13,7 +13,6 @@ import android.os.Bundle;
  * Fragment for dialog box of selecting profile image
  */
 public class SelectProfileImageDialogFragment extends DialogFragment {
-
     private static final String DIALOG_ID_KEY = "id_key";
     private static final int DIALOG_ID_PHOTO_PICKER = 1;
 
@@ -32,23 +31,10 @@ public class SelectProfileImageDialogFragment extends DialogFragment {
                         // take picture from camera
                     case 1:
                         // do something else
-
                 }
             }
         });
         return builder.create();
-
-
-        // all of our options are stored in an array in rsources
-
-//        DialogInterface.OnClickListener dlistener = new DialogInterface.OnClickListener() {
-//            public void onClick(DialogInterface dialog, int item) {
-//
-//            }
-//        };
-                //builder.setItems()
-
-
     }
 
     public static SelectProfileImageDialogFragment newInstance(int dialog_id) {
@@ -59,7 +45,4 @@ public class SelectProfileImageDialogFragment extends DialogFragment {
         frag.setArguments(args);
         return frag;
     }
-
-
-
 }

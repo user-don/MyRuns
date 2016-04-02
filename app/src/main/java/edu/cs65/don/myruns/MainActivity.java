@@ -21,18 +21,15 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        Log.d(RUNS, "onCreate called");
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         // clear soft keyboard until text view tapped
         getWindow().setSoftInputMode(
                 WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN
         );
-
-
-        mImageView = (ImageView) findViewById(R.id.prof_photo);
-        if (savedInstanceState != null) {
-            mImageCaptureUri = savedInstanceState.getParcelable(IMAGE_URI);
-        }
+        // load previously set profile photo
+        loadProfilePhoto(savedInstanceState);
 
 
     }
@@ -44,6 +41,7 @@ public class MainActivity extends AppCompatActivity {
         // This bundle has also been passed to onCreate.
         // Will only be called if the Activity has been
         // killed by the system since it was last visible.
+        Log.d(RUNS, "onRestoreInstanceState called");
     }
 
     /**
@@ -54,6 +52,7 @@ public class MainActivity extends AppCompatActivity {
         super.onRestart();
         // Load changes knowing that the Activity has already
         // been visible within this process.
+        Log.d(RUNS, "onRestart called");
     }
 
     // Called at the start of the visible lifetime.
@@ -61,6 +60,7 @@ public class MainActivity extends AppCompatActivity {
     public void onStart(){
         super.onStart();
         // Apply any required UI change now that the Activity is visible.
+        Log.d(RUNS, "onStart called");
     }
 
     // Called at the start of the active lifetime.
@@ -69,6 +69,7 @@ public class MainActivity extends AppCompatActivity {
         super.onResume();
         // Resume any paused UI updates, threads, or processes required
         // by the Activity but suspended when it was inactive.
+        Log.d(RUNS, "onResume called");
     }
 
     // Called to save UI state changes at the
@@ -80,7 +81,7 @@ public class MainActivity extends AppCompatActivity {
         // onRestoreInstanceState if the process is
         // killed and restarted by the run time.
         super.onSaveInstanceState(savedInstanceState);
-        Log.d("app", "onSaveInstanceState() called");
+        Log.d("app", "onSaveInstanceState called");
 
         // call this to save something.
         //savedInstanceState.putParcelable(URI_INSTANCE_STATE_KEY, mImageCaptureUri);
@@ -92,6 +93,7 @@ public class MainActivity extends AppCompatActivity {
         // Suspend UI updates, threads, or CPU intensive processes
         // that don't need to be updated when the Activity isn't
         // the active foreground Activity.
+        Log.d(RUNS, "onPause called");
         super.onPause();
     }
 
@@ -102,6 +104,7 @@ public class MainActivity extends AppCompatActivity {
         // that aren't required when the Activity isn't visible.
         // Persist all edits or state changes
         // as after this call the process is likely to be killed.
+        Log.d(RUNS, "onStop called");
         super.onStop();
     }
 
@@ -110,16 +113,22 @@ public class MainActivity extends AppCompatActivity {
     public void onDestroy(){
         // Clean up any resources including ending threads,
         // closing database connections etc.
+        Log.d(RUNS, "onDestroy called");
         super.onDestroy();
     }
 
     /**
-     * display dialog fragment
-     * @param id
+     * Displays dialog fragment. Dialog displayed depends on the specified id;
+     * For now there is only one dialog (changing photo), but this generic function
+     * has the capability to be expanded in future.
+     * @param id ID of the dialog to be displayed
      */
     public void displayDialog(int id) {
-        DialogFragment fragment = SelectProfileImageDialogFragment.newInstance(id);
-        fragment.show(getFragmentManager(), "dialog_fragment_photo_picker");
+        switch(id) {
+            case 1:
+                DialogFragment fragment = SelectProfileImageDialogFragment.newInstance(id);
+                fragment.show(getFragmentManager(), "dialog_fragment_photo_picker");
+        }
     }
 
     /**
@@ -130,6 +139,14 @@ public class MainActivity extends AppCompatActivity {
         displayDialog(DIALOG_ID_PHOTO_PICKER);
     }
 
+    // ****************** private helper functions ***************************//
 
+    private void loadProfilePhoto(Bundle savedInstanceState) {
+        // Saved state stuff
+        mImageView = (ImageView) findViewById(R.id.prof_photo);
+        if (savedInstanceState != null) {
+            mImageCaptureUri = savedInstanceState.getParcelable(IMAGE_URI);
+        }
+    }
 
 }
