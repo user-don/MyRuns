@@ -163,31 +163,35 @@ public class MainActivity extends AppCompatActivity {
         mEditor.clear();
         // Save name
         mKey = getString(R.string.preference_key_profile_name);
-        String mValue = ((EditText) findViewById(R.id.name_text)).getText().toString();
+        EditText et = (EditText) findViewById(R.id.name_text);
+        String mValue = et != null ? et.getText().toString() : "";
         mEditor.putString(mKey, mValue);
         mKey = getString(R.string.preference_key_profile_email);
-        mValue = ((EditText) findViewById(R.id.email_text)).getText().toString();
+        et = (EditText) findViewById(R.id.email_text);
+        mValue = et != null ? et.getText().toString() : "";
         mEditor.putString(mKey, mValue);
         mKey = getString(R.string.preference_key_profile_phone_number);
-        mValue = ((EditText) findViewById(R.id.phone_num_text)).getText().toString();
+        et = (EditText) findViewById(R.id.phone_num_text);
+        mValue = et != null ? et.getText().toString() : "";
         mEditor.putString(mKey, mValue);
 
         // special handling for radio buttons
         mKey = getString(R.string.preference_key_profile_gender);
         RadioGroup mRadioGroup = (RadioGroup) findViewById(R.id.radioGender);
-        int mIntValue = mRadioGroup.indexOfChild(findViewById(mRadioGroup
-                .getCheckedRadioButtonId()));
+        assert mRadioGroup != null;
+        int mrg = mRadioGroup.getCheckedRadioButtonId();
+        int mIntValue = mRadioGroup.indexOfChild(findViewById(mrg));
         mEditor.putInt(mKey, mIntValue);
 
         // LEFT OFF: Issues with NPE warnings and AppCompatActivity...
 
         mKey = getString(R.string.preference_key_profile_class);
-        EditText et = (EditText) findViewById(R.id.class_text);
+        et = (EditText) findViewById(R.id.class_text);
         mValue = et != null ? et.getText().toString() : "";
-        mValue = ((EditText) findViewById(R.id.class_text)).getText().toString();
         mEditor.putString(mKey, mValue);
         mKey = getString(R.string.preference_key_profile_major);
-        mValue = ((EditText) findViewById(R.id.major_text)).getText().toString();
+        et = (EditText) findViewById(R.id.major_text);
+        mValue = et != null ? et.getText().toString() : "";
         mEditor.putString(mKey, mValue);
         // TODO: Use toast to indicate data saved
 

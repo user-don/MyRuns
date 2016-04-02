@@ -58,6 +58,7 @@
                 android:layout_height="wrap_content"
                 android:hint="@string/input_name_text"
                 android:singleLine="true"
+                android:text=""
                 android:inputType="textCapWords" />
 
             <TextView
@@ -72,6 +73,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:hint="@string/input_email_text"
+                android:text=""
                 android:singleLine="true" />
 
             <TextView
@@ -86,6 +88,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:hint="@string/input_phone_text"
+                android:text=""
                 android:singleLine="true" />
 
             <TextView
@@ -104,7 +107,7 @@
                     android:layout_height="wrap_content"
                     android:text="@string/female"
                     android:id="@+id/radioGenderF"
-                    android:checked="false" />
+                    android:checked="true" />
 
                 <RadioButton
                     android:layout_width="wrap_content"
@@ -126,6 +129,7 @@
                 android:layout_height="wrap_content"
                 android:hint="@string/input_class_text"
                 android:singleLine="true"
+                android:text=""
                 android:inputType="number" />
 
             <TextView
@@ -140,6 +144,7 @@
                 android:layout_height="wrap_content"
                 android:hint="@string/input_major_text"
                 android:singleLine="true"
+                android:text=""
                 android:inputType="textCapWords" />
 
             <LinearLayout
