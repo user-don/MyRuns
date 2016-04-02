@@ -9,7 +9,7 @@ import android.os.Bundle;
 
 /**
  * Created by don on 3/31/16.
- *
+ * <p>
  * Fragment for dialog box of selecting profile image
  */
 public class MyRunsDialogFragment extends DialogFragment {
@@ -21,7 +21,7 @@ public class MyRunsDialogFragment extends DialogFragment {
         // get ID to figure out what dialog we want to show
         int dialog_id = getArguments().getInt(DIALOG_ID_KEY);
         final Activity parent = getActivity();
-        switch(dialog_id) {
+        switch (dialog_id) {
             case DIALOG_ID_PHOTO_PICKER:
                 AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
                 builder.setTitle(R.string.select_profile_image);
@@ -29,7 +29,7 @@ public class MyRunsDialogFragment extends DialogFragment {
                 builder.setItems(R.array.ui_profile_photo_picker_items, new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
                         // the which argument contains the index position of the selected item
-                        switch(which) {
+                        switch (which) {
                             case 0:
                                 // take picture from camera
                             case 1:
