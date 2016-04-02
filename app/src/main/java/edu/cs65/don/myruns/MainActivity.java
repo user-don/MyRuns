@@ -1,23 +1,26 @@
 package edu.cs65.don.myruns;
 
 import android.app.DialogFragment;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.view.WindowManager;
+import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.RadioGroup;
 
 public class MainActivity extends AppCompatActivity {
 
     public static final String IMAGE_URI = "image_uri";
     private static final int ID_PHOTO_PICKER_FROM_CAMERA = 0;
     private static final int DIALOG_ID_PHOTO_PICKER = 1;
+    private static final String URI_INSTANCE_STATE_KEY = "profile_photo";
     private static final String RUNS = "runs";
     private ImageView mImageView;
     private Uri mImageCaptureUri;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -28,9 +31,7 @@ public class MainActivity extends AppCompatActivity {
         getWindow().setSoftInputMode(
                 WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN
         );
-        // load previously set profile photo
-        loadProfilePhoto(savedInstanceState);
-
+        // load previously set settings
         loadProfile(savedInstanceState);
 
 
@@ -86,7 +87,7 @@ public class MainActivity extends AppCompatActivity {
         Log.d("app", "onSaveInstanceState called");
 
         // call this to save something.
-        //savedInstanceState.putParcelable(URI_INSTANCE_STATE_KEY, mImageCaptureUri);
+        savedInstanceState.putParcelable(URI_INSTANCE_STATE_KEY, mImageCaptureUri);
     }
 
     // Called at the end of the active lifetime.
@@ -133,27 +134,56 @@ public class MainActivity extends AppCompatActivity {
     /**
      * Display photo picker dialog box
      */
-    public void displayPhotoDialog(View view) {
+    public void displayPhotoDialog(View v) {
         Log.d(RUNS, "display photo dialog called");
         displayDialog(DIALOG_ID_PHOTO_PICKER);
     }
 
-    // ****************** private helper functions ***************************//
-
-    private void loadProfilePhoto(Bundle savedInstanceState) {
-        // Saved state stuff
-        mImageView = (ImageView) findViewById(R.id.prof_photo);
-        if (savedInstanceState != null) {
-            mImageCaptureUri = savedInstanceState.getParcelable(IMAGE_URI);
-        }
+    /**
+     * Protected wrapper for saveProfile (which is private helper function)
+     * @param v view passed when button tapped
+     */
+    protected void saveProfileTapped(View v) {
+        saveProfile();
     }
+
+    // ****************** private helper functions ***************************//
 
     /**
      * Save user input data using SharedPreference object. Use toast to indicate data saved.
      */
     private void saveProfile() {
         // TODO: Save user input data using SharedPreference object
+        Log.d(RUNS, "save profile");
+        // Get shared preferences editor
+        String mKey = getString(R.string.preference_name);
+        SharedPreferences mPrefs = getSharedPreferences(mKey, MODE_PRIVATE);
+        SharedPreferences.Editor mEditor = mPrefs.edit();
+        mEditor.clear();
+        // Save name
+        mKey = getString(R.string.preference_key_profile_name);
+        String mValue = (String) ((EditText) findViewById(R.id.name_text)).getText().toString();
+        mEditor.putString(mKey, mValue);
+        mKey = getString(R.string.preference_key_profile_email);
+        mValue = (String) ((EditText) findViewById(R.id.email_text)).getText().toString();
+        mEditor.putString(mKey, mValue);
+        mKey = getString(R.string.preference_key_profile_phone_number);
+        mValue = (String) ((EditText) findViewById(R.id.phone_num_text)).getText().toString();
+        mEditor.putString(mKey, mValue);
 
+        // special handling for radio buttons
+        mKey = getString(R.string.preference_key_profile_gender);
+        RadioGroup mRadioGroup = (RadioGroup) findViewById(R.id.radioGender);
+        int mIntValue = mRadioGroup.indexOfChild(findViewById(mRadioGroup
+                .getCheckedRadioButtonId()));
+        mEditor.putString(mKey, mIntValue);
+
+        mKey = getString(R.string.preference_key_profile_class);
+        mValue = (String) ((EditText) findViewById(R.id.class_text)).getText().toString();
+        mEditor.putString(mKey, mValue);
+        mKey = getString(R.string.preference_key_profile_major);
+        mValue = (String) ((EditText) findViewById(R.id.major_text)).getText().toString();
+        mEditor.putString(mKey, mValue);
         // TODO: Use toast to indicate data saved
 
     }
@@ -163,6 +193,11 @@ public class MainActivity extends AppCompatActivity {
      */
     private void loadProfile(Bundle savedInstanceState) {
         // TODO: Help load user data that has already been saved
+
+        mImageView = (ImageView) findViewById(R.id.prof_photo);
+        if (savedInstanceState != null) {
+            mImageCaptureUri = savedInstanceState.getParcelable(IMAGE_URI);
+        }
 
     }
 

@@ -26,4 +26,13 @@
         <item>Take picture from camera</item>
         <item>SD card</item>
     </string-array>
+    <string name="preference_name">my_shared_preferences</string>
+
+    <!-- Preference keys -->
+    <string name="preference_key_profile_name">profile_name</string>
+    <string name="preference_key_profile_email">profile_email</string>
+    <string name="preference_key_profile_phone_number">profile_phone_number</string>
+    <string name="preference_key_profile_gender">profile_gender</string>
+    <string name="preference_key_profile_class">profile_class</string>
+    <string name="preference_key_profile_major">profile_major</string>
 </resources>
