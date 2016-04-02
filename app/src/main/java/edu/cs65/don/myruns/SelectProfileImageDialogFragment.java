@@ -9,6 +9,8 @@ import android.os.Bundle;
 
 /**
  * Created by don on 3/31/16.
+ *
+ * Fragment for dialog box of selecting profile image
  */
 public class SelectProfileImageDialogFragment extends DialogFragment {
 
@@ -19,15 +21,6 @@ public class SelectProfileImageDialogFragment extends DialogFragment {
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         // get ID to figure out what dialog we want to show
         int dialog_id = getArguments().getInt(DIALOG_ID_KEY);
-
-        final Activity parent = getActivity();
-
-        switch(dialog_id) {
-            case DIALOG_ID_PHOTO_PICKER:
-                // put stuff in here
-
-        }
-
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         builder.setTitle(R.string.select_profile_image);
 

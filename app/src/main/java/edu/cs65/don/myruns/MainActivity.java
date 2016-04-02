@@ -118,7 +118,6 @@ public class MainActivity extends AppCompatActivity {
      * @param id
      */
     public void displayDialog(int id) {
-        Log.d(RUNS, "display dialog called");
         DialogFragment fragment = SelectProfileImageDialogFragment.newInstance(id);
         fragment.show(getFragmentManager(), "dialog_fragment_photo_picker");
     }
@@ -127,6 +126,7 @@ public class MainActivity extends AppCompatActivity {
      * Display photo picker dialog box
      */
     public void displayPhotoDialog(View view) {
+        Log.d(RUNS, "display photo dialog called");
         displayDialog(DIALOG_ID_PHOTO_PICKER);
     }
 
