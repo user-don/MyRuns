@@ -1,5 +1,6 @@
 package edu.cs65.don.myruns;
 
+import android.app.Activity;
 import android.app.DialogFragment;
 import android.content.SharedPreferences;
 import android.net.Uri;
@@ -162,13 +163,13 @@ public class MainActivity extends AppCompatActivity {
         mEditor.clear();
         // Save name
         mKey = getString(R.string.preference_key_profile_name);
-        String mValue = (String) ((EditText) findViewById(R.id.name_text)).getText().toString();
+        String mValue = ((EditText) findViewById(R.id.name_text)).getText().toString();
         mEditor.putString(mKey, mValue);
         mKey = getString(R.string.preference_key_profile_email);
-        mValue = (String) ((EditText) findViewById(R.id.email_text)).getText().toString();
+        mValue = ((EditText) findViewById(R.id.email_text)).getText().toString();
         mEditor.putString(mKey, mValue);
         mKey = getString(R.string.preference_key_profile_phone_number);
-        mValue = (String) ((EditText) findViewById(R.id.phone_num_text)).getText().toString();
+        mValue = ((EditText) findViewById(R.id.phone_num_text)).getText().toString();
         mEditor.putString(mKey, mValue);
 
         // special handling for radio buttons
@@ -176,13 +177,17 @@ public class MainActivity extends AppCompatActivity {
         RadioGroup mRadioGroup = (RadioGroup) findViewById(R.id.radioGender);
         int mIntValue = mRadioGroup.indexOfChild(findViewById(mRadioGroup
                 .getCheckedRadioButtonId()));
-        mEditor.putString(mKey, mIntValue);
+        mEditor.putInt(mKey, mIntValue);
+
+        // LEFT OFF: Issues with NPE warnings and AppCompatActivity...
 
         mKey = getString(R.string.preference_key_profile_class);
-        mValue = (String) ((EditText) findViewById(R.id.class_text)).getText().toString();
+        EditText et = (EditText) findViewById(R.id.class_text);
+        mValue = et != null ? et.getText().toString() : "";
+        mValue = ((EditText) findViewById(R.id.class_text)).getText().toString();
         mEditor.putString(mKey, mValue);
         mKey = getString(R.string.preference_key_profile_major);
-        mValue = (String) ((EditText) findViewById(R.id.major_text)).getText().toString();
+        mValue = ((EditText) findViewById(R.id.major_text)).getText().toString();
         mEditor.putString(mKey, mValue);
         // TODO: Use toast to indicate data saved
 
