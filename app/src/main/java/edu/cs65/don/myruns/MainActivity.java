@@ -31,6 +31,8 @@ public class MainActivity extends AppCompatActivity {
         // load previously set profile photo
         loadProfilePhoto(savedInstanceState);
 
+        loadProfile(savedInstanceState);
+
 
     }
 
@@ -124,11 +126,8 @@ public class MainActivity extends AppCompatActivity {
      * @param id ID of the dialog to be displayed
      */
     public void displayDialog(int id) {
-        switch(id) {
-            case 1:
-                DialogFragment fragment = SelectProfileImageDialogFragment.newInstance(id);
-                fragment.show(getFragmentManager(), "dialog_fragment_photo_picker");
-        }
+        DialogFragment fragment = MyRunsDialogFragment.newInstance(id);
+        fragment.show(getFragmentManager(), "dialog_fragment_photo_picker");
     }
 
     /**
@@ -147,6 +146,24 @@ public class MainActivity extends AppCompatActivity {
         if (savedInstanceState != null) {
             mImageCaptureUri = savedInstanceState.getParcelable(IMAGE_URI);
         }
+    }
+
+    /**
+     * Save user input data using SharedPreference object. Use toast to indicate data saved.
+     */
+    private void saveProfile() {
+        // TODO: Save user input data using SharedPreference object
+
+        // TODO: Use toast to indicate data saved
+
+    }
+
+    /**
+     * Help load user data that has already been saved.
+     */
+    private void loadProfile(Bundle savedInstanceState) {
+        // TODO: Help load user data that has already been saved
+
     }
 
 }
