@@ -5,12 +5,16 @@ import android.net.Uri;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
+import android.view.WindowManager;
 import android.widget.ImageView;
 
 public class MainActivity extends AppCompatActivity {
 
-    public static final String EXAMPLE_KEY = "exampleKey";
-    private static final ID_PHOTO_PICKER_FROM_CAMERA = 0;
+    public static final String IMAGE_URI = "image_uri";
+    private static final int ID_PHOTO_PICKER_FROM_CAMERA = 0;
+    private static final int DIALOG_ID_PHOTO_PICKER = 1;
+    private static final String RUNS = "runs";
     private ImageView mImageView;
     private Uri mImageCaptureUri;
 
@@ -19,11 +23,15 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        // clear soft keyboard until text view tapped
+        getWindow().setSoftInputMode(
+                WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN
+        );
+
 
         mImageView = (ImageView) findViewById(R.id.prof_photo);
-
         if (savedInstanceState != null) {
-            mImageCaptureUri = savedInstanceState.getParcelable(EXAMPLE_KEY);
+            mImageCaptureUri = savedInstanceState.getParcelable(IMAGE_URI);
         }
 
 
@@ -105,10 +113,21 @@ public class MainActivity extends AppCompatActivity {
         super.onDestroy();
     }
 
-    // display dialog fragment
+    /**
+     * display dialog fragment
+     * @param id
+     */
     public void displayDialog(int id) {
+        Log.d(RUNS, "display dialog called");
         DialogFragment fragment = SelectProfileImageDialogFragment.newInstance(id);
         fragment.show(getFragmentManager(), "dialog_fragment_photo_picker");
+    }
+
+    /**
+     * Display photo picker dialog box
+     */
+    public void displayPhotoDialog(View view) {
+        displayDialog(DIALOG_ID_PHOTO_PICKER);
     }
 
 

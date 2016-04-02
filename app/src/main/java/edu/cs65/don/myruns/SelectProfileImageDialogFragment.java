@@ -64,6 +64,7 @@ public class SelectProfileImageDialogFragment extends DialogFragment {
         // we want to pass ID to the activity
         args.putInt(DIALOG_ID_KEY, dialog_id);
         frag.setArguments(args);
+        return frag;
     }
 
 
