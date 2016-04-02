@@ -12,6 +12,7 @@ import android.view.WindowManager;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.RadioGroup;
+import android.widget.Toast;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -161,7 +162,7 @@ public class MainActivity extends AppCompatActivity {
         SharedPreferences mPrefs = getSharedPreferences(mKey, MODE_PRIVATE);
         SharedPreferences.Editor mEditor = mPrefs.edit();
         mEditor.clear();
-        // Save name
+        // Save preferences
         mKey = getString(R.string.preference_key_profile_name);
         EditText et = (EditText) findViewById(R.id.name_text);
         String mValue = et != null ? et.getText().toString() : "";
@@ -174,7 +175,6 @@ public class MainActivity extends AppCompatActivity {
         et = (EditText) findViewById(R.id.phone_num_text);
         mValue = et != null ? et.getText().toString() : "";
         mEditor.putString(mKey, mValue);
-
         // special handling for radio buttons
         mKey = getString(R.string.preference_key_profile_gender);
         RadioGroup mRadioGroup = (RadioGroup) findViewById(R.id.radioGender);
@@ -182,8 +182,6 @@ public class MainActivity extends AppCompatActivity {
         int mrg = mRadioGroup.getCheckedRadioButtonId();
         int mIntValue = mRadioGroup.indexOfChild(findViewById(mrg));
         mEditor.putInt(mKey, mIntValue);
-
-        // LEFT OFF: Issues with NPE warnings and AppCompatActivity...
 
         mKey = getString(R.string.preference_key_profile_class);
         et = (EditText) findViewById(R.id.class_text);
@@ -193,8 +191,10 @@ public class MainActivity extends AppCompatActivity {
         et = (EditText) findViewById(R.id.major_text);
         mValue = et != null ? et.getText().toString() : "";
         mEditor.putString(mKey, mValue);
-        // TODO: Use toast to indicate data saved
 
+        mEditor.apply();
+        Toast.makeText(getApplicationContext(),
+                R.string.profile_info_saved, Toast.LENGTH_SHORT).show();
     }
 
     /**

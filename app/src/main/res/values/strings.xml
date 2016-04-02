@@ -35,4 +35,7 @@
     <string name="preference_key_profile_gender">profile_gender</string>
     <string name="preference_key_profile_class">profile_class</string>
     <string name="preference_key_profile_major">profile_major</string>
+
+
+    <string name="profile_info_saved">Profile information saved</string>
 </resources>
