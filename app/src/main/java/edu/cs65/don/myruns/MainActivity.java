@@ -1,6 +1,5 @@
 package edu.cs65.don.myruns;
 
-import android.app.Activity;
 import android.app.DialogFragment;
 import android.content.SharedPreferences;
 import android.net.Uri;
@@ -11,6 +10,7 @@ import android.view.View;
 import android.view.WindowManager;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.Toast;
 
@@ -35,7 +35,6 @@ public class MainActivity extends AppCompatActivity {
         );
         // load previously set settings
         loadProfile(savedInstanceState);
-
 
     }
 
@@ -136,7 +135,7 @@ public class MainActivity extends AppCompatActivity {
     /**
      * Display photo picker dialog box
      */
-    public void displayPhotoDialog(View v) {
+    public void displayPhotoDialog(@SuppressWarnings("UnusedParameters") View v) {
         Log.d(RUNS, "display photo dialog called");
         displayDialog(DIALOG_ID_PHOTO_PICKER);
     }
@@ -145,7 +144,7 @@ public class MainActivity extends AppCompatActivity {
      * Protected wrapper for saveProfile (which is private helper function)
      * @param v view passed when button tapped
      */
-    protected void saveProfileTapped(View v) {
+    public void saveProfileTapped(@SuppressWarnings("UnusedParameters") View v) {
         saveProfile();
     }
 
@@ -154,44 +153,53 @@ public class MainActivity extends AppCompatActivity {
     /**
      * Save user input data using SharedPreference object. Use toast to indicate data saved.
      */
+    @SuppressWarnings("ConstantConditions")
     private void saveProfile() {
-        // TODO: Save user input data using SharedPreference object
         Log.d(RUNS, "save profile");
         // Get shared preferences editor
         String mKey = getString(R.string.preference_name);
         SharedPreferences mPrefs = getSharedPreferences(mKey, MODE_PRIVATE);
         SharedPreferences.Editor mEditor = mPrefs.edit();
         mEditor.clear();
-        // Save preferences
+
+        // Save preferences: Name
         mKey = getString(R.string.preference_key_profile_name);
         EditText et = (EditText) findViewById(R.id.name_text);
         String mValue = et != null ? et.getText().toString() : "";
         mEditor.putString(mKey, mValue);
+
+        // Email
         mKey = getString(R.string.preference_key_profile_email);
         et = (EditText) findViewById(R.id.email_text);
         mValue = et != null ? et.getText().toString() : "";
         mEditor.putString(mKey, mValue);
+
+        // Phone Number
         mKey = getString(R.string.preference_key_profile_phone_number);
         et = (EditText) findViewById(R.id.phone_num_text);
         mValue = et != null ? et.getText().toString() : "";
         mEditor.putString(mKey, mValue);
-        // special handling for radio buttons
+
+        // Gender
         mKey = getString(R.string.preference_key_profile_gender);
         RadioGroup mRadioGroup = (RadioGroup) findViewById(R.id.radioGender);
-        assert mRadioGroup != null;
-        int mrg = mRadioGroup.getCheckedRadioButtonId();
-        int mIntValue = mRadioGroup.indexOfChild(findViewById(mrg));
+        int mIntValue = mRadioGroup.indexOfChild(findViewById(mRadioGroup
+                .getCheckedRadioButtonId()));
         mEditor.putInt(mKey, mIntValue);
 
+        // Class Year
         mKey = getString(R.string.preference_key_profile_class);
         et = (EditText) findViewById(R.id.class_text);
         mValue = et != null ? et.getText().toString() : "";
         mEditor.putString(mKey, mValue);
+
+        // Major
         mKey = getString(R.string.preference_key_profile_major);
         et = (EditText) findViewById(R.id.major_text);
         mValue = et != null ? et.getText().toString() : "";
         mEditor.putString(mKey, mValue);
 
+        // Apply settings and pop up toast dialog
         mEditor.apply();
         Toast.makeText(getApplicationContext(),
                 R.string.profile_info_saved, Toast.LENGTH_SHORT).show();
@@ -200,14 +208,58 @@ public class MainActivity extends AppCompatActivity {
     /**
      * Help load user data that has already been saved.
      */
+    @SuppressWarnings("ConstantConditions")
     private void loadProfile(Bundle savedInstanceState) {
-        // TODO: Help load user data that has already been saved
+        Log.d(RUNS, "load user profile");
+        // get sharedPreferences
+        String mKey = getString(R.string.preference_name);
+        SharedPreferences mPrefs = getSharedPreferences(mKey, MODE_PRIVATE);
 
+        // get the preferences: name
+        mKey = getString(R.string.preference_key_profile_name);
+        String mValue = mPrefs.getString(mKey, "");
+        ((EditText) findViewById(R.id.name_text)).setText(mValue);
+
+        // email
+        mKey = getString(R.string.preference_key_profile_email);
+        mValue = mPrefs.getString(mKey, "");
+        ((EditText) findViewById(R.id.email_text)).setText(mValue);
+
+        // phone number
+        mKey = getString(R.string.preference_key_profile_phone_number);
+        mValue = mPrefs.getString(mKey, "");
+        ((EditText) findViewById(R.id.phone_num_text)).setText(mValue);
+
+        // gender info
+        mKey = getString(R.string.preference_key_profile_gender);
+        int mIntValue = mPrefs.getInt(mKey, -1);
+        // in case there isn't one saved before
+        if (mIntValue >= 0) {
+            // Find the radio button that should be checked
+            RadioButton radioBtn = (RadioButton) ((RadioGroup) findViewById(R.id.radioGender))
+                    .getChildAt(mIntValue);
+            // check the button
+            radioBtn.setChecked(true);
+            Toast.makeText(getApplicationContext(),
+                    "number of the radio button is : " + mIntValue,
+                    Toast.LENGTH_SHORT).show();
+        }
+
+        // class
+        mKey = getString(R.string.preference_key_profile_class);
+        mValue = mPrefs.getString(mKey, "");
+        ((EditText) findViewById(R.id.class_text)).setText(mValue);
+
+        // major
+        mKey = getString(R.string.preference_key_profile_major);
+        mValue = mPrefs.getString(mKey, "");
+        ((EditText) findViewById(R.id.major_text)).setText(mValue);
+
+        // TODO: Reload profile photo
         mImageView = (ImageView) findViewById(R.id.prof_photo);
         if (savedInstanceState != null) {
             mImageCaptureUri = savedInstanceState.getParcelable(IMAGE_URI);
         }
-
     }
 
 }
