@@ -53,7 +53,7 @@ public class MainActivity extends AppCompatActivity {
         );
         // load previously set settings
         loadProfile(savedInstanceState);
-
+        loadSnap();
     }
 
     @Override
@@ -179,14 +179,20 @@ public class MainActivity extends AppCompatActivity {
             case REQUEST_CODE_TAKE_FROM_CAMERA:
                 // Send image taken from camera for cropping
                 cropImage();
-                break;
+                // We need to show the profile photo once it has been saved
+                // Then we also need to save it appropriately
 
+            // TODO: This is not being called properly from cropImage. Figure out why.
             case REQUEST_CODE_CROP_PHOTO:
                 // Update image view after image crop
                 Bundle extras = data.getExtras();
                 // Set the picture image in UI
+                Bitmap bmp = data.getParcelableExtra("data");
+
                 if (extras != null) {
-                    mImageView.setImageBitmap((Bitmap) extras.getParcelable("data"));
+                    //mImageView.setImageBitmap((Bitmap) extras.getParcelable("data"));
+                    mImageView.setImageBitmap((Bitmap) extras.getParcelable(
+                            getString(R.string.profile_photo_file_name)));
                 }
 
                 // Delete temporary image taken by camera after crop.
@@ -195,8 +201,6 @@ public class MainActivity extends AppCompatActivity {
                     if (f.exists())
                         f.delete();
                 }
-
-                break;
         }
     }
 
@@ -231,8 +235,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
     // ****************** private helper functions ***************************//
-
-    // TODO: Swap save & cancel buttons back to original design
 
     /**
      * Save user input data using SharedPreference object. Use toast to indicate data saved.
@@ -287,6 +289,8 @@ public class MainActivity extends AppCompatActivity {
         mEditor.apply();
         Toast.makeText(getApplicationContext(),
                 R.string.profile_info_saved, Toast.LENGTH_SHORT).show();
+        // quit the app
+        finish();
     }
 
     /**
@@ -357,6 +361,8 @@ public class MainActivity extends AppCompatActivity {
             fis.close();
         } catch (IOException e) {
             // Default profile photo if no photo saved before.
+            Log.d(RUNS, "Caught IOException loading profile photo from internal storage."
+            + " defaulting to default profile photo");
             mImageView.setImageResource(R.drawable.default_profile);
         }
     }
