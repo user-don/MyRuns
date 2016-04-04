@@ -31,9 +31,10 @@ public class MyRunsDialogFragment extends DialogFragment {
                         // the which argument contains the index position of the selected item
                         switch (which) {
                             case 0:
-                                // take picture from camera
+                                // TODO: take picture from camera
+
                             case 1:
-                                // do something else
+                                // TODO: Load photo from phone library
                         }
                     }
                 });

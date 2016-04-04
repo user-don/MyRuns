@@ -88,6 +88,7 @@ public class MainActivity extends AppCompatActivity {
         Log.d("app", "onSaveInstanceState called");
 
         // call this to save something.
+        // TODO: Save temporary profile picture & reload it in onCreate()
         savedInstanceState.putParcelable(URI_INSTANCE_STATE_KEY, mImageCaptureUri);
     }
 
@@ -149,6 +150,8 @@ public class MainActivity extends AppCompatActivity {
     }
 
     // ****************** private helper functions ***************************//
+
+    // TODO: Swap save & cancel buttons back to original design
 
     /**
      * Save user input data using SharedPreference object. Use toast to indicate data saved.
@@ -255,7 +258,7 @@ public class MainActivity extends AppCompatActivity {
         mValue = mPrefs.getString(mKey, "");
         ((EditText) findViewById(R.id.major_text)).setText(mValue);
 
-        // TODO: Reload profile photo
+        // TODO: Load (or reload) profile photo
         mImageView = (ImageView) findViewById(R.id.prof_photo);
         if (savedInstanceState != null) {
             mImageCaptureUri = savedInstanceState.getParcelable(IMAGE_URI);
