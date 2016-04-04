@@ -16,6 +16,9 @@ public class MyRunsDialogFragment extends DialogFragment {
     private static final String DIALOG_ID_KEY = "id_key";
     private static final int DIALOG_ID_PHOTO_PICKER = 1;
 
+    // For photo picker selection:
+    public static final int ID_PHOTO_PICKER_FROM_CAMERA = 0;
+
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         // get ID to figure out what dialog we want to show
@@ -26,12 +29,17 @@ public class MyRunsDialogFragment extends DialogFragment {
                 AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
                 builder.setTitle(R.string.select_profile_image);
 
-                builder.setItems(R.array.ui_profile_photo_picker_items, new DialogInterface.OnClickListener() {
+                builder.setItems(R.array.ui_profile_photo_picker_items,
+                        new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
                         // the which argument contains the index position of the selected item
                         switch (which) {
                             case 0:
                                 // TODO: take picture from camera
+                                // Item is ID_PHOTO_PICKER_FROM_CAMERA
+                                // Call the onPhotoPickerItemSelected in the parent
+                                // activity, i.e., cameraControlActivity in this case
+                                ((MainActivity) parent).onPhotoPickerItemSelected(which);
 
                             case 1:
                                 // TODO: Load photo from phone library
