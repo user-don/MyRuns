@@ -42,14 +42,12 @@ public class MainActivity extends AppCompatActivity {
     static final int MY_PERMISSIONS_REQUEST_READ_EXTERNAL_DATA = 222;
     static final int MY_PERMISSIONS_REQUEST_WRITE_EXTERNAL_DATA = 223;
 
-    public static final int REQUEST_CODE_TAKE_FROM_CAMERA = 0;
-
-    private static final String IMAGE_UNSPECIFIED = "image/*";
     private static final String URI_INSTANCE_STATE_KEY = "saved_uri";
 
     private static final String RUNS = "runs";
     private ImageView mImageView;
     private Uri mImageCaptureUri;
+    private Uri tempImageUri;
     private boolean isTakenFromCamera;
 
     @Override
@@ -67,8 +65,18 @@ public class MainActivity extends AppCompatActivity {
         );
 
         // load previously set settings
+        mImageView = (ImageView) findViewById(R.id.prof_photo);
+        if (savedInstanceState != null) {
+            tempImageUri = savedInstanceState.getParcelable(URI_INSTANCE_STATE_KEY);
+            if (tempImageUri != null) {
+                mImageView.setImageURI(tempImageUri);
+            } else {
+                loadSnap();
+            }
+        } else {
+            loadSnap();
+        }
         loadProfile(savedInstanceState);
-        loadSnap();
     }
 
     @Override
@@ -119,7 +127,7 @@ public class MainActivity extends AppCompatActivity {
         // killed and restarted by the run time.
         super.onSaveInstanceState(savedInstanceState);
         Log.d("app", "onSaveInstanceState called");
-        savedInstanceState.putParcelable(URI_INSTANCE_STATE_KEY, mImageCaptureUri);
+        savedInstanceState.putParcelable(URI_INSTANCE_STATE_KEY, tempImageUri);
     }
 
     // Called at the end of the active lifetime.
@@ -333,9 +341,6 @@ public class MainActivity extends AppCompatActivity {
                     .getChildAt(mIntValue);
             // check the button
             radioBtn.setChecked(true);
-            Toast.makeText(getApplicationContext(),
-                    "number of the radio button is : " + mIntValue,
-                    Toast.LENGTH_SHORT).show();
         }
 
         // class
@@ -347,11 +352,6 @@ public class MainActivity extends AppCompatActivity {
         mKey = getString(R.string.preference_key_profile_major);
         mValue = mPrefs.getString(mKey, "");
         ((EditText) findViewById(R.id.major_text)).setText(mValue);
-
-        mImageView = (ImageView) findViewById(R.id.prof_photo);
-        if (savedInstanceState != null) {
-            mImageCaptureUri = savedInstanceState.getParcelable(IMAGE_URI);
-        }
     }
 
     private void loadSnap() {
@@ -371,7 +371,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void saveSnap() {
-
         // Commit all the changes into preference file
         // Save profile image into internal storage.
         mImageView.buildDrawingCache();
@@ -396,12 +395,18 @@ public class MainActivity extends AppCompatActivity {
 
     private void handleCrop(int resultCode, Intent result) {
         if (resultCode == RESULT_OK) {
-            mImageView.setImageURI(Crop.getOutput(result));
+            tempImageUri = Crop.getOutput(result);
+            //mImageView.setImageURI(Crop.getOutput(result));
+            mImageView.setImageURI(tempImageUri);
+            Log.d(RUNS, "tempImageUri set to " + String.valueOf(tempImageUri));
         } else if (resultCode == Crop.RESULT_ERROR) {
             Toast.makeText(this, Crop.getError(result).getMessage(), Toast.LENGTH_SHORT).show();
         }
     }
 
+    /**
+     * Check for app permissions
+     */
     private void checkForPermissions() {
         int checkWriteExternalStorage = ContextCompat.checkSelfPermission(this,
                 Manifest.permission.WRITE_EXTERNAL_STORAGE);
@@ -418,7 +423,6 @@ public class MainActivity extends AppCompatActivity {
                     new String[] {Manifest.permission.READ_EXTERNAL_STORAGE},
                     MY_PERMISSIONS_REQUEST_READ_EXTERNAL_DATA);
         }
-
     }
 
 }
