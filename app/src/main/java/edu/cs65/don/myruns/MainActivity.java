@@ -66,14 +66,17 @@ public class MainActivity extends AppCompatActivity {
 
         // load previously set settings
         mImageView = (ImageView) findViewById(R.id.prof_photo);
+        Boolean tempImageAvailable = false;
         if (savedInstanceState != null) {
+            // activity is restarting due to interruption or rotation. attempt
+            // to recover unsaved photo if available
             tempImageUri = savedInstanceState.getParcelable(URI_INSTANCE_STATE_KEY);
             if (tempImageUri != null) {
+                tempImageAvailable = true;
                 mImageView.setImageURI(tempImageUri);
-            } else {
-                loadSnap();
             }
-        } else {
+        }
+        if (!tempImageAvailable) { // temp image not available, load from saved data
             loadSnap();
         }
         loadProfile(savedInstanceState);
