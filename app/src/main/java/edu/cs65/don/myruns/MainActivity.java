@@ -36,7 +36,6 @@ import java.net.URI;
 public class MainActivity extends AppCompatActivity {
 
     public static final String IMAGE_URI = "image_uri";
-    private static final int ID_PHOTO_PICKER_FROM_CAMERA = 0;
     private static final int DIALOG_ID_PHOTO_PICKER = 1;
     static final int REQUEST_IMAGE_CAPTURE = 1;
     // for permission requests
@@ -44,7 +43,6 @@ public class MainActivity extends AppCompatActivity {
     static final int MY_PERMISSIONS_REQUEST_WRITE_EXTERNAL_DATA = 223;
 
     public static final int REQUEST_CODE_TAKE_FROM_CAMERA = 0;
-    public static final int REQUEST_CODE_CROP_PHOTO = 2;
 
     private static final String IMAGE_UNSPECIFIED = "image/*";
     private static final String URI_INSTANCE_STATE_KEY = "saved_uri";
@@ -52,7 +50,6 @@ public class MainActivity extends AppCompatActivity {
     private static final String RUNS = "runs";
     private ImageView mImageView;
     private Uri mImageCaptureUri;
-    private Uri croppedImageUri;
     private boolean isTakenFromCamera;
 
     @Override
@@ -68,6 +65,7 @@ public class MainActivity extends AppCompatActivity {
         getWindow().setSoftInputMode(
                 WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN
         );
+
         // load previously set settings
         loadProfile(savedInstanceState);
         loadSnap();
@@ -121,9 +119,6 @@ public class MainActivity extends AppCompatActivity {
         // killed and restarted by the run time.
         super.onSaveInstanceState(savedInstanceState);
         Log.d("app", "onSaveInstanceState called");
-
-        // call this to save something.
-        // TODO: Save temporary profile picture & reload it in onCreate()
         savedInstanceState.putParcelable(URI_INSTANCE_STATE_KEY, mImageCaptureUri);
     }
 
@@ -195,80 +190,27 @@ public class MainActivity extends AppCompatActivity {
         switch (requestCode) {
 
             case REQUEST_IMAGE_CAPTURE:
-                Bundle extras = data.getExtras();
-                Bitmap imageBitMap = (Bitmap) extras.get("data");
+                cropImage(mImageCaptureUri);
 
-                // Construct temporary image path and name to save taken photo
-//                mImageCaptureUri = Uri.fromFile(new File(Environment
-//                        .getExternalStorageDirectory(), "tmp_"
-//                        + String.valueOf(System.currentTimeMillis()) + ".jpg"));
-
-                ByteArrayOutputStream bytes = new ByteArrayOutputStream();
-                imageBitMap.compress(Bitmap.CompressFormat.PNG, 100, bytes);
-                String path = MediaStore.Images.Media.insertImage(
-                        getApplicationContext().getContentResolver(), imageBitMap, "toCrop", null);
-                mImageCaptureUri = Uri.parse(path);
-
-
-            case REQUEST_CODE_TAKE_FROM_CAMERA:
-                // Send image taken from camera for cropping
-                cropImage();
-                // We need to show the profile photo once it has been saved
-                // Then we also need to save it appropriately
-
-            // TODO: This is not being called properly from cropImage. Figure out why.
-            case REQUEST_CODE_CROP_PHOTO:
-//                // Update image view after image crop
-//                Bundle extras = data.getExtras();
-//                // Set the picture image in UI
-//                Bitmap bmp = data.getParcelableExtra("data");
-//
-//                if (extras != null) {
-//                    //mImageView.setImageBitmap((Bitmap) extras.getParcelable("data"));
-//                    mImageView.setImageBitmap((Bitmap) extras.getParcelable(
-//                            getString(R.string.profile_photo_file_name)));
-//                }
-//
-//                // Delete temporary image taken by camera after crop.
-//                if (isTakenFromCamera) {
-//                    File f = new File(mImageCaptureUri.getPath());
-//                    if (f.exists())
-//                        f.delete();
-//                }
             case Crop.REQUEST_CROP:
-                // TODO: Put in handleCrop() with parameters
                 handleCrop(resultCode, data);
+
+                // Delete temporary image taken by camera after crop.
+                if (isTakenFromCamera) {
+                    File f = new File(mImageCaptureUri.getPath());
+                    if (f.exists())
+                        f.delete();
+                }
 
         }
     }
 
 
     public void onPhotoPickerItemSelected(int item){
-        Intent intent;
 
         switch(item) {
             case MyRunsDialogFragment.ID_PHOTO_PICKER_FROM_CAMERA:
                 dispatchTakePictureIntent();
-
-//                // Take photo with camera. Construct intent with action
-//                // MediaStore.ACTION_IMAGE_CAPTURE
-//                intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-//                // Construct temporary image path and name to save taken photo
-//                mImageCaptureUri = Uri.fromFile(new File(Environment
-//                        .getExternalStorageDirectory(), "tmp_"
-//                        + String.valueOf(System.currentTimeMillis()) + ".jpg"));
-//                intent.putExtra(MediaStore.EXTRA_OUTPUT, mImageCaptureUri);
-//                intent.putExtra("return-data", true);
-//                try {
-//                    // Start a camera capturing activity
-//                    // REQUEST_CODE_TAKE_FROM_CAMERA is an integer tag you
-//                    // defined to identify the activity in onActivityResult()
-//                    // when it returns
-//                    startActivityForResult(intent,REQUEST_CODE_TAKE_FROM_CAMERA);
-//                } catch (ActivityNotFoundException e) {
-//                    e.printStackTrace();
-//                }
-//                isTakenFromCamera = true;
             default:
                 // do nothing
         }
@@ -278,9 +220,22 @@ public class MainActivity extends AppCompatActivity {
 
     private void dispatchTakePictureIntent() {
         Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-        if (takePictureIntent.resolveActivity(getPackageManager()) != null) {
-            startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE);
+        // Construct temporary image path and name to save the taken
+        // photo
+        mImageCaptureUri = Uri.fromFile(new File(Environment
+                .getExternalStorageDirectory(), "tmp_"
+                + String.valueOf(System.currentTimeMillis()) + ".jpg"));
+        takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT,
+                mImageCaptureUri);
+        takePictureIntent.putExtra("return-data", true);
+        try {
+            if (takePictureIntent.resolveActivity(getPackageManager()) != null) {
+                startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE);
+            }
+        } catch (ActivityNotFoundException e) {
+            e.printStackTrace();
         }
+        isTakenFromCamera = true;
     }
 
     /**
@@ -331,6 +286,9 @@ public class MainActivity extends AppCompatActivity {
         et = (EditText) findViewById(R.id.major_text);
         mValue = et != null ? et.getText().toString() : "";
         mEditor.putString(mKey, mValue);
+
+        // Save profile photo
+        saveSnap();
 
         // Apply settings and pop up toast dialog
         mEditor.apply();
@@ -390,7 +348,6 @@ public class MainActivity extends AppCompatActivity {
         mValue = mPrefs.getString(mKey, "");
         ((EditText) findViewById(R.id.major_text)).setText(mValue);
 
-        // TODO: Load (or reload) profile photo
         mImageView = (ImageView) findViewById(R.id.prof_photo);
         if (savedInstanceState != null) {
             mImageCaptureUri = savedInstanceState.getParcelable(IMAGE_URI);
@@ -398,7 +355,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void loadSnap() {
-
 
         // Load profile photo from internal storage
         try {
@@ -432,22 +388,9 @@ public class MainActivity extends AppCompatActivity {
     }
 
     // Crop and resize the image for profile
-    private void cropImage() {
-
-        // Construct temporary image path and name to save taken photo
-//        mImageCaptureUri = Uri.fromFile(new File(Environment
-//                .getExternalStorageDirectory(), "tmp_"
-//                + String.valueOf(System.currentTimeMillis()) + ".jpg"));
-
-
-//        croppedImageUri = Uri.fromFile(
-//                new File(Environment.getExternalStorageDirectory(), "tmp_" + String.valueOf(
-//                        System.currentTimeMillis()) + ".jpg"));
-
-        croppedImageUri = Uri.fromFile(new File(getCacheDir(), "cropped"));
-
-
-        Crop.of(mImageCaptureUri, croppedImageUri).asSquare().withMaxSize(100, 100).start(this);
+    private void cropImage(Uri source) {
+        Uri destination = Uri.fromFile(new File(getCacheDir(), "cropped"));
+        Crop.of(source, destination).asSquare().withMaxSize(100, 100).start(this);
 
     }
 
