@@ -1,14 +1,18 @@
 package edu.cs65.don.myruns;
 
+import android.Manifest;
 import android.app.DialogFragment;
 import android.content.ActivityNotFoundException;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Environment;
 import android.provider.MediaStore;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -20,16 +24,24 @@ import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.Toast;
 
+import com.soundcloud.android.crop.Crop;
+
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.net.URI;
 
 public class MainActivity extends AppCompatActivity {
 
     public static final String IMAGE_URI = "image_uri";
     private static final int ID_PHOTO_PICKER_FROM_CAMERA = 0;
     private static final int DIALOG_ID_PHOTO_PICKER = 1;
+    static final int REQUEST_IMAGE_CAPTURE = 1;
+    // for permission requests
+    static final int MY_PERMISSIONS_REQUEST_READ_EXTERNAL_DATA = 222;
+    static final int MY_PERMISSIONS_REQUEST_WRITE_EXTERNAL_DATA = 223;
 
     public static final int REQUEST_CODE_TAKE_FROM_CAMERA = 0;
     public static final int REQUEST_CODE_CROP_PHOTO = 2;
@@ -40,6 +52,7 @@ public class MainActivity extends AppCompatActivity {
     private static final String RUNS = "runs";
     private ImageView mImageView;
     private Uri mImageCaptureUri;
+    private Uri croppedImageUri;
     private boolean isTakenFromCamera;
 
     @Override
@@ -47,6 +60,10 @@ public class MainActivity extends AppCompatActivity {
         Log.d(RUNS, "onCreate called");
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        // check for permissions
+        checkForPermissions();
+
         // clear soft keyboard until text view tapped
         getWindow().setSoftInputMode(
                 WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN
@@ -176,6 +193,23 @@ public class MainActivity extends AppCompatActivity {
             return;
 
         switch (requestCode) {
+
+            case REQUEST_IMAGE_CAPTURE:
+                Bundle extras = data.getExtras();
+                Bitmap imageBitMap = (Bitmap) extras.get("data");
+
+                // Construct temporary image path and name to save taken photo
+//                mImageCaptureUri = Uri.fromFile(new File(Environment
+//                        .getExternalStorageDirectory(), "tmp_"
+//                        + String.valueOf(System.currentTimeMillis()) + ".jpg"));
+
+                ByteArrayOutputStream bytes = new ByteArrayOutputStream();
+                imageBitMap.compress(Bitmap.CompressFormat.PNG, 100, bytes);
+                String path = MediaStore.Images.Media.insertImage(
+                        getApplicationContext().getContentResolver(), imageBitMap, "toCrop", null);
+                mImageCaptureUri = Uri.parse(path);
+
+
             case REQUEST_CODE_TAKE_FROM_CAMERA:
                 // Send image taken from camera for cropping
                 cropImage();
@@ -184,23 +218,27 @@ public class MainActivity extends AppCompatActivity {
 
             // TODO: This is not being called properly from cropImage. Figure out why.
             case REQUEST_CODE_CROP_PHOTO:
-                // Update image view after image crop
-                Bundle extras = data.getExtras();
-                // Set the picture image in UI
-                Bitmap bmp = data.getParcelableExtra("data");
+//                // Update image view after image crop
+//                Bundle extras = data.getExtras();
+//                // Set the picture image in UI
+//                Bitmap bmp = data.getParcelableExtra("data");
+//
+//                if (extras != null) {
+//                    //mImageView.setImageBitmap((Bitmap) extras.getParcelable("data"));
+//                    mImageView.setImageBitmap((Bitmap) extras.getParcelable(
+//                            getString(R.string.profile_photo_file_name)));
+//                }
+//
+//                // Delete temporary image taken by camera after crop.
+//                if (isTakenFromCamera) {
+//                    File f = new File(mImageCaptureUri.getPath());
+//                    if (f.exists())
+//                        f.delete();
+//                }
+            case Crop.REQUEST_CROP:
+                // TODO: Put in handleCrop() with parameters
+                handleCrop(resultCode, data);
 
-                if (extras != null) {
-                    //mImageView.setImageBitmap((Bitmap) extras.getParcelable("data"));
-                    mImageView.setImageBitmap((Bitmap) extras.getParcelable(
-                            getString(R.string.profile_photo_file_name)));
-                }
-
-                // Delete temporary image taken by camera after crop.
-                if (isTakenFromCamera) {
-                    File f = new File(mImageCaptureUri.getPath());
-                    if (f.exists())
-                        f.delete();
-                }
         }
     }
 
@@ -210,31 +248,40 @@ public class MainActivity extends AppCompatActivity {
 
         switch(item) {
             case MyRunsDialogFragment.ID_PHOTO_PICKER_FROM_CAMERA:
-                // Take photo with camera. Construct intent with action
-                // MediaStore.ACTION_IMAGE_CAPTURE
-                intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-                // Construct temporary image path and name to save taken photo
-                mImageCaptureUri = Uri.fromFile(new File(Environment
-                        .getExternalStorageDirectory(), "tmp_"
-                        + String.valueOf(System.currentTimeMillis()) + ".jpg"));
-                intent.putExtra(MediaStore.EXTRA_OUTPUT, mImageCaptureUri);
-                intent.putExtra("return-data", true);
-                try {
-                    // Start a camera capturing activity
-                    // REQUEST_CODE_TAKE_FROM_CAMERA is an integer tag you
-                    // defined to identify the activity in onActivityResult()
-                    // when it returns
-                    startActivityForResult(intent,REQUEST_CODE_TAKE_FROM_CAMERA);
-                } catch (ActivityNotFoundException e) {
-                    e.printStackTrace();
-                }
-                isTakenFromCamera = true;
+                dispatchTakePictureIntent();
+
+//                // Take photo with camera. Construct intent with action
+//                // MediaStore.ACTION_IMAGE_CAPTURE
+//                intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+//                // Construct temporary image path and name to save taken photo
+//                mImageCaptureUri = Uri.fromFile(new File(Environment
+//                        .getExternalStorageDirectory(), "tmp_"
+//                        + String.valueOf(System.currentTimeMillis()) + ".jpg"));
+//                intent.putExtra(MediaStore.EXTRA_OUTPUT, mImageCaptureUri);
+//                intent.putExtra("return-data", true);
+//                try {
+//                    // Start a camera capturing activity
+//                    // REQUEST_CODE_TAKE_FROM_CAMERA is an integer tag you
+//                    // defined to identify the activity in onActivityResult()
+//                    // when it returns
+//                    startActivityForResult(intent,REQUEST_CODE_TAKE_FROM_CAMERA);
+//                } catch (ActivityNotFoundException e) {
+//                    e.printStackTrace();
+//                }
+//                isTakenFromCamera = true;
             default:
                 // do nothing
         }
     }
 
     // ****************** private helper functions ***************************//
+
+    private void dispatchTakePictureIntent() {
+        Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        if (takePictureIntent.resolveActivity(getPackageManager()) != null) {
+            startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE);
+        }
+    }
 
     /**
      * Save user input data using SharedPreference object. Use toast to indicate data saved.
@@ -386,22 +433,49 @@ public class MainActivity extends AppCompatActivity {
 
     // Crop and resize the image for profile
     private void cropImage() {
-        // Use existing crop activity.
-        Intent intent = new Intent("com.android.camera.action.CROP");
-        intent.setDataAndType(mImageCaptureUri, IMAGE_UNSPECIFIED);
 
-        // Specify image size
-        intent.putExtra("outputX", 100);
-        intent.putExtra("outputY", 100);
+        // Construct temporary image path and name to save taken photo
+//        mImageCaptureUri = Uri.fromFile(new File(Environment
+//                .getExternalStorageDirectory(), "tmp_"
+//                + String.valueOf(System.currentTimeMillis()) + ".jpg"));
 
-        // Specify aspect ratio, 1:1
-        intent.putExtra("aspectX", 1);
-        intent.putExtra("aspectY", 1);
-        intent.putExtra("scale", true);
-        intent.putExtra("return-data", true);
-        // REQUEST_CODE_CROP_PHOTO is an integer tag you defined to
-        // identify the activity in onActivityResult() when it returns
-        startActivityForResult(intent, REQUEST_CODE_CROP_PHOTO);
+
+//        croppedImageUri = Uri.fromFile(
+//                new File(Environment.getExternalStorageDirectory(), "tmp_" + String.valueOf(
+//                        System.currentTimeMillis()) + ".jpg"));
+
+        croppedImageUri = Uri.fromFile(new File(getCacheDir(), "cropped"));
+
+
+        Crop.of(mImageCaptureUri, croppedImageUri).asSquare().withMaxSize(100, 100).start(this);
+
+    }
+
+    private void handleCrop(int resultCode, Intent result) {
+        if (resultCode == RESULT_OK) {
+            mImageView.setImageURI(Crop.getOutput(result));
+        } else if (resultCode == Crop.RESULT_ERROR) {
+            Toast.makeText(this, Crop.getError(result).getMessage(), Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    private void checkForPermissions() {
+        int checkWriteExternalStorage = ContextCompat.checkSelfPermission(this,
+                Manifest.permission.WRITE_EXTERNAL_STORAGE);
+        int checkReadExternalStorage = ContextCompat.checkSelfPermission(this,
+                Manifest.permission.READ_EXTERNAL_STORAGE);
+
+        if (checkWriteExternalStorage != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this,
+                    new String[] {Manifest.permission.WRITE_EXTERNAL_STORAGE},
+                    MY_PERMISSIONS_REQUEST_WRITE_EXTERNAL_DATA);
+        }
+        if (checkReadExternalStorage != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this,
+                    new String[] {Manifest.permission.READ_EXTERNAL_STORAGE},
+                    MY_PERMISSIONS_REQUEST_READ_EXTERNAL_DATA);
+        }
+
     }
 
 }
