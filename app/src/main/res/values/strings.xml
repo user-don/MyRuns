@@ -40,4 +40,5 @@
     <string name="profile_info_saved">Profile information saved</string>
     <string name="profile_image">profile image</string>
     <string name="profile_photo_file_name">profile_photo.png</string>
+    <string name="profile_photo_to_crop">profile_photo_to_crop.png</string>
 </resources>
