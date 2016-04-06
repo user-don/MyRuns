@@ -166,14 +166,15 @@
                     android:text="@string/save_text"
                     android:id="@+id/save_button"
                     android:layout_weight="1"
-                    android:onClick="saveProfileTapped" />
+                    android:onClick="onSaveCancelClicked" />
 
                 <Button
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/cancel_text"
                     android:id="@+id/cancel_button"
-                    android:layout_weight="1" />
+                    android:layout_weight="1"
+                    android:onClick="onSaveCancelClicked"/>
 
             </LinearLayout>
         </LinearLayout>

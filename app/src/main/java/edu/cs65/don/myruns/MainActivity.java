@@ -35,7 +35,6 @@ import java.net.URI;
 
 public class MainActivity extends AppCompatActivity {
 
-    public static final String IMAGE_URI = "image_uri";
     private static final int DIALOG_ID_PHOTO_PICKER = 1;
     static final int REQUEST_IMAGE_CAPTURE = 1;
     // for permission requests
@@ -183,26 +182,35 @@ public class MainActivity extends AppCompatActivity {
     }
 
     /**
-     * Protected wrapper for saveProfile (which is private helper function)
-     * @param v view passed when button tapped
+     * Handle save and cancel button presses
+     * @param v the view corresponding to the pressed button
      */
-    public void saveProfileTapped(@SuppressWarnings("UnusedParameters") View v) {
-        saveProfile();
+    public void onSaveCancelClicked (View v) {
+        if (v.getId() == R.id.save_button) {
+            saveProfile();
+        } else if (v.getId() == R.id.cancel_button) {
+            finish();
+        }
     }
 
-    // Photo Picker Dialog and related functions
-
-    // Handle data after activity returns.
+    /**
+     * Callback function that handles results of activities started with the
+     * startActivityForResult command
+     * @param requestCode specified in the startActivityForResult() command, and allows
+     *                    us to identify which request we are handling
+     * @param resultCode indicates the success of the activity
+     * @param data intent containing data from the activity's actions
+     */
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (resultCode != RESULT_OK)
             return;
 
         switch (requestCode) {
-
+            // callback for taking photo
             case REQUEST_IMAGE_CAPTURE:
                 cropImage(mImageCaptureUri);
-
+            // callback for cropping activity
             case Crop.REQUEST_CROP:
                 handleCrop(resultCode, data);
 
@@ -216,7 +224,10 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-
+    /**
+     * Actions to execute based on results of our dialog fragment
+     * @param item the position (starting at 0) of the item selected in the dialog
+     */
     public void onPhotoPickerItemSelected(int item){
 
         switch(item) {
@@ -229,6 +240,9 @@ public class MainActivity extends AppCompatActivity {
 
     // ****************** private helper functions ***************************//
 
+    /**
+     * Dispatch a take picture intent and start Android's photo taking application
+     */
     private void dispatchTakePictureIntent() {
         Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         // Construct temporary image path and name to save the taken
@@ -357,9 +371,10 @@ public class MainActivity extends AppCompatActivity {
         ((EditText) findViewById(R.id.major_text)).setText(mValue);
     }
 
+    /**
+     * Load a profile photo from internal storage
+     */
     private void loadSnap() {
-
-        // Load profile photo from internal storage
         try {
             FileInputStream fis = openFileInput(getString(R.string.profile_photo_file_name));
             Bitmap bmap = BitmapFactory.decodeStream(fis);
@@ -373,6 +388,9 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * Save profile photo to internal storage
+     */
     private void saveSnap() {
         // Commit all the changes into preference file
         // Save profile image into internal storage.
@@ -389,13 +407,21 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    // Crop and resize the image for profile
+    /**
+     * Crop and resize the image for profile
+     * @param source the URI of the source image to be cropped
+     */
     private void cropImage(Uri source) {
         Uri destination = Uri.fromFile(new File(getCacheDir(), "cropped"));
         Crop.of(source, destination).asSquare().withMaxSize(100, 100).start(this);
 
     }
 
+    /**
+     * Update profile photo thumbnail to match the results of crop activity
+     * @param resultCode indicates success of cropping activity
+     * @param result intent representing the result of the cropping activity
+     */
     private void handleCrop(int resultCode, Intent result) {
         if (resultCode == RESULT_OK) {
             tempImageUri = Crop.getOutput(result);
