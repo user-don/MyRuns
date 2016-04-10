@@ -37,4 +37,7 @@
     <string name="profile_info_saved">Profile information saved</string>
     <string name="profile_image">profile image</string>
     <string name="profile_photo_file_name">profile_photo.png</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>

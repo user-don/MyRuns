@@ -38,7 +38,7 @@ public class MyRunsDialogFragment extends DialogFragment {
                                 // Item is ID_PHOTO_PICKER_FROM_CAMERA
                                 // Call the onPhotoPickerItemSelected in the parent
                                 // activity, i.e., cameraControlActivity in this case
-                                ((MainActivity) parent).onPhotoPickerItemSelected(which);
+                                ((AccountPreferencesActivity) parent).onPhotoPickerItemSelected(which);
 
                             case 1:
                                 // TODO: Load photo from phone library
