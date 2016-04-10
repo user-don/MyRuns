@@ -35,7 +35,6 @@ public class MyRunsDialogFragment extends DialogFragment {
                         // the which argument contains the index position of the selected item
                         switch (which) {
                             case 0:
-                                // TODO: take picture from camera
                                 // Item is ID_PHOTO_PICKER_FROM_CAMERA
                                 // Call the onPhotoPickerItemSelected in the parent
                                 // activity, i.e., cameraControlActivity in this case

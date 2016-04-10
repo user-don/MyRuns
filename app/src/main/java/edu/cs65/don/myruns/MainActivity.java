@@ -26,20 +26,18 @@ import android.widget.Toast;
 
 import com.soundcloud.android.crop.Crop;
 
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.net.URI;
 
 public class MainActivity extends AppCompatActivity {
 
     private static final int DIALOG_ID_PHOTO_PICKER = 1;
-    static final int REQUEST_IMAGE_CAPTURE = 1;
+    private static final int REQUEST_IMAGE_CAPTURE = 1;
     // for permission requests
-    static final int MY_PERMISSIONS_REQUEST_READ_EXTERNAL_DATA = 222;
-    static final int MY_PERMISSIONS_REQUEST_WRITE_EXTERNAL_DATA = 223;
+    private static final int MY_PERMISSIONS_REQUEST_READ_EXTERNAL_DATA = 222;
+    private static final int MY_PERMISSIONS_REQUEST_WRITE_EXTERNAL_DATA = 223;
 
     private static final String URI_INSTANCE_STATE_KEY = "saved_uri";
 
@@ -168,7 +166,7 @@ public class MainActivity extends AppCompatActivity {
      * has the capability to be expanded in future.
      * @param id ID of the dialog to be displayed
      */
-    public void displayDialog(int id) {
+    private void displayDialog(int id) {
         DialogFragment fragment = MyRunsDialogFragment.newInstance(id);
         fragment.show(getFragmentManager(), "dialog_fragment_photo_picker");
     }
@@ -218,6 +216,7 @@ public class MainActivity extends AppCompatActivity {
                 if (isTakenFromCamera) {
                     File f = new File(mImageCaptureUri.getPath());
                     if (f.exists())
+                        //noinspection ResultOfMethodCallIgnored
                         f.delete();
                 }
 
@@ -327,7 +326,7 @@ public class MainActivity extends AppCompatActivity {
      * Help load user data that has already been saved.
      */
     @SuppressWarnings("ConstantConditions")
-    private void loadProfile(Bundle savedInstanceState) {
+    private void loadProfile(@SuppressWarnings("UnusedParameters") Bundle savedInstanceState) {
         Log.d(RUNS, "load user profile");
         // get sharedPreferences
         String mKey = getString(R.string.preference_name);
@@ -429,6 +428,7 @@ public class MainActivity extends AppCompatActivity {
             mImageView.setImageURI(tempImageUri);
             Log.d(RUNS, "tempImageUri set to " + String.valueOf(tempImageUri));
         } else if (resultCode == Crop.RESULT_ERROR) {
+            //noinspection ThrowableResultOfMethodCallIgnored
             Toast.makeText(this, Crop.getError(result).getMessage(), Toast.LENGTH_SHORT).show();
         }
     }
