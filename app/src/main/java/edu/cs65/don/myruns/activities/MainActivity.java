@@ -1,4 +1,4 @@
-package edu.cs65.don.myruns;
+package edu.cs65.don.myruns.activities;
 
 import android.Manifest;
 import android.app.Fragment;
@@ -13,6 +13,11 @@ import android.view.MenuInflater;
 
 import java.util.ArrayList;
 
+import edu.cs65.don.myruns.R;
+import edu.cs65.don.myruns.adapters.ActionTabsViewPagerAdapter;
+import edu.cs65.don.myruns.fragments.HistoryFragment;
+import edu.cs65.don.myruns.fragments.SettingsFragment;
+import edu.cs65.don.myruns.fragments.StartFragment;
 import edu.cs65.don.myruns.view.SlidingTabLayout;
 
 public class MainActivity extends AppCompatActivity {

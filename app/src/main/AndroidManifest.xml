@@ -4,6 +4,7 @@
     package="edu.cs65.don.myruns">
 
     <uses-feature android:name="android.hardware.camera" />
+
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
 
     <application
@@ -13,15 +14,16 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:ignore="GoogleAppIndexingWarning">
-        <activity android:name=".MainActivity">
+        <activity android:name=".activities.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".AccountPreferencesActivity"/>
+        <activity android:name=".activities.AccountPreferencesActivity" />
         <activity android:name="com.soundcloud.android.crop.CropImageActivity" />
+        <activity android:name=".activities.ManualInputActivity"></activity>
     </application>
 
 </manifest>

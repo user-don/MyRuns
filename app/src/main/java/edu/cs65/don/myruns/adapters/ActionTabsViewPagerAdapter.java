@@ -1,4 +1,4 @@
-package edu.cs65.don.myruns;
+package edu.cs65.don.myruns.adapters;
 
 import android.app.Fragment;
 import android.app.FragmentManager;

@@ -7,17 +7,6 @@
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
-    tools:context=".activities.MainActivity">
-
-    <edu.cs65.don.myruns.view.SlidingTabLayout
-        android:id="@+id/tab"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"/>
-
-    <android.support.v4.view.ViewPager
-        android:layout_width="fill_parent"
-        android:layout_height="fill_parent"
-        android:id="@+id/viewpager"
-        android:layout_below="@+id/tab"/>
+    tools:context="edu.cs65.don.myruns.activities.ManualInputActivity">
 
 </RelativeLayout>

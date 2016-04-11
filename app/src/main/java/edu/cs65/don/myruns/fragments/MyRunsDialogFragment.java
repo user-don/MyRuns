@@ -1,4 +1,4 @@
-package edu.cs65.don.myruns;
+package edu.cs65.don.myruns.fragments;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -6,6 +6,9 @@ import android.app.Dialog;
 import android.app.DialogFragment;
 import android.content.DialogInterface;
 import android.os.Bundle;
+
+import edu.cs65.don.myruns.activities.AccountPreferencesActivity;
+import edu.cs65.don.myruns.R;
 
 /**
  * Created by don on 3/31/16.
