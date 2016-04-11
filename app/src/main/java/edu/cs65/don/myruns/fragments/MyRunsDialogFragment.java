@@ -17,10 +17,23 @@ import edu.cs65.don.myruns.R;
  */
 public class MyRunsDialogFragment extends DialogFragment {
     private static final String DIALOG_ID_KEY = "id_key";
-    private static final int DIALOG_ID_PHOTO_PICKER = 1;
+    public static final int DIALOG_ID_PHOTO_PICKER = 0;
+
+    // manual entries
+    public static final int DATE       = 1;
+    public static final int TIME       = 2;
+    public static final int DURATION   = 3;
+    public static final int DISTANCE   = 4;
+    public static final int CALORIES   = 5;
+    public static final int HEART_RATE = 6;
+    public static final int COMMENT    = 7;
+
 
     // For photo picker selection:
     public static final int ID_PHOTO_PICKER_FROM_CAMERA = 0;
+
+    // instantiate builder
+    AlertDialog.Builder builder;
 
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
@@ -29,7 +42,7 @@ public class MyRunsDialogFragment extends DialogFragment {
         final Activity parent = getActivity();
         switch (dialog_id) {
             case DIALOG_ID_PHOTO_PICKER:
-                AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+                builder = new AlertDialog.Builder(getActivity());
                 builder.setTitle(R.string.select_profile_image);
 
                 builder.setItems(R.array.ui_profile_photo_picker_items,
@@ -48,6 +61,35 @@ public class MyRunsDialogFragment extends DialogFragment {
                         }
                     }
                 });
+                return builder.create();
+
+            case DATE:
+                builder = new AlertDialog.Builder(getActivity());
+                builder.setTitle("hello");
+                return builder.create();
+            case TIME:
+                builder = new AlertDialog.Builder(getActivity());
+                builder.setTitle("hello");
+                return builder.create();
+            case DURATION:
+                builder = new AlertDialog.Builder(getActivity());
+                builder.setTitle("hello");
+                return builder.create();
+            case DISTANCE:
+                builder = new AlertDialog.Builder(getActivity());
+                builder.setTitle("hello");
+                return builder.create();
+            case CALORIES:
+                builder = new AlertDialog.Builder(getActivity());
+                builder.setTitle("hello");
+                return builder.create();
+            case HEART_RATE:
+                builder = new AlertDialog.Builder(getActivity());
+                builder.setTitle("hello");
+                return builder.create();
+            case COMMENT:
+                builder = new AlertDialog.Builder(getActivity());
+                builder.setTitle("hello");
                 return builder.create();
         }
         // If dialog ID does not match with one of the above cases, throw exception

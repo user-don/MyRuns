@@ -32,7 +32,6 @@ import edu.cs65.don.myruns.fragments.MyRunsDialogFragment;
 
 public class AccountPreferencesActivity extends AppCompatActivity {
 
-    private static final int DIALOG_ID_PHOTO_PICKER = 1;
     private static final int REQUEST_IMAGE_CAPTURE = 1;
 
 
@@ -169,7 +168,7 @@ public class AccountPreferencesActivity extends AppCompatActivity {
      */
     public void displayPhotoDialog(@SuppressWarnings("UnusedParameters") View v) {
         Log.d(RUNS, "display photo dialog called");
-        displayDialog(DIALOG_ID_PHOTO_PICKER);
+        displayDialog(MyRunsDialogFragment.DIALOG_ID_PHOTO_PICKER);
     }
 
     /**
