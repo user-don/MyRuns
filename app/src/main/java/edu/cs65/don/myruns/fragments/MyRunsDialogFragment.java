@@ -50,94 +50,28 @@ public class MyRunsDialogFragment extends DialogFragment {
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         // get ID to figure out what dialog we want to show
         int dialog_id = getArguments().getInt(DIALOG_ID_KEY);
-        final Activity parent = getActivity();
+
         switch (dialog_id) {
             case DIALOG_ID_PHOTO_PICKER:
-                builder = new AlertDialog.Builder(getActivity());
-                builder.setTitle(R.string.select_profile_image);
-
-                builder.setItems(R.array.ui_profile_photo_picker_items,
-                        new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int which) {
-                        // the which argument contains the index position of the selected item
-                        switch (which) {
-                            case 0:
-                                // Item is ID_PHOTO_PICKER_FROM_CAMERA
-                                // Call the onPhotoPickerItemSelected in the parent
-                                // activity, i.e., cameraControlActivity in this case
-                                ((AccountPreferencesActivity) parent).onPhotoPickerItemSelected(which);
-
-                            case 1:
-                                // TODO: Load photo from phone library
-                        }
-                    }
-                });
-                return builder.create();
-
+                return constructPhotoPickerAlertDialog();
             case DATE:
-                DatePickerDialog.OnDateSetListener date_listener =
-                        new DatePickerDialog.OnDateSetListener() {
-
-                    @Override
-                    public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
-                        // grab data somehow
-                    }
-                };
-                calendar = Calendar.getInstance();
-                int year = calendar.get(Calendar.YEAR);
-                int month = calendar.get(Calendar.MONTH);
-                int day = calendar.get(Calendar.DAY_OF_MONTH);
-                return new DatePickerDialog(getActivity(), date_listener, year, month, day);
-
+                return constructDatePickerDialog();
             case TIME:
-                TimePickerDialog.OnTimeSetListener time_listener =
-                        new TimePickerDialog.OnTimeSetListener() {
-                    @Override
-                    public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
-                        // grab data
-                    }
-                };
-                calendar = Calendar.getInstance();
-                int hourOfDay = calendar.get(Calendar.HOUR_OF_DAY);
-                int minute = calendar.get(Calendar.MINUTE);
-                return new TimePickerDialog(getActivity(), time_listener, hourOfDay, minute, false);
+                return constructTimePickerDialog();
             case DURATION:
-                builder = new AlertDialog.Builder(getActivity());
-                final EditText input = new EditText(getActivity());
-                input.setInputType(InputType.TYPE_CLASS_TEXT);
-                input.setText("", TextView.BufferType.EDITABLE);
-                builder.setView(input);
-                builder.setTitle(R.string.manual_entry_duration);
-                builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
-
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        String text = input.getText().toString();
-                        Log.d("RUNS", "text input is: " + text);
-                    }
-                });
-                builder.setNegativeButton("CANCEL", new DialogInterface.OnClickListener() {
-
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        dialog.cancel();
-                    }
-                });
+                builder = constructSimpleDialogWithStringInput(R.string.manual_entry_duration);
                 return builder.create();
             case DISTANCE:
                 builder = constructSimpleDialogWithStringInput(R.string.manual_entry_distance);
                 return builder.create();
             case CALORIES:
-                builder = new AlertDialog.Builder(getActivity());
-                builder.setTitle(R.string.manual_entry_calories);
+                builder = constructSimpleDialogWithStringInput(R.string.manual_entry_calories);
                 return builder.create();
             case HEART_RATE:
-                builder = new AlertDialog.Builder(getActivity());
-                builder.setTitle(R.string.manual_entry_heart_rate);
+                builder = constructSimpleDialogWithStringInput(R.string.manual_entry_heart_rate);
                 return builder.create();
             case COMMENT:
-                builder = new AlertDialog.Builder(getActivity());
-                builder.setTitle(R.string.manual_entry_comment);
+                builder = constructSimpleDialogWithStringInput(R.string.manual_entry_comment);
                 return builder.create();
         }
         // If dialog ID does not match with one of the above cases, throw exception
@@ -154,7 +88,6 @@ public class MyRunsDialogFragment extends DialogFragment {
     }
 
     private AlertDialog.Builder constructSimpleDialogWithStringInput(int title) {
-
         AlertDialog.Builder b = new AlertDialog.Builder(getActivity());
         final EditText input = new EditText(getActivity());
         input.setInputType(InputType.TYPE_CLASS_TEXT);
@@ -177,5 +110,58 @@ public class MyRunsDialogFragment extends DialogFragment {
             }
         });
         return b;
+    }
+
+    private DatePickerDialog constructDatePickerDialog() {
+        DatePickerDialog.OnDateSetListener date_listener =
+                new DatePickerDialog.OnDateSetListener() {
+
+                    @Override
+                    public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
+                        // grab data somehow
+                    }
+                };
+        calendar = Calendar.getInstance();
+        int year = calendar.get(Calendar.YEAR);
+        int month = calendar.get(Calendar.MONTH);
+        int day = calendar.get(Calendar.DAY_OF_MONTH);
+        return new DatePickerDialog(getActivity(), date_listener, year, month, day);
+    }
+
+    private TimePickerDialog constructTimePickerDialog() {
+        TimePickerDialog.OnTimeSetListener time_listener =
+                new TimePickerDialog.OnTimeSetListener() {
+                    @Override
+                    public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
+                        // grab data
+                    }
+                };
+        calendar = Calendar.getInstance();
+        int hourOfDay = calendar.get(Calendar.HOUR_OF_DAY);
+        int minute = calendar.get(Calendar.MINUTE);
+        return new TimePickerDialog(getActivity(), time_listener, hourOfDay, minute, false);
+    }
+
+    private AlertDialog constructPhotoPickerAlertDialog() {
+        final Activity parent = getActivity();
+        builder = new AlertDialog.Builder(getActivity());
+        builder.setTitle(R.string.select_profile_image);
+        builder.setItems(R.array.ui_profile_photo_picker_items,
+                new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        // the which argument contains the index position of the selected item
+                        switch (which) {
+                            case 0:
+                                // Item is ID_PHOTO_PICKER_FROM_CAMERA
+                                // Call the onPhotoPickerItemSelected in the parent
+                                // activity, i.e., cameraControlActivity in this case
+                                ((AccountPreferencesActivity) parent).onPhotoPickerItemSelected(which);
+
+                            case 1:
+                                // TODO: Load photo from phone library
+                        }
+                    }
+                });
+        return builder.create();
     }
 }
