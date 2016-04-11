@@ -73,4 +73,5 @@
     <string name="manual_entry_calories">Calories</string>
     <string name="manual_entry_heart_rate">Heart Rate</string>
     <string name="manual_entry_comment">Comment</string>
+    <string name="title_activity_gpsmode">Map</string>
 </resources>
