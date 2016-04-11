@@ -7,6 +7,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import edu.cs65.don.myruns.R;
 import edu.cs65.don.myruns.fragments.MyRunsDialogFragment;
@@ -64,6 +65,16 @@ public class ManualInputActivity extends AppCompatActivity {
     private void displayDialog(int id, String tag) {
         DialogFragment fragment = MyRunsDialogFragment.newInstance(id);
         fragment.show(getFragmentManager(), tag);
+    }
+
+    public void onSaveCancelClicked(View v) {
+        if (v.getId() == R.id.manual_entry_save_button) {
+            // TODO: Save to database
+            finish();
+        } else { // cancel pressed
+            finish();
+            Toast.makeText(getApplicationContext(), "Entry discarded.", Toast.LENGTH_SHORT).show();
+        }
     }
 
 

@@ -59,19 +59,24 @@ public class MyRunsDialogFragment extends DialogFragment {
             case TIME:
                 return constructTimePickerDialog();
             case DURATION:
-                builder = constructSimpleDialogWithStringInput(R.string.manual_entry_duration);
+                builder = constructSimpleDialogWithStringInput(
+                        R.string.manual_entry_duration, InputType.TYPE_CLASS_NUMBER);
                 return builder.create();
             case DISTANCE:
-                builder = constructSimpleDialogWithStringInput(R.string.manual_entry_distance);
+                builder = constructSimpleDialogWithStringInput(
+                        R.string.manual_entry_distance, InputType.TYPE_CLASS_NUMBER);
                 return builder.create();
             case CALORIES:
-                builder = constructSimpleDialogWithStringInput(R.string.manual_entry_calories);
+                builder = constructSimpleDialogWithStringInput(
+                        R.string.manual_entry_calories, InputType.TYPE_CLASS_NUMBER);
                 return builder.create();
             case HEART_RATE:
-                builder = constructSimpleDialogWithStringInput(R.string.manual_entry_heart_rate);
+                builder = constructSimpleDialogWithStringInput(
+                        R.string.manual_entry_heart_rate, InputType.TYPE_CLASS_NUMBER);
                 return builder.create();
             case COMMENT:
-                builder = constructSimpleDialogWithStringInput(R.string.manual_entry_comment);
+                builder = constructSimpleDialogWithStringInput(
+                        R.string.manual_entry_comment, InputType.TYPE_CLASS_TEXT);
                 return builder.create();
         }
         // If dialog ID does not match with one of the above cases, throw exception
@@ -87,10 +92,10 @@ public class MyRunsDialogFragment extends DialogFragment {
         return frag;
     }
 
-    private AlertDialog.Builder constructSimpleDialogWithStringInput(int title) {
+    private AlertDialog.Builder constructSimpleDialogWithStringInput(int title, int inputType) {
         AlertDialog.Builder b = new AlertDialog.Builder(getActivity());
         final EditText input = new EditText(getActivity());
-        input.setInputType(InputType.TYPE_CLASS_TEXT);
+        input.setInputType(inputType);
         input.setText("", TextView.BufferType.EDITABLE);
         b.setView(input);
         b.setTitle(title);
