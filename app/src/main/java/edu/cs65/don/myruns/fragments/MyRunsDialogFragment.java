@@ -2,10 +2,14 @@ package edu.cs65.don.myruns.fragments;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.DatePickerDialog;
 import android.app.Dialog;
 import android.app.DialogFragment;
 import android.content.DialogInterface;
 import android.os.Bundle;
+import android.widget.DatePicker;
+
+import java.util.Calendar;
 
 import edu.cs65.don.myruns.activities.AccountPreferencesActivity;
 import edu.cs65.don.myruns.R;
@@ -64,9 +68,19 @@ public class MyRunsDialogFragment extends DialogFragment {
                 return builder.create();
 
             case DATE:
-                builder = new AlertDialog.Builder(getActivity());
-                builder.setTitle("hello");
-                return builder.create();
+                DatePickerDialog.OnDateSetListener listener = new DatePickerDialog.OnDateSetListener() {
+
+                    @Override
+                    public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
+                        // grab data somehow
+                    }
+                };
+                Calendar calendar = Calendar.getInstance();
+                int year = calendar.get(Calendar.YEAR);
+                int month = calendar.get(Calendar.MONTH);
+                int day = calendar.get(Calendar.DAY_OF_MONTH);
+                return new DatePickerDialog(getActivity(), listener, year, month, day);
+
             case TIME:
                 builder = new AlertDialog.Builder(getActivity());
                 builder.setTitle("hello");
