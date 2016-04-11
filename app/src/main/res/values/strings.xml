@@ -42,6 +42,16 @@
         <item>Snowboarding</item>
     </string-array>
 
+    <string-array name="manual_entry_values">
+        <item>Date</item>
+        <item>Time</item>
+        <item>Duration</item>
+        <item>Distance</item>
+        <item>Calories</item>
+        <item>Heart Rate</item>
+        <item>Comment</item>
+    </string-array>
+
     <!-- Preference keys -->
     <string name="preference_key_profile_name">profile_name</string>
     <string name="preference_key_profile_email">profile_email</string>
