@@ -23,7 +23,8 @@
         </activity>
         <activity android:name=".activities.AccountPreferencesActivity" />
         <activity android:name="com.soundcloud.android.crop.CropImageActivity" />
-        <activity android:name=".activities.ManualInputActivity"></activity>
+        <activity android:name=".activities.ManualInputActivity" />
+        <activity android:name=".activities.GPSModeActivity"></activity>
     </application>
 
 </manifest>
