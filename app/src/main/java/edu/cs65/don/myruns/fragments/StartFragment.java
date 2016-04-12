@@ -63,7 +63,6 @@ public class StartFragment extends Fragment {
                     intent.putExtras(extras);
                     startActivity(intent);
                 }
-                // TODO: Fill out rest of IF statement
                 else {
                     // GPS or Automatic, pull up GPS mode for both
                     // TODO: Eventually differentiate Automatic mode
