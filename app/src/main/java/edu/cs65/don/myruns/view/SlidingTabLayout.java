@@ -47,6 +47,7 @@ package edu.cs65.don.myruns.view;
  * The views used as tabs can be customized by calling {@link #setCustomTabView(int, int)},
  * providing the layout ID of your custom layout.
  */
+@SuppressWarnings("ALL")
 public class SlidingTabLayout extends HorizontalScrollView {
     /**
      * Allows complete control over the colors drawn in the tab layout. Set with
@@ -153,6 +154,7 @@ public class SlidingTabLayout extends HorizontalScrollView {
 
         mViewPager = viewPager;
         if (viewPager != null) {
+            //noinspection deprecation
             viewPager.setOnPageChangeListener(new InternalViewPagerListener());
             populateTabStrip();
         }

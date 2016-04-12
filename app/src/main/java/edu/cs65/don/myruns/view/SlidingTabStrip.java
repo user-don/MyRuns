@@ -25,6 +25,7 @@ package edu.cs65.don.myruns.view;
         import android.view.View;
         import android.widget.LinearLayout;
 
+@SuppressWarnings("ALL")
 class SlidingTabStrip extends LinearLayout {
 
     private static final int DEFAULT_BOTTOM_BORDER_THICKNESS_DIPS = 0;
@@ -48,7 +49,7 @@ class SlidingTabStrip extends LinearLayout {
         this(context, null);
     }
 
-    SlidingTabStrip(Context context, AttributeSet attrs) {
+    SlidingTabStrip(Context context, @SuppressWarnings("SameParameterValue") AttributeSet attrs) {
         super(context, attrs);
         setWillNotDraw(false);
 
@@ -132,7 +133,7 @@ class SlidingTabStrip extends LinearLayout {
     /**
      * Set the alpha value of the {@code color} to be the given {@code alpha} value.
      */
-    private static int setColorAlpha(int color, byte alpha) {
+    private static int setColorAlpha(int color, @SuppressWarnings("SameParameterValue") byte alpha) {
         return Color.argb(alpha, Color.red(color), Color.green(color), Color.blue(color));
     }
 

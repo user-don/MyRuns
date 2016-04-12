@@ -101,7 +101,7 @@ public class MyRunsDialogFragment extends DialogFragment {
      * Design pattern for constructing a simple dialog with string input
      * @param title title of dialog
      * @param inputType input type of type {@link InputType}
-     * @return
+     * @return AlertDialog Builder
      */
     private AlertDialog.Builder constructSimpleDialogWithStringInput(int title, int inputType) {
         AlertDialog.Builder b = new AlertDialog.Builder(getActivity());

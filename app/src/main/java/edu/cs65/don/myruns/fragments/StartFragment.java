@@ -24,8 +24,6 @@ public class StartFragment extends Fragment {
     private Spinner input_type_spinner;
     private Spinner activity_type_spinner;
     private static final String RUNS = "runs";
-    private Button start_button;
-    private Button sync_button;
 
     public StartFragment() {
         // Required empty public constructor
@@ -47,8 +45,8 @@ public class StartFragment extends Fragment {
      * @param v inflated view passed from onCreateView
      */
     private void initializeButtons(View v) {
-        start_button = (Button) v.findViewById(R.id.start_button);
-        sync_button = (Button) v.findViewById(R.id.sync_button);
+        Button start_button = (Button) v.findViewById(R.id.start_button);
+        Button sync_button = (Button) v.findViewById(R.id.sync_button);
         start_button.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 // launch activity

@@ -27,7 +27,7 @@ public class ManualInputActivity extends AppCompatActivity {
     /**
      * Create OnItemClickListener for the ListView defined in onCreate()
      */
-    private AdapterView.OnItemClickListener clickListener = new AdapterView.OnItemClickListener() {
+    private final AdapterView.OnItemClickListener clickListener = new AdapterView.OnItemClickListener() {
         @Override
         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
             switch(position) {

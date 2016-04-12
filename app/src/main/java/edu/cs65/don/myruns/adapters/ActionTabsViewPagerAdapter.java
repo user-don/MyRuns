@@ -6,8 +6,9 @@ import android.support.v13.app.FragmentPagerAdapter;
 
 import java.util.ArrayList;
 
+@SuppressWarnings("ALL")
 public class ActionTabsViewPagerAdapter extends FragmentPagerAdapter {
-    private ArrayList<Fragment> fragments;
+    private final ArrayList<Fragment> fragments;
 
     public static final int START = 0;
     public static final int HISTORY = 1;

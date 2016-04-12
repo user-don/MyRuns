@@ -1,7 +1,6 @@
 package edu.cs65.don.myruns.fragments;
 
 
-import android.app.Fragment;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -29,14 +28,14 @@ public class SettingsFragment extends PreferenceFragment {
         addPreferencesFromResource(R.xml.preferences);
 
         // accessing preferences
-        PreferenceScreen ps = (PreferenceScreen) getPreferenceScreen();
+        PreferenceScreen ps = getPreferenceScreen();
         // add listener for account_preferences
-        Preference account_preferences = (Preference) ps.findPreference("account_preferences");
+        Preference account_preferences = ps.findPreference("account_preferences");
         Preference.OnPreferenceClickListener account_preferences_listener =
                 getOnPreferenceClickListener(ACCOUNT_PREFERENCES);
         account_preferences.setOnPreferenceClickListener(account_preferences_listener);
         // add listener for loading webpage
-        Preference webpage = (Preference) ps.findPreference("webpage");
+        Preference webpage = ps.findPreference("webpage");
         Preference.OnPreferenceClickListener web_listener = getOnPreferenceClickListener(WEBPAGE);
         webpage.setOnPreferenceClickListener(web_listener);
 

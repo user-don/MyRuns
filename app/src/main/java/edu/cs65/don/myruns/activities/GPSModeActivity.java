@@ -1,6 +1,5 @@
 package edu.cs65.don.myruns.activities;
 
-import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 
@@ -15,6 +14,7 @@ import edu.cs65.don.myruns.R;
 
 public class GPSModeActivity extends AppCompatActivity implements OnMapReadyCallback {
 
+    @SuppressWarnings("FieldCanBeLocal")
     private GoogleMap mMap;
 
     @Override

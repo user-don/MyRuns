@@ -20,6 +20,7 @@ import edu.cs65.don.myruns.fragments.SettingsFragment;
 import edu.cs65.don.myruns.fragments.StartFragment;
 import edu.cs65.don.myruns.view.SlidingTabLayout;
 
+@SuppressWarnings("FieldCanBeLocal")
 public class MainActivity extends AppCompatActivity {
 
     // for permission requests
@@ -47,7 +48,7 @@ public class MainActivity extends AppCompatActivity {
         viewPager = (ViewPager) findViewById(R.id.viewpager);
 
         // create a fragment list in order.
-        fragments = new ArrayList<Fragment>();
+        fragments = new ArrayList<>();
         fragments.add(new StartFragment());
         fragments.add(new HistoryFragment());
         fragments.add(new SettingsFragment());

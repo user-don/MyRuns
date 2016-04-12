@@ -4,7 +4,6 @@ import android.app.DialogFragment;
 import android.content.ActivityNotFoundException;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
@@ -159,7 +158,7 @@ public class AccountPreferencesActivity extends AppCompatActivity {
      */
     public void displayPhotoDialog(@SuppressWarnings("UnusedParameters") View v) {
         Log.d(RUNS, "display photo dialog called");
-        displayDialog(MyRunsDialogFragment.DIALOG_ID_PHOTO_PICKER);
+        displayDialog();
     }
 
     /**
@@ -231,13 +230,11 @@ public class AccountPreferencesActivity extends AppCompatActivity {
     // ****************** private helper functions ***************************//
 
     /**
-     * Displays dialog fragment. Dialog displayed depends on the specified id;
-     * For now there is only one dialog (changing photo), but this generic function
-     * has the capability to be expanded in future.
-     * @param id ID of the dialog to be displayed
+     * Displays dialog fragment.
      */
-    private void displayDialog(int id) {
-        DialogFragment fragment = MyRunsDialogFragment.newInstance(id);
+    private void displayDialog() {
+        DialogFragment fragment = MyRunsDialogFragment.newInstance(
+                MyRunsDialogFragment.DIALOG_ID_PHOTO_PICKER);
         fragment.show(getFragmentManager(), "dialog_fragment_photo_picker");
     }
 
