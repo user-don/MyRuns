@@ -218,11 +218,6 @@ public class AccountPreferencesActivity extends AppCompatActivity {
             case REQUEST_GALLERY_LAUNCH:
                 Uri uri = data.getData();
                 cropImage(uri);
-//                try {
-//                    handleGalleryLaunch(resultCode, data);
-//                } catch (Exception e) {
-//                    Log.d("RUNS", e.toString());
-//                }
         }
     }
 
@@ -235,10 +230,10 @@ public class AccountPreferencesActivity extends AppCompatActivity {
         switch(item) {
             case MyRunsDialogFragment.ID_PHOTO_PICKER_FROM_CAMERA:
                 dispatchTakePictureIntent();
+                return;
             case MyRunsDialogFragment.ID_PHOTO_PICKER_FROM_GALLERY:
-                // pick from gallery
-                //dispatchLaunchGalleryIntent();
                 selectFromGallery();
+                return;
             default:
                 // do nothing
         }
@@ -267,19 +262,6 @@ public class AccountPreferencesActivity extends AppCompatActivity {
             e.printStackTrace();
         }
         isTakenFromCamera = true;
-    }
-
-    private void dispatchLaunchGalleryIntent() {
-        Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
-        intent.setType("image/*");
-        mImageCaptureUri = Uri.fromFile(new File(Environment
-                .getExternalStorageDirectory(), "tmp_"
-                + String.valueOf(System.currentTimeMillis()) + ".jpg"));
-        Log.d(RUNS, String.valueOf(mImageCaptureUri));
-        intent.putExtra(MediaStore.EXTRA_OUTPUT,
-                mImageCaptureUri);
-        intent.putExtra("return-data", true);
-        startActivityForResult(intent, REQUEST_GALLERY_LAUNCH);
     }
 
     private void selectFromGallery() {
