@@ -1,9 +1,11 @@
 package edu.cs65.don.myruns.activities;
 
+import android.app.Activity;
 import android.app.DialogFragment;
 import android.content.ActivityNotFoundException;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
@@ -26,6 +28,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 
 import edu.cs65.don.myruns.R;
 import edu.cs65.don.myruns.fragments.MyRunsDialogFragment;
@@ -33,6 +36,7 @@ import edu.cs65.don.myruns.fragments.MyRunsDialogFragment;
 public class AccountPreferencesActivity extends AppCompatActivity {
 
     private static final int REQUEST_IMAGE_CAPTURE = 1;
+    private static final int REQUEST_GALLERY_LAUNCH = 2;
 
 
     private static final String URI_INSTANCE_STATE_KEY = "saved_uri";
@@ -211,7 +215,14 @@ public class AccountPreferencesActivity extends AppCompatActivity {
                         //noinspection ResultOfMethodCallIgnored
                         f.delete();
                 }
-
+            case REQUEST_GALLERY_LAUNCH:
+                Uri uri = data.getData();
+                cropImage(uri);
+//                try {
+//                    handleGalleryLaunch(resultCode, data);
+//                } catch (Exception e) {
+//                    Log.d("RUNS", e.toString());
+//                }
         }
     }
 
@@ -224,6 +235,10 @@ public class AccountPreferencesActivity extends AppCompatActivity {
         switch(item) {
             case MyRunsDialogFragment.ID_PHOTO_PICKER_FROM_CAMERA:
                 dispatchTakePictureIntent();
+            case MyRunsDialogFragment.ID_PHOTO_PICKER_FROM_GALLERY:
+                // pick from gallery
+                //dispatchLaunchGalleryIntent();
+                selectFromGallery();
             default:
                 // do nothing
         }
@@ -252,6 +267,37 @@ public class AccountPreferencesActivity extends AppCompatActivity {
             e.printStackTrace();
         }
         isTakenFromCamera = true;
+    }
+
+    private void dispatchLaunchGalleryIntent() {
+        Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
+        intent.setType("image/*");
+        mImageCaptureUri = Uri.fromFile(new File(Environment
+                .getExternalStorageDirectory(), "tmp_"
+                + String.valueOf(System.currentTimeMillis()) + ".jpg"));
+        Log.d(RUNS, String.valueOf(mImageCaptureUri));
+        intent.putExtra(MediaStore.EXTRA_OUTPUT,
+                mImageCaptureUri);
+        intent.putExtra("return-data", true);
+        startActivityForResult(intent, REQUEST_GALLERY_LAUNCH);
+    }
+
+    private void selectFromGallery() {
+        isTakenFromCamera = false;
+        Intent mediaChooser = new Intent(Intent.ACTION_PICK,
+                MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+        startActivityForResult(mediaChooser, REQUEST_GALLERY_LAUNCH);
+    }
+
+    private void handleGalleryLaunch(int resultCode, Intent data) throws Exception {
+        if (resultCode == Activity.RESULT_OK) {
+            if (data == null) {
+                throw new Exception("Attempted image gallery launch was not successful");
+            }
+            InputStream is = getApplicationContext().getContentResolver().openInputStream(data.getData());
+            data.getParcelableExtra("data");
+
+        }
     }
 
     /**
@@ -425,6 +471,20 @@ public class AccountPreferencesActivity extends AppCompatActivity {
         }
     }
 
+    private String getRealPathFromURI(Uri contentUri) {
+        String[] proj = new String[] { android.provider.MediaStore.Images.ImageColumns.DATA };
+
+        Cursor cursor = getContentResolver().query(contentUri, proj, null,
+                null, null);
+        int column_index = cursor
+                .getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
+        cursor.moveToFirst();
+
+        String filename = cursor.getString(column_index);
+        cursor.close();
+
+        return filename;
+    }
 
 
 }

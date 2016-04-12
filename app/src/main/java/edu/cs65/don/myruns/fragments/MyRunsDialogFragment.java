@@ -41,6 +41,7 @@ public class MyRunsDialogFragment extends DialogFragment {
 
     // For photo picker selection:
     public static final int ID_PHOTO_PICKER_FROM_CAMERA = 0;
+    public static final int ID_PHOTO_PICKER_FROM_GALLERY = 1;
 
     // instantiate builder
     AlertDialog.Builder builder;
@@ -154,17 +155,7 @@ public class MyRunsDialogFragment extends DialogFragment {
         builder.setItems(R.array.ui_profile_photo_picker_items,
                 new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
-                        // the which argument contains the index position of the selected item
-                        switch (which) {
-                            case 0:
-                                // Item is ID_PHOTO_PICKER_FROM_CAMERA
-                                // Call the onPhotoPickerItemSelected in the parent
-                                // activity, i.e., cameraControlActivity in this case
-                                ((AccountPreferencesActivity) parent).onPhotoPickerItemSelected(which);
-
-                            case 1:
-                                // TODO: Load photo from phone library
-                        }
+                        ((AccountPreferencesActivity) parent).onPhotoPickerItemSelected(which);
                     }
                 });
         return builder.create();
