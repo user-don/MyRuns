@@ -98,6 +98,9 @@ public class MyRunsDialogFragment extends DialogFragment {
         final EditText input = new EditText(getActivity());
         input.setInputType(inputType);
         input.setText("", TextView.BufferType.EDITABLE);
+        if (title == R.string.manual_entry_comment) {
+            input.setHint(R.string.comment_hint);
+        }
         b.setView(input);
         b.setTitle(title);
         b.setPositiveButton("OK", new DialogInterface.OnClickListener() {

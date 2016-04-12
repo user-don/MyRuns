@@ -40,6 +40,12 @@
         <item>Downhill Skiing</item>
         <item>Cross-Country Skiing</item>
         <item>Snowboarding</item>
+        <item>Skating</item>
+        <item>Swimming</item>
+        <item>Mountain Biking</item>
+        <item>Wheelchair</item>
+        <item>Elliptical</item>
+        <item>Other</item>
     </string-array>
 
     <string-array name="manual_entry_values">
@@ -97,4 +103,5 @@
     <string name="summary_account_preferences">User Profile</string>
     <string name="title_account_preferences_category">Account Preferences</string>
     <string name="title_misc_category">Misc.</string>
+    <string name="comment_hint">How did it go? Notes here.</string>
 </resources>

@@ -1,6 +1,5 @@
 package edu.cs65.don.myruns.activities;
 
-import android.app.Activity;
 import android.app.DialogFragment;
 import android.content.ActivityNotFoundException;
 import android.content.Intent;
@@ -28,7 +27,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 
 import edu.cs65.don.myruns.R;
 import edu.cs65.don.myruns.fragments.MyRunsDialogFragment;
@@ -205,6 +203,11 @@ public class AccountPreferencesActivity extends AppCompatActivity {
             case REQUEST_IMAGE_CAPTURE:
                 cropImage(mImageCaptureUri);
             // callback for cropping activity
+                return;
+            case REQUEST_GALLERY_LAUNCH:
+                Uri uri = data.getData();
+                cropImage(uri);
+                return;
             case Crop.REQUEST_CROP:
                 handleCrop(resultCode, data);
 
@@ -215,9 +218,6 @@ public class AccountPreferencesActivity extends AppCompatActivity {
                         //noinspection ResultOfMethodCallIgnored
                         f.delete();
                 }
-            case REQUEST_GALLERY_LAUNCH:
-                Uri uri = data.getData();
-                cropImage(uri);
         }
     }
 
@@ -232,7 +232,7 @@ public class AccountPreferencesActivity extends AppCompatActivity {
                 dispatchTakePictureIntent();
                 return;
             case MyRunsDialogFragment.ID_PHOTO_PICKER_FROM_GALLERY:
-                selectFromGallery();
+                selectImageFromGallery();
                 return;
             default:
                 // do nothing
@@ -264,23 +264,14 @@ public class AccountPreferencesActivity extends AppCompatActivity {
         isTakenFromCamera = true;
     }
 
-    private void selectFromGallery() {
+    private void selectImageFromGallery() {
         isTakenFromCamera = false;
         Intent mediaChooser = new Intent(Intent.ACTION_PICK,
                 MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
         startActivityForResult(mediaChooser, REQUEST_GALLERY_LAUNCH);
     }
 
-    private void handleGalleryLaunch(int resultCode, Intent data) throws Exception {
-        if (resultCode == Activity.RESULT_OK) {
-            if (data == null) {
-                throw new Exception("Attempted image gallery launch was not successful");
-            }
-            InputStream is = getApplicationContext().getContentResolver().openInputStream(data.getData());
-            data.getParcelableExtra("data");
 
-        }
-    }
 
     /**
      * Save user input data using SharedPreference object. Use toast to indicate data saved.
@@ -444,7 +435,9 @@ public class AccountPreferencesActivity extends AppCompatActivity {
     private void handleCrop(int resultCode, Intent result) {
         if (resultCode == RESULT_OK) {
             tempImageUri = Crop.getOutput(result);
-            //mImageView.setImageURI(Crop.getOutput(result));
+            // since image URI can stay constant between updates, set drawable to null
+            // to force re-draw
+            mImageView.setImageDrawable(null);
             mImageView.setImageURI(tempImageUri);
             Log.d(RUNS, "tempImageUri set to " + String.valueOf(tempImageUri));
         } else if (resultCode == Crop.RESULT_ERROR) {
