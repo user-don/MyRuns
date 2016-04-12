@@ -24,6 +24,9 @@ public class ManualInputActivity extends AppCompatActivity {
         lv.setOnItemClickListener(clickListener);
     }
 
+    /**
+     * Create OnItemClickListener for the ListView defined in onCreate()
+     */
     private AdapterView.OnItemClickListener clickListener = new AdapterView.OnItemClickListener() {
         @Override
         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -62,11 +65,21 @@ public class ManualInputActivity extends AppCompatActivity {
         }
     };
 
+    /**
+     * Create DialogFragment with specified ID
+     * @param id ID that corresponds to the desired dialog fragment to be constructed. Must be
+     *           specified using one of the static ints in {@link MyRunsDialogFragment}.
+     * @param tag The tag for this fragment, as per {@link android.app.FragmentTransaction}
+     */
     private void displayDialog(int id, String tag) {
         DialogFragment fragment = MyRunsDialogFragment.newInstance(id);
         fragment.show(getFragmentManager(), tag);
     }
 
+    /**
+     * Function handler for save and cancel buttons
+     * @param v specifies which button was pressed
+     */
     public void onSaveCancelClicked(View v) {
         if (v.getId() == R.id.manual_entry_save_button) {
             // TODO: Save to database

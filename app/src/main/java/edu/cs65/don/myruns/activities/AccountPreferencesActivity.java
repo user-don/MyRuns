@@ -33,13 +33,13 @@ import edu.cs65.don.myruns.fragments.MyRunsDialogFragment;
 
 public class AccountPreferencesActivity extends AppCompatActivity {
 
+    // Request codes for onActivityResult
     private static final int REQUEST_IMAGE_CAPTURE = 1;
     private static final int REQUEST_GALLERY_LAUNCH = 2;
 
-
     private static final String URI_INSTANCE_STATE_KEY = "saved_uri";
-
     private static final String RUNS = "runs";
+    // Define global variables
     private ImageView mImageView;
     private Uri mImageCaptureUri;
     private Uri tempImageUri;
@@ -155,17 +155,6 @@ public class AccountPreferencesActivity extends AppCompatActivity {
     }
 
     /**
-     * Displays dialog fragment. Dialog displayed depends on the specified id;
-     * For now there is only one dialog (changing photo), but this generic function
-     * has the capability to be expanded in future.
-     * @param id ID of the dialog to be displayed
-     */
-    private void displayDialog(int id) {
-        DialogFragment fragment = MyRunsDialogFragment.newInstance(id);
-        fragment.show(getFragmentManager(), "dialog_fragment_photo_picker");
-    }
-
-    /**
      * Display photo picker dialog box
      */
     public void displayPhotoDialog(@SuppressWarnings("UnusedParameters") View v) {
@@ -242,6 +231,17 @@ public class AccountPreferencesActivity extends AppCompatActivity {
     // ****************** private helper functions ***************************//
 
     /**
+     * Displays dialog fragment. Dialog displayed depends on the specified id;
+     * For now there is only one dialog (changing photo), but this generic function
+     * has the capability to be expanded in future.
+     * @param id ID of the dialog to be displayed
+     */
+    private void displayDialog(int id) {
+        DialogFragment fragment = MyRunsDialogFragment.newInstance(id);
+        fragment.show(getFragmentManager(), "dialog_fragment_photo_picker");
+    }
+
+    /**
      * Dispatch a take picture intent and start Android's photo taking application
      */
     private void dispatchTakePictureIntent() {
@@ -264,14 +264,15 @@ public class AccountPreferencesActivity extends AppCompatActivity {
         isTakenFromCamera = true;
     }
 
+    /**
+     * Construct intent for selecting an image from image gallery
+     */
     private void selectImageFromGallery() {
         isTakenFromCamera = false;
         Intent mediaChooser = new Intent(Intent.ACTION_PICK,
                 MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
         startActivityForResult(mediaChooser, REQUEST_GALLERY_LAUNCH);
     }
-
-
 
     /**
      * Save user input data using SharedPreference object. Use toast to indicate data saved.
@@ -445,21 +446,4 @@ public class AccountPreferencesActivity extends AppCompatActivity {
             Toast.makeText(this, Crop.getError(result).getMessage(), Toast.LENGTH_SHORT).show();
         }
     }
-
-    private String getRealPathFromURI(Uri contentUri) {
-        String[] proj = new String[] { android.provider.MediaStore.Images.ImageColumns.DATA };
-
-        Cursor cursor = getContentResolver().query(contentUri, proj, null,
-                null, null);
-        int column_index = cursor
-                .getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
-        cursor.moveToFirst();
-
-        String filename = cursor.getString(column_index);
-        cursor.close();
-
-        return filename;
-    }
-
-
 }

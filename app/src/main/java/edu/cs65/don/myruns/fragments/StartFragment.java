@@ -17,7 +17,7 @@ import edu.cs65.don.myruns.activities.GPSModeActivity;
 import edu.cs65.don.myruns.activities.ManualInputActivity;
 
 /**
- * A simple {@link Fragment} subclass.
+ * {@link Fragment} subclass for displaying the start screen of our runs app
  */
 public class StartFragment extends Fragment {
 
@@ -31,7 +31,6 @@ public class StartFragment extends Fragment {
         // Required empty public constructor
     }
 
-
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -43,6 +42,10 @@ public class StartFragment extends Fragment {
         return view;
     }
 
+    /**
+     * Initializes onClickListeners for save and cancel buttons
+     * @param v inflated view passed from onCreateView
+     */
     private void initializeButtons(View v) {
         start_button = (Button) v.findViewById(R.id.start_button);
         sync_button = (Button) v.findViewById(R.id.sync_button);
@@ -84,6 +87,10 @@ public class StartFragment extends Fragment {
         });
     }
 
+    /**
+     * Initialize inputType spinner
+     * @param view inflated view
+     */
     private void setInputTypeSpinnerContent(View view) {
         input_type_spinner = (Spinner) view.findViewById(R.id.input_type_spinner);
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(getActivity(),
@@ -92,6 +99,10 @@ public class StartFragment extends Fragment {
         input_type_spinner.setAdapter(adapter);
     }
 
+    /**
+     * Initialize activityType spinner
+     * @param view inflated view
+     */
     private void setActivityTypeSpinnerContent(View view) {
         activity_type_spinner = (Spinner) view.findViewById(R.id.activity_type_spinner);
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(getActivity(),

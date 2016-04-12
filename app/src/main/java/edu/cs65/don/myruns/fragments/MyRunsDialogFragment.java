@@ -38,14 +38,12 @@ public class MyRunsDialogFragment extends DialogFragment {
     public static final int HEART_RATE = 6;
     public static final int COMMENT    = 7;
 
-
     // For photo picker selection:
     public static final int ID_PHOTO_PICKER_FROM_CAMERA = 0;
     public static final int ID_PHOTO_PICKER_FROM_GALLERY = 1;
 
-    // instantiate builder
-    AlertDialog.Builder builder;
-    Calendar calendar;
+    // instantiate variables
+    private AlertDialog.Builder builder;
 
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
@@ -84,6 +82,12 @@ public class MyRunsDialogFragment extends DialogFragment {
         throw new IllegalArgumentException("Bad dialog ID specified");
     }
 
+    /**
+     * Constructor for MyRunsDialogFragment.
+     * @param dialog_id The ID of the dialog that you wish to construct. MUST correspond to
+     *                  one of the publicly accessible IDs in this class.
+     * @return dialog fragment for instantiation
+     */
     public static MyRunsDialogFragment newInstance(int dialog_id) {
         MyRunsDialogFragment frag = new MyRunsDialogFragment();
         Bundle args = new Bundle();
@@ -93,6 +97,12 @@ public class MyRunsDialogFragment extends DialogFragment {
         return frag;
     }
 
+    /**
+     * Design pattern for constructing a simple dialog with string input
+     * @param title title of dialog
+     * @param inputType input type of type {@link InputType}
+     * @return
+     */
     private AlertDialog.Builder constructSimpleDialogWithStringInput(int title, int inputType) {
         AlertDialog.Builder b = new AlertDialog.Builder(getActivity());
         final EditText input = new EditText(getActivity());
@@ -121,6 +131,10 @@ public class MyRunsDialogFragment extends DialogFragment {
         return b;
     }
 
+    /**
+     * Design pattern for constructing date picker dialog
+     * @return constructed DatePickerDialog object
+     */
     private DatePickerDialog constructDatePickerDialog() {
         DatePickerDialog.OnDateSetListener date_listener =
                 new DatePickerDialog.OnDateSetListener() {
@@ -130,13 +144,17 @@ public class MyRunsDialogFragment extends DialogFragment {
                         // grab data somehow
                     }
                 };
-        calendar = Calendar.getInstance();
+        Calendar calendar = Calendar.getInstance();
         int year = calendar.get(Calendar.YEAR);
         int month = calendar.get(Calendar.MONTH);
         int day = calendar.get(Calendar.DAY_OF_MONTH);
         return new DatePickerDialog(getActivity(), date_listener, year, month, day);
     }
 
+    /**
+     * Design pattern for constructing a time picker dialog
+     * @return constructed TimePickerDialog object
+     */
     private TimePickerDialog constructTimePickerDialog() {
         TimePickerDialog.OnTimeSetListener time_listener =
                 new TimePickerDialog.OnTimeSetListener() {
@@ -145,12 +163,16 @@ public class MyRunsDialogFragment extends DialogFragment {
                         // grab data
                     }
                 };
-        calendar = Calendar.getInstance();
+        Calendar calendar = Calendar.getInstance();
         int hourOfDay = calendar.get(Calendar.HOUR_OF_DAY);
         int minute = calendar.get(Calendar.MINUTE);
         return new TimePickerDialog(getActivity(), time_listener, hourOfDay, minute, false);
     }
 
+    /**
+     * Helper method for constructing the photo picker alert dialog
+     * @return constructed AlertDialog
+     */
     private AlertDialog constructPhotoPickerAlertDialog() {
         final Activity parent = getActivity();
         builder = new AlertDialog.Builder(getActivity());

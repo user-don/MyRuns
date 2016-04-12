@@ -41,8 +41,7 @@ public class MainActivity extends AppCompatActivity {
         // check for permissions
         checkForPermissions();
 
-        // Define SlidingTabLayout (shown at top)
-        // and ViewPager (shown at bottom) in the layout.
+        // Define SlidingTabLayout (shown at top) and ViewPager (shown at bottom) in the layout.
         // Get their instances.
         slidingTabLayout = (SlidingTabLayout) findViewById(R.id.tab);
         viewPager = (ViewPager) findViewById(R.id.viewpager);
@@ -71,9 +70,9 @@ public class MainActivity extends AppCompatActivity {
         return true;
     }
 
-
     /**
-     * Check for app permissions
+     * Check for app permissions. Not needed anymore since we have dropped targetSdkVersion
+     * to 21, but keeping around in case we need to bring back up for any reason.
      */
     private void checkForPermissions() {
         int checkWriteExternalStorage = ContextCompat.checkSelfPermission(this,

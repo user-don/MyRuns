@@ -1,27 +1,23 @@
 package edu.cs65.don.myruns.fragments;
 
 
+import android.app.Fragment;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
-import android.app.Fragment;
 import android.preference.Preference;
 import android.preference.PreferenceFragment;
 import android.preference.PreferenceScreen;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
 
 import edu.cs65.don.myruns.R;
 import edu.cs65.don.myruns.activities.AccountPreferencesActivity;
-import edu.cs65.don.myruns.activities.MainActivity;
 
 
 /**
- * A simple {@link Fragment} subclass.
+ * Subclass of {@link PreferenceFragment} for handling all app settings
  */
 public class SettingsFragment extends PreferenceFragment {
-
+    // Reference tags for click handlers
     private static final int ACCOUNT_PREFERENCES = 0;
     private static final int WEBPAGE = 1;
 
@@ -46,6 +42,12 @@ public class SettingsFragment extends PreferenceFragment {
 
     }
 
+    /**
+     * Construct {@link android.preference.Preference.OnPreferenceClickListener} based on the
+     * specified preference_id
+     * @param preference_id determines the functionality of the listener
+     * @return listener that can be set on a preference using setOnPreferenceClickListener
+     */
     private Preference.OnPreferenceClickListener getOnPreferenceClickListener(int preference_id) {
         if (preference_id == ACCOUNT_PREFERENCES) {
             return new Preference.OnPreferenceClickListener() {

@@ -11,7 +11,7 @@ import edu.cs65.don.myruns.R;
 
 
 /**
- * A simple {@link Fragment} subclass.
+ * A simple {@link Fragment} subclass for showing run history.
  */
 public class HistoryFragment extends Fragment {
 
