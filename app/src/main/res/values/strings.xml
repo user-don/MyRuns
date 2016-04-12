@@ -52,6 +52,16 @@
         <item>Comment</item>
     </string-array>
 
+    <string-array name="entries_unit_preference">
+        <item>Metric (Kilometers)</item>
+        <item>Imperial (Miles)</item>
+    </string-array>
+
+    <string-array name="entryvalues_unit_preference">
+        <item>Metric</item>
+        <item>Imperial</item>
+    </string-array>
+
     <!-- Preference keys -->
     <string name="preference_key_profile_name">profile_name</string>
     <string name="preference_key_profile_email">profile_email</string>
@@ -74,4 +84,17 @@
     <string name="manual_entry_heart_rate">Heart Rate</string>
     <string name="manual_entry_comment">Comment</string>
     <string name="title_activity_gpsmode">Map</string>
+    <string name="title_privacy_setting">Privacy Setting</string>
+    <string name="summary_privacy_setting">Posting your records anonymously</string>
+    <string name="additional_settings">Additional Settings</string>
+    <string name="webpage">Webpage</string>
+    <string name="cs_dartmouth_url">http://web.cs.dartmouth.edu/</string>
+    <string name="title_comments">Comments</string>
+    <string name="summary_comments">Please enter your comments</string>
+    <string name="summary_unit_preference">Select the units</string>
+    <string name="title_unit_preference">Unit Preference</string>
+    <string name="title_account_preferences">Name, Email, Class, etc</string>
+    <string name="summary_account_preferences">User Profile</string>
+    <string name="title_account_preferences_category">Account Preferences</string>
+    <string name="title_misc_category">Misc.</string>
 </resources>

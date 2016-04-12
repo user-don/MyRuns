@@ -2,6 +2,7 @@ package edu.cs65.don.myruns.fragments;
 
 
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.app.Fragment;
 import android.preference.Preference;
@@ -21,7 +22,8 @@ import edu.cs65.don.myruns.activities.MainActivity;
  */
 public class SettingsFragment extends PreferenceFragment {
 
-    public static final int ACCOUNT_PREFERENCES = 0;
+    private static final int ACCOUNT_PREFERENCES = 0;
+    private static final int WEBPAGE = 1;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -37,7 +39,10 @@ public class SettingsFragment extends PreferenceFragment {
         Preference.OnPreferenceClickListener account_preferences_listener =
                 getOnPreferenceClickListener(ACCOUNT_PREFERENCES);
         account_preferences.setOnPreferenceClickListener(account_preferences_listener);
-
+        // add listener for loading webpage
+        Preference webpage = (Preference) ps.findPreference("webpage");
+        Preference.OnPreferenceClickListener web_listener = getOnPreferenceClickListener(WEBPAGE);
+        webpage.setOnPreferenceClickListener(web_listener);
 
     }
 
@@ -48,6 +53,17 @@ public class SettingsFragment extends PreferenceFragment {
                 public boolean onPreferenceClick(Preference preference) {
                     // open intent
                     Intent intent = new Intent(getActivity(), AccountPreferencesActivity.class);
+                    startActivity(intent);
+                    return true;
+                }
+            };
+        } else if (preference_id == WEBPAGE) {
+            return new Preference.OnPreferenceClickListener() {
+                @Override
+                public boolean onPreferenceClick(Preference preference) {
+                    // open webpage
+                    Intent intent = new Intent(Intent.ACTION_VIEW,
+                            Uri.parse(getString(R.string.cs_dartmouth_url)));
                     startActivity(intent);
                     return true;
                 }
