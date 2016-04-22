@@ -1,18 +1,14 @@
-package edu.cs65.don.myruns;
+package edu.cs65.don.myruns.activities;
 
-import android.Manifest;
 import android.app.DialogFragment;
 import android.content.ActivityNotFoundException;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Environment;
 import android.provider.MediaStore;
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -26,24 +22,23 @@ import android.widget.Toast;
 
 import com.soundcloud.android.crop.Crop;
 
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.net.URI;
 
-public class MainActivity extends AppCompatActivity {
+import edu.cs65.don.myruns.R;
+import edu.cs65.don.myruns.fragments.MyRunsDialogFragment;
 
-    private static final int DIALOG_ID_PHOTO_PICKER = 1;
-    static final int REQUEST_IMAGE_CAPTURE = 1;
-    // for permission requests
-    static final int MY_PERMISSIONS_REQUEST_READ_EXTERNAL_DATA = 222;
-    static final int MY_PERMISSIONS_REQUEST_WRITE_EXTERNAL_DATA = 223;
+public class AccountPreferencesActivity extends AppCompatActivity {
+
+    // Request codes for onActivityResult
+    private static final int REQUEST_IMAGE_CAPTURE = 1;
+    private static final int REQUEST_GALLERY_LAUNCH = 2;
 
     private static final String URI_INSTANCE_STATE_KEY = "saved_uri";
-
     private static final String RUNS = "runs";
+    // Define global variables
     private ImageView mImageView;
     private Uri mImageCaptureUri;
     private Uri tempImageUri;
@@ -51,12 +46,8 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        Log.d(RUNS, "onCreate called");
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
-
-        // check for permissions
-        checkForPermissions();
+        setContentView(R.layout.activity_account_preferences);
 
         // clear soft keyboard until text view tapped
         getWindow().setSoftInputMode(
@@ -163,22 +154,11 @@ public class MainActivity extends AppCompatActivity {
     }
 
     /**
-     * Displays dialog fragment. Dialog displayed depends on the specified id;
-     * For now there is only one dialog (changing photo), but this generic function
-     * has the capability to be expanded in future.
-     * @param id ID of the dialog to be displayed
-     */
-    public void displayDialog(int id) {
-        DialogFragment fragment = MyRunsDialogFragment.newInstance(id);
-        fragment.show(getFragmentManager(), "dialog_fragment_photo_picker");
-    }
-
-    /**
      * Display photo picker dialog box
      */
     public void displayPhotoDialog(@SuppressWarnings("UnusedParameters") View v) {
         Log.d(RUNS, "display photo dialog called");
-        displayDialog(DIALOG_ID_PHOTO_PICKER);
+        displayDialog();
     }
 
     /**
@@ -211,6 +191,11 @@ public class MainActivity extends AppCompatActivity {
             case REQUEST_IMAGE_CAPTURE:
                 cropImage(mImageCaptureUri);
             // callback for cropping activity
+                return;
+            case REQUEST_GALLERY_LAUNCH:
+                Uri uri = data.getData();
+                cropImage(uri);
+                return;
             case Crop.REQUEST_CROP:
                 handleCrop(resultCode, data);
 
@@ -218,9 +203,9 @@ public class MainActivity extends AppCompatActivity {
                 if (isTakenFromCamera) {
                     File f = new File(mImageCaptureUri.getPath());
                     if (f.exists())
+                        //noinspection ResultOfMethodCallIgnored
                         f.delete();
                 }
-
         }
     }
 
@@ -233,12 +218,25 @@ public class MainActivity extends AppCompatActivity {
         switch(item) {
             case MyRunsDialogFragment.ID_PHOTO_PICKER_FROM_CAMERA:
                 dispatchTakePictureIntent();
+                return;
+            case MyRunsDialogFragment.ID_PHOTO_PICKER_FROM_GALLERY:
+                selectImageFromGallery();
+                return;
             default:
                 // do nothing
         }
     }
 
     // ****************** private helper functions ***************************//
+
+    /**
+     * Displays dialog fragment.
+     */
+    private void displayDialog() {
+        DialogFragment fragment = MyRunsDialogFragment.newInstance(
+                MyRunsDialogFragment.DIALOG_ID_PHOTO_PICKER);
+        fragment.show(getFragmentManager(), "dialog_fragment_photo_picker");
+    }
 
     /**
      * Dispatch a take picture intent and start Android's photo taking application
@@ -261,6 +259,16 @@ public class MainActivity extends AppCompatActivity {
             e.printStackTrace();
         }
         isTakenFromCamera = true;
+    }
+
+    /**
+     * Construct intent for selecting an image from image gallery
+     */
+    private void selectImageFromGallery() {
+        isTakenFromCamera = false;
+        Intent mediaChooser = new Intent(Intent.ACTION_PICK,
+                MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+        startActivityForResult(mediaChooser, REQUEST_GALLERY_LAUNCH);
     }
 
     /**
@@ -327,7 +335,7 @@ public class MainActivity extends AppCompatActivity {
      * Help load user data that has already been saved.
      */
     @SuppressWarnings("ConstantConditions")
-    private void loadProfile(Bundle savedInstanceState) {
+    private void loadProfile(@SuppressWarnings("UnusedParameters") Bundle savedInstanceState) {
         Log.d(RUNS, "load user profile");
         // get sharedPreferences
         String mKey = getString(R.string.preference_name);
@@ -425,33 +433,14 @@ public class MainActivity extends AppCompatActivity {
     private void handleCrop(int resultCode, Intent result) {
         if (resultCode == RESULT_OK) {
             tempImageUri = Crop.getOutput(result);
-            //mImageView.setImageURI(Crop.getOutput(result));
+            // since image URI can stay constant between updates, set drawable to null
+            // to force re-draw
+            mImageView.setImageDrawable(null);
             mImageView.setImageURI(tempImageUri);
             Log.d(RUNS, "tempImageUri set to " + String.valueOf(tempImageUri));
         } else if (resultCode == Crop.RESULT_ERROR) {
+            //noinspection ThrowableResultOfMethodCallIgnored
             Toast.makeText(this, Crop.getError(result).getMessage(), Toast.LENGTH_SHORT).show();
         }
     }
-
-    /**
-     * Check for app permissions
-     */
-    private void checkForPermissions() {
-        int checkWriteExternalStorage = ContextCompat.checkSelfPermission(this,
-                Manifest.permission.WRITE_EXTERNAL_STORAGE);
-        int checkReadExternalStorage = ContextCompat.checkSelfPermission(this,
-                Manifest.permission.READ_EXTERNAL_STORAGE);
-
-        if (checkWriteExternalStorage != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(this,
-                    new String[] {Manifest.permission.WRITE_EXTERNAL_STORAGE},
-                    MY_PERMISSIONS_REQUEST_WRITE_EXTERNAL_DATA);
-        }
-        if (checkReadExternalStorage != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(this,
-                    new String[] {Manifest.permission.READ_EXTERNAL_STORAGE},
-                    MY_PERMISSIONS_REQUEST_READ_EXTERNAL_DATA);
-        }
-    }
-
 }

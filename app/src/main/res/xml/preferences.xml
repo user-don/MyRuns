@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <PreferenceCategory
+        android:title="@string/title_account_preferences_category">
+
+        <Preference
+            android:key="account_preferences"
+            android:title="@string/title_account_preferences"
+            android:summary="@string/summary_account_preferences"
+            android:selectable="true" />
+
+        <CheckBoxPreference
+            android:key="privacy_setting"
+            android:title="@string/title_privacy_setting"
+            android:summary="@string/summary_privacy_setting"/>
+
+    </PreferenceCategory>
+    <PreferenceCategory
+        android:title="@string/additional_settings">
+
+        <ListPreference
+            android:key="unit_preference"
+            android:title="@string/title_unit_preference"
+            android:summary="@string/summary_unit_preference"
+            android:entries="@array/entries_unit_preference"
+            android:entryValues="@array/entryvalues_unit_preference" />
+
+        <EditTextPreference
+            android:key="comments"
+            android:title="@string/title_comments"
+            android:summary="@string/summary_comments"
+            android:dialogTitle="@string/title_comments"/>
+
+    </PreferenceCategory>
+
+    <PreferenceCategory
+        android:title="@string/title_misc_category">
+
+        <Preference
+            android:key="webpage"
+            android:title="@string/webpage"
+            android:summary="@string/cs_dartmouth_url"/>
+
+    </PreferenceCategory>
+
+
+
+</PreferenceScreen>
