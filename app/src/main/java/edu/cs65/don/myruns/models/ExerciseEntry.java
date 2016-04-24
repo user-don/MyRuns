@@ -2,6 +2,7 @@ package edu.cs65.don.myruns.models;
 
 import com.google.android.gms.maps.model.LatLng;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Calendar;
 

@@ -1,9 +1,20 @@
 package edu.cs65.don.myruns.helpers;
 
 
+import android.content.ContentValues;
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.util.Log;
+
+import org.json.JSONObject;
+
+import java.io.IOException;
+import java.io.Serializable;
+import java.nio.ByteBuffer;
+import java.text.SimpleDateFormat;
+
+import edu.cs65.don.myruns.models.ExerciseEntry;
 
 /**
  * Helper class for managing DB interactions for ExerciseEntry objects.
@@ -53,13 +64,60 @@ public class ExerciseEntryDbHelper extends SQLiteOpenHelper {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
     }
 
+    /**
+     * onCreate only gets called when the database (for current version number) does not already
+     * exist.
+     * @param db the database
+     */
     @Override
     public void onCreate(SQLiteDatabase db) {
-
+        db.execSQL(DATABASE_CREATE);
     }
 
+    /**
+     * onUpgrade() only called when the db file exists but the stored version number
+     * is lower than the current one. Currently, this drops the existing table and
+     * creates a new one.
+     * @param db the database
+     * @param oldVersion the old version of the database
+     * @param newVersion the new version of the database
+     */
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
+        Log.w(ExerciseEntryDbHelper.class.getName(),
+                "Upgrading database from version " + oldVersion + " to "
+                        + newVersion + ", which will destroy all old data");
+        db.execSQL("DROP TABLE IF EXISTS " + TABLE_ENTRIES);
+        // Once deleted, create new database!
+        onCreate(db);
+    }
 
+    // Insert a item given each column value
+    public long insertEntry(ExerciseEntry entry) {
+        SQLiteDatabase db = getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put(INPUT_TYPE, entry.mInputType);
+        values.put(ACTIVITY_TYPE, entry.mActivityType);
+        // for inserting our date object, we store as string. Not worrying about UTC for now.
+        values.put(DATE_TIME, entry.mDateTime.toString());
+        values.put(DURATION, entry.mDuration);
+        values.put(DISTANCE, entry.mDistance);
+        values.put(AVG_PACE, entry.mAvgPace);
+        values.put(AVG_SPEED, entry.mAvgSpeed);
+        values.put(CALORIES, entry.mCalorie);
+        values.put(CLIMB, entry.mClimb);
+        values.put(HEARTRATE, entry.mHeartRate);
+        values.put(COMMENT, entry.mComment);
+        // put ArrayList in as a blob
+        byte[] ba = {};
+        try {
+            ba = Serializer.serialize(entry.mLocationList);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        ByteBuffer bb = ByteBuffer.wrap(ba);
+        values.put(GPS_DATA, bb.toString());
+
+        return db.insert(TABLE_ENTRIES, null, values);
     }
 }
