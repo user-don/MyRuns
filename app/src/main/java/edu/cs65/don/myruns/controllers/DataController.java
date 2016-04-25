@@ -1,12 +1,15 @@
 package edu.cs65.don.myruns.controllers;
 
 import android.content.Context;
+import android.content.res.Resources;
 import android.os.AsyncTask;
 
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.InputMismatchException;
 import java.util.TimeZone;
 
+import edu.cs65.don.myruns.R;
 import edu.cs65.don.myruns.helpers.ExerciseEntryDbHelper;
 import edu.cs65.don.myruns.models.ExerciseEntry;
 
@@ -35,6 +38,32 @@ public class DataController {
         tempCalendar = Calendar.getInstance(TimeZone.getDefault());
         // attach dbHelper to the application context. prevent memory leaks!
         dbHelper = new ExerciseEntryDbHelper(context.getApplicationContext());
+    }
+
+    /**
+     * Get input type as string given input ID as saved in ExerciseEntry
+     * @param id id of input type
+     * @return input type as string
+     */
+    public String getInputType(int id) {
+        switch(id) {
+            case 0:
+                return "Manual Entry";
+            case 1:
+                return "GPS";
+            case 2:
+                // TODO: Make this depend on "Automatic" functionality
+                return "Automatic";
+        }
+        throw new InputMismatchException("Bad ID specified");
+    }
+
+    public String getActivityType(int id, Resources r) {
+        String[] activities = r.getStringArray(R.array.activity_type);
+        if (id >= activities.length) {
+            throw new IllegalArgumentException("Bad ID specified");
+        }
+        return activities[id];
     }
 
     public void saveToDbAsync(ExerciseEntry entry) {

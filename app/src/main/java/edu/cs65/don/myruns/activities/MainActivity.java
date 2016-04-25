@@ -83,12 +83,13 @@ public class MainActivity extends AppCompatActivity {
                 if (position == 1) {
                     // history tab.
                     mDataController.getExerciseEntriesFromDB();
-                    for (int i = 0; i < mDataController.entries.size(); i++) {
-                        ExerciseEntry entry = mDataController.entries.get(i);
-                        Log.d("RUNS", String.valueOf(entry.mInputType));
-                        Log.d("RUNS", entry.mDateTime.toString());
-                        Log.d("RUNS", String.valueOf(entry.mDuration));
-                    }
+                    // TODO: Delete once debugging is complete
+//                    for (int i = 0; i < mDataController.entries.size(); i++) {
+//                        ExerciseEntry entry = mDataController.entries.get(i);
+//                        Log.d("RUNS", String.valueOf(entry.mInputType));
+//                        Log.d("RUNS", entry.mDateTime.toString());
+//                        Log.d("RUNS", String.valueOf(entry.mDuration));
+//                    }
 
                 }
             }
