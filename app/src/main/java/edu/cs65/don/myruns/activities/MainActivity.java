@@ -30,6 +30,11 @@ public class MainActivity extends AppCompatActivity {
     private static final int MY_PERMISSIONS_REQUEST_READ_EXTERNAL_DATA = 222;
     private static final int MY_PERMISSIONS_REQUEST_WRITE_EXTERNAL_DATA = 223;
 
+    // Fragment positions
+    private static final int START_FRAGMENT_POSITION = 0;
+    private static final int HISTORY_FRAGMENT_POSITION = 1;
+    private static final int SETTINGS_FRAGMENT_POSITION = 2;
+
     private SlidingTabLayout slidingTabLayout;
     // use view pager to show the list of fragments
     private ViewPager viewPager;
@@ -80,17 +85,12 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onPageSelected(int position) {
-                if (position == 1) {
+                if (position == HISTORY_FRAGMENT_POSITION) {
                     // history tab.
-                    mDataController.getExerciseEntriesFromDB();
-                    // TODO: Delete once debugging is complete
-//                    for (int i = 0; i < mDataController.entries.size(); i++) {
-//                        ExerciseEntry entry = mDataController.entries.get(i);
-//                        Log.d("RUNS", String.valueOf(entry.mInputType));
-//                        Log.d("RUNS", entry.mDateTime.toString());
-//                        Log.d("RUNS", String.valueOf(entry.mDuration));
-//                    }
-
+                    HistoryFragment frag = (HistoryFragment)
+                            getFragmentManager().findFragmentByTag("android:switcher:"
+                            + R.id.viewpager + ":" + HISTORY_FRAGMENT_POSITION);
+                    frag.getExerciseEntriesFromDB();
                 }
             }
 

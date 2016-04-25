@@ -1,17 +1,22 @@
 package edu.cs65.don.myruns.fragments;
 
 
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ListView;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
 
+import java.util.ArrayList;
+
 import edu.cs65.don.myruns.R;
+import edu.cs65.don.myruns.adapters.ActivityEntriesAdapter;
 import edu.cs65.don.myruns.controllers.DataController;
 import edu.cs65.don.myruns.models.ExerciseEntry;
 
@@ -22,6 +27,7 @@ import edu.cs65.don.myruns.models.ExerciseEntry;
 public class HistoryFragment extends Fragment {
 
     private static DataController mDataController;
+    private View mView;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -31,10 +37,14 @@ public class HistoryFragment extends Fragment {
         // TODO: Get the DataController and test db storage with logging or inspector
         // instantiate the data controller as a singleton
         mDataController = DataController.getInstance(getActivity().getApplicationContext());
-        initTable(view);
+        getExerciseEntriesFromDB();
+        mView = view;
+        //initTable(view);
         return view;
 
     }
+
+
 
     private void initTable(View v) {
         TableLayout layout = (TableLayout) v.findViewById(R.id.runsTable);
@@ -42,14 +52,6 @@ public class HistoryFragment extends Fragment {
         // and place two rows of text
         int tableIndex = 0;
         for (ExerciseEntry entry : mDataController.entries) {
-//            TableRow row = new TableRow(v.getContext());
-//            TextView firstLine = new TextView(v.getContext());
-//            TextView secondLine = new TextView(v.getContext());
-//            firstLine.setText("Manual Entry ASDF " +
-//                mDataController.getInputType(entry.mActivityType));
-//            secondLine.setText("Miles");
-//            row.addView(firstLine);
-//            row.addView(secondLine);
             View row = initRow(v, entry);
             layout.addView(row, tableIndex);
             tableIndex++;
@@ -80,6 +82,32 @@ public class HistoryFragment extends Fragment {
         secondLine.setText(second.toString());
         Log.d("RUNS", second.toString());
         return row;
+    }
+
+    public void getExerciseEntriesFromDB() {
+        new GetExerciseEntriesFromDB().execute();
+    }
+
+    private void fillExerciseEntriesFromDB(ArrayList<ExerciseEntry> entries) {
+        mDataController.entries = entries;
+    }
+
+    private class GetExerciseEntriesFromDB extends AsyncTask<Void, Void, ArrayList<ExerciseEntry>> {
+
+        @Override
+        protected ArrayList<ExerciseEntry> doInBackground(Void... params) {
+            return mDataController.dbHelper.fetchEntries();
+        }
+
+        @Override
+        protected void onPostExecute(ArrayList<ExerciseEntry> exerciseEntries) {
+            fillExerciseEntriesFromDB(exerciseEntries);
+            final ActivityEntriesAdapter adapter = new ActivityEntriesAdapter(mView.getContext(),
+                    R.layout.history_table_row, mDataController.entries);
+            final ListView history = (ListView) mView.findViewById(R.id.historyList);
+            history.setAdapter(adapter);
+            super.onPostExecute(exerciseEntries);
+        }
     }
 
 }
