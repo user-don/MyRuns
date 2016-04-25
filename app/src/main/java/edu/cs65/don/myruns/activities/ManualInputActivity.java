@@ -9,19 +9,41 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.Toast;
 
-import edu.cs65.don.myruns.R;
-import edu.cs65.don.myruns.fragments.MyRunsDialogFragment;
+import java.util.Calendar;
+import java.util.TimeZone;
 
-public class ManualInputActivity extends AppCompatActivity {
+import edu.cs65.don.myruns.R;
+import edu.cs65.don.myruns.controllers.DataController;
+import edu.cs65.don.myruns.fragments.MyRunsDialogFragment;
+import edu.cs65.don.myruns.models.ExerciseEntry;
+
+public class ManualInputActivity extends AppCompatActivity
+        implements MyRunsDialogFragment.MyRunsDialogListener {
+
+    private ExerciseEntry entry;
+    private int year, monthOfYear, dayOfMonth, hourOfDay, minute;
+    private boolean dateSelected = false;
+    private boolean timeSelected = false;
+    private static DataController mDataController;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        // instantiate the data controller as a singleton
+        mDataController = DataController.getInstance(getApplicationContext());
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_manual_input);
 
         ListView lv = (ListView) findViewById(R.id.listView);
         assert lv != null;
         lv.setOnItemClickListener(clickListener);
+        entry = new ExerciseEntry();
+        entry.mInputType = mDataController.INPUT_TYPE_MANUAL;
+        // get activity type from bundle
+        Bundle extras = getIntent().getExtras();
+        if (extras != null) {
+            // there is absolutely no reason this should be throwing an error. It's stupid.
+            entry.mActivityType = extras.getInt("activity_type");
+        }
     }
 
     /**
@@ -83,6 +105,9 @@ public class ManualInputActivity extends AppCompatActivity {
     public void onSaveCancelClicked(View v) {
         if (v.getId() == R.id.manual_entry_save_button) {
             // TODO: Save to database
+            // build calendar object if available
+            entry.mDateTime = buildCalendar();
+            mDataController.saveToDbAsync(entry);
             finish();
         } else { // cancel pressed
             finish();
@@ -90,5 +115,63 @@ public class ManualInputActivity extends AppCompatActivity {
         }
     }
 
+    private Calendar buildCalendar() {
+        // build calendar using given information.
+        // if neither date nor time is specified, default to current date and time
+        // if only date is specified, show that date but with current time
+        // if only time is specified, use that time with current date
+        Calendar cal = Calendar.getInstance(TimeZone.getDefault());
+        if (dateSelected && timeSelected) {
+            cal.set(year, monthOfYear, dayOfMonth, hourOfDay, minute);
+            return cal;
+        } else if (dateSelected) {
+            // only date specified. show date with current time (which we get by default
+            // with the getInstance() method)
+            cal.set(year, monthOfYear, dayOfMonth);
+            return cal;
+        } else {
+            // return current date/time if either none specified or only time specified
+            return cal;
+        }
+    }
 
+    @Override
+    public void onDateSelected(int year, int monthOfYear, int dayOfMonth) {
+        this.year = year;
+        this.monthOfYear = monthOfYear;
+        this.dayOfMonth = dayOfMonth;
+        dateSelected = true;
+    }
+
+    @Override
+    public void onTimeSelected(int hourOfDay, int minute) {
+        this.hourOfDay = hourOfDay;
+        this.minute = minute;
+        timeSelected = false;
+    }
+
+    @Override
+    public void onDurationSelected(int duration) {
+        entry.mDuration = duration;
+    }
+
+    @Override
+    public void onDistanceSelected(double distance) {
+        entry.mDistance = distance;
+    }
+
+    @Override
+    public void onCaloriesSelected(int calories) {
+        entry.mCalorie = calories;
+    }
+
+    @Override
+    public void onHeartRateSelected(int heartRate) {
+        entry.mHeartRate = heartRate;
+    }
+
+    @Override
+    public void onCommentSelected(String comment) {
+        entry.mComment = comment;
+    }
 }

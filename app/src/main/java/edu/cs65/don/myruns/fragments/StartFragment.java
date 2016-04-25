@@ -58,8 +58,8 @@ public class StartFragment extends Fragment {
                     // in the bundle
                     Intent intent = new Intent(getActivity(), ManualInputActivity.class);
                     Bundle extras = new Bundle();
-                    extras.putString("activity_type",
-                            activity_type_spinner.getSelectedItem().toString());
+                    extras.putInt("activity_type",
+                            activity_type_spinner.getSelectedItemPosition());
                     intent.putExtras(extras);
                     startActivity(intent);
                 }
@@ -68,8 +68,8 @@ public class StartFragment extends Fragment {
                     // TODO: Eventually differentiate Automatic mode
                     Intent intent = new Intent(getActivity(), GPSModeActivity.class);
                     Bundle extras = new Bundle();
-                    extras.putString("activity_type",
-                            activity_type_spinner.getSelectedItem().toString());
+                    extras.putInt("activity_type",
+                            activity_type_spinner.getSelectedItemPosition());
                     intent.putExtras(extras);
                     startActivity(intent);
                 }

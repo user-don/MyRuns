@@ -8,6 +8,7 @@ import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 
@@ -15,9 +16,11 @@ import java.util.ArrayList;
 
 import edu.cs65.don.myruns.R;
 import edu.cs65.don.myruns.adapters.ActionTabsViewPagerAdapter;
+import edu.cs65.don.myruns.controllers.DataController;
 import edu.cs65.don.myruns.fragments.HistoryFragment;
 import edu.cs65.don.myruns.fragments.SettingsFragment;
 import edu.cs65.don.myruns.fragments.StartFragment;
+import edu.cs65.don.myruns.models.ExerciseEntry;
 import edu.cs65.don.myruns.view.SlidingTabLayout;
 
 @SuppressWarnings("FieldCanBeLocal")
@@ -33,9 +36,14 @@ public class MainActivity extends AppCompatActivity {
     private ArrayList<Fragment> fragments;
     // we supply an implementation of a PagerAdapter to generate the pages that the view shows.
     private ActionTabsViewPagerAdapter myViewPageAdapter;
+    private static DataController mDataController;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        // instantiate the data controller as a singleton
+        mDataController = DataController.getInstance(getApplicationContext());
+        // initialize data in the dataController
+        mDataController.initializeData(this);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
@@ -62,7 +70,36 @@ public class MainActivity extends AppCompatActivity {
         // make sure the tabs are equally spaced.
         slidingTabLayout.setDistributeEvenly(true);
         slidingTabLayout.setViewPager(viewPager);
+
+        slidingTabLayout.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+
+            @Override
+            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+
+            }
+
+            @Override
+            public void onPageSelected(int position) {
+                if (position == 1) {
+                    // history tab.
+                    mDataController.getExerciseEntriesFromDB();
+                    for (int i = 0; i < mDataController.entries.size(); i++) {
+                        ExerciseEntry entry = mDataController.entries.get(i);
+                        Log.d("RUNS", String.valueOf(entry.mInputType));
+                        Log.d("RUNS", entry.mDateTime.toString());
+                        Log.d("RUNS", String.valueOf(entry.mDuration));
+                    }
+
+                }
+            }
+
+            @Override
+            public void onPageScrollStateChanged(int state) {
+
+            }
+        });
     }
+
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -70,6 +107,7 @@ public class MainActivity extends AppCompatActivity {
         inflater.inflate(R.menu.main, menu);
         return true;
     }
+
 
     /**
      * Check for app permissions. Not needed anymore since we have dropped targetSdkVersion
