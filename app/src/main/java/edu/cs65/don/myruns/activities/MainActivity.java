@@ -93,7 +93,8 @@ public class MainActivity extends AppCompatActivity {
                     HistoryFragment frag = (HistoryFragment)
                             getFragmentManager().findFragmentByTag("android:switcher:"
                             + R.id.viewpager + ":" + HISTORY_FRAGMENT_POSITION);
-                    frag.getExerciseEntriesFromDB();
+                    //frag.getExerciseEntriesFromDB();
+                    frag.getLoaderManager().initLoader(0, null, frag);
                 }
             }
 

@@ -1,6 +1,8 @@
 package edu.cs65.don.myruns.fragments;
 
 
+import android.app.LoaderManager;
+import android.content.Loader;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.app.Fragment;
@@ -18,16 +20,24 @@ import java.util.ArrayList;
 import edu.cs65.don.myruns.R;
 import edu.cs65.don.myruns.adapters.ActivityEntriesAdapter;
 import edu.cs65.don.myruns.controllers.DataController;
+import edu.cs65.don.myruns.helpers.DataLoader;
 import edu.cs65.don.myruns.models.ExerciseEntry;
 
 
 /**
  * A simple {@link Fragment} subclass for showing run history.
  */
-public class HistoryFragment extends Fragment {
+public class HistoryFragment extends Fragment
+        implements LoaderManager.LoaderCallbacks<ArrayList<ExerciseEntry>> {
 
     private static DataController mDataController;
     private View mView;
+
+    @Override
+    public void onActivityCreated(Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+        getLoaderManager().initLoader(0, null, this);
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -36,17 +46,10 @@ public class HistoryFragment extends Fragment {
         final View view = inflater.inflate(R.layout.fragment_history, container, false);
         // instantiate the data controller as a singleton
         mDataController = DataController.getInstance(getActivity().getApplicationContext());
-        getExerciseEntriesFromDB();
+        //getExerciseEntriesFromDB();
         mView = view;
         return view;
 
-    }
-
-    /**
-     * Asynchronously refresh the ListView with new data from database.
-     */
-    public void getExerciseEntriesFromDB() {
-        new GetExerciseEntriesFromDB().execute();
     }
 
     /**
@@ -58,26 +61,24 @@ public class HistoryFragment extends Fragment {
         mDataController.entries = entries;
     }
 
-    /**
-     * Asynchronous task for getting exercise entries from database and subsequently
-     * updating the UI
-     */
-    private class GetExerciseEntriesFromDB extends AsyncTask<Void, Void, ArrayList<ExerciseEntry>> {
+    @Override
+    public Loader<ArrayList<ExerciseEntry>> onCreateLoader(int id, Bundle args) {
+        return new DataLoader(getActivity());
+    }
 
-        @Override
-        protected ArrayList<ExerciseEntry> doInBackground(Void... params) {
-            return mDataController.dbHelper.fetchEntries();
-        }
+    @Override
+    public void onLoadFinished(Loader<ArrayList<ExerciseEntry>> loader,
+                               ArrayList<ExerciseEntry> data) {
+        fillExerciseEntriesFromDB(data);
+        final ActivityEntriesAdapter adapter = new ActivityEntriesAdapter(mView.getContext(),
+                R.layout.history_table_row, mDataController.entries);
+        final ListView history = (ListView) mView.findViewById(R.id.historyList);
+        history.setAdapter(adapter);
+    }
 
-        @Override
-        protected void onPostExecute(ArrayList<ExerciseEntry> exerciseEntries) {
-            fillExerciseEntriesFromDB(exerciseEntries);
-            final ActivityEntriesAdapter adapter = new ActivityEntriesAdapter(mView.getContext(),
-                    R.layout.history_table_row, mDataController.entries);
-            final ListView history = (ListView) mView.findViewById(R.id.historyList);
-            history.setAdapter(adapter);
-            super.onPostExecute(exerciseEntries);
-        }
+    @Override
+    public void onLoaderReset(Loader<ArrayList<ExerciseEntry>> loader) {
+        // do nothing here
     }
 
     //    private void initTable(View v) {
