@@ -44,15 +44,8 @@ public class ExerciseEntry {
     public ExerciseEntry() {
         timeZone = TimeZone.getDefault();
         // initialize default values
-        mActivityType = 0;
-        mDuration = 0;
-        mDistance = 0;
-        mAvgPace = 0;
-        mAvgSpeed = 0;
-        mCalorie = 0;
-        mClimb = 0;
-        mHeartRate = 0;
-        mComment = "";
+        mActivityType = 0; mDuration = 0; mDistance = 0; mAvgPace = 0; mAvgSpeed = 0;
+        mCalorie = 0; mClimb = 0; mHeartRate = 0; mComment = "";
     }
 
     public static String getActivityType(int id, Resources r) {

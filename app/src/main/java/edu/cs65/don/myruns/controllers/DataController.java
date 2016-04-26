@@ -1,8 +1,10 @@
 package edu.cs65.don.myruns.controllers;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.os.AsyncTask;
+import android.preference.PreferenceManager;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -24,6 +26,7 @@ public class DataController {
     public final int INPUT_TYPE_AUTOMATIC = 2;
     public ExerciseEntryDbHelper dbHelper;
     public ArrayList<ExerciseEntry> entries = new ArrayList<>();
+    private Context context;
 
     // For instantiating as a singleton
     private static DataController sDataController;
@@ -37,7 +40,10 @@ public class DataController {
     public void initializeData(Context context) {
         // attach dbHelper to the application context. prevent memory leaks!
         dbHelper = new ExerciseEntryDbHelper(context.getApplicationContext());
+        this.context = context.getApplicationContext();
     }
+
+
 
     public void saveToDbAsync(ExerciseEntry entry) {
         new SaveToDB().execute(entry);

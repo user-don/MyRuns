@@ -18,6 +18,7 @@ import edu.cs65.don.myruns.controllers.DataController;
 import edu.cs65.don.myruns.models.ExerciseEntry;
 
 /**
+ * ActionEntriesAdapter
  * Created by don on 4/25/16.
  */
 public class ActivityEntriesAdapter extends ArrayAdapter<ExerciseEntry> {
@@ -66,10 +67,10 @@ public class ActivityEntriesAdapter extends ArrayAdapter<ExerciseEntry> {
 
     private String buildSecondString(ExerciseEntry e) {
         StringBuilder second = new StringBuilder();
-        String unit_preference = getUnitPreferences();
-        String[] unit_prefs = context.getResources()
+        String preference_choice = getUnitPreferences();
+        String[] preference_choices = context.getResources()
                 .getStringArray(R.array.entryvalues_unit_preference);
-        if (unit_preference.equals(unit_prefs[0])) {
+        if (preference_choice.equals(preference_choices[0])) {
             // metric
             second.append(String.valueOf(milesToKm(e.mDistance)) + " Kilometers, ");
         } else {
