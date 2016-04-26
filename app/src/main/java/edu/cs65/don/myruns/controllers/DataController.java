@@ -14,6 +14,7 @@ import edu.cs65.don.myruns.helpers.ExerciseEntryDbHelper;
 import edu.cs65.don.myruns.models.ExerciseEntry;
 
 /**
+ * DataController.java
  * Created by don on 4/24/16.
  */
 public class DataController {
@@ -23,7 +24,6 @@ public class DataController {
     public final int INPUT_TYPE_AUTOMATIC = 2;
     public ExerciseEntryDbHelper dbHelper;
     public ArrayList<ExerciseEntry> entries = new ArrayList<>();
-    private Calendar tempCalendar;
 
     // For instantiating as a singleton
     private static DataController sDataController;
@@ -35,47 +35,12 @@ public class DataController {
     }
 
     public void initializeData(Context context) {
-        tempCalendar = Calendar.getInstance(TimeZone.getDefault());
         // attach dbHelper to the application context. prevent memory leaks!
         dbHelper = new ExerciseEntryDbHelper(context.getApplicationContext());
     }
 
-    /**
-     * Get input type as string given input ID as saved in ExerciseEntry
-     * @param id id of input type
-     * @return input type as string
-     */
-    public String getInputType(int id) {
-        switch(id) {
-            case 0:
-                return "Manual Entry";
-            case 1:
-                return "GPS";
-            case 2:
-                // TODO: Make this depend on "Automatic" functionality
-                return "Automatic";
-        }
-        throw new InputMismatchException("Bad ID specified");
-    }
-
-    public String getActivityType(int id, Resources r) {
-        String[] activities = r.getStringArray(R.array.activity_type);
-        if (id >= activities.length) {
-            throw new IllegalArgumentException("Bad ID specified");
-        }
-        return activities[id];
-    }
-
     public void saveToDbAsync(ExerciseEntry entry) {
         new SaveToDB().execute(entry);
-    }
-
-    public void getExerciseEntriesFromDB() {
-        new GetExerciseEntriesFromDB().execute();
-    }
-
-    private void fillExerciseEntriesFromDB(ArrayList<ExerciseEntry> entries) {
-        this.entries = entries;
     }
 
     private class SaveToDB extends AsyncTask<ExerciseEntry, Void, Void> {
@@ -90,20 +55,6 @@ public class DataController {
         protected void onPostExecute(Void result) {
             super.onPostExecute(result);
             // do nothing...
-        }
-    }
-
-    private class GetExerciseEntriesFromDB extends AsyncTask<Void, Void, ArrayList<ExerciseEntry>> {
-
-        @Override
-        protected ArrayList<ExerciseEntry> doInBackground(Void... params) {
-            return dbHelper.fetchEntries();
-        }
-
-        @Override
-        protected void onPostExecute(ArrayList<ExerciseEntry> exerciseEntries) {
-            fillExerciseEntriesFromDB(exerciseEntries);
-            super.onPostExecute(exerciseEntries);
         }
     }
 

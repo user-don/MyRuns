@@ -34,64 +34,34 @@ public class HistoryFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         final View view = inflater.inflate(R.layout.fragment_history, container, false);
-        // TODO: Get the DataController and test db storage with logging or inspector
         // instantiate the data controller as a singleton
         mDataController = DataController.getInstance(getActivity().getApplicationContext());
         getExerciseEntriesFromDB();
         mView = view;
-        //initTable(view);
         return view;
 
     }
 
-
-
-    private void initTable(View v) {
-        TableLayout layout = (TableLayout) v.findViewById(R.id.runsTable);
-        // for each entry in mDataController.entries, create a table entry
-        // and place two rows of text
-        int tableIndex = 0;
-        for (ExerciseEntry entry : mDataController.entries) {
-            View row = initRow(v, entry);
-            layout.addView(row, tableIndex);
-            tableIndex++;
-        }
-    }
-
-    private View initRow(View v, ExerciseEntry e) {
-        TableRow tr = new TableRow(v.getContext());
-        View row = LayoutInflater.from(v.getContext())
-                .inflate(R.layout.history_table_row, tr, false);
-        TextView firstLine = (TextView) row.findViewById(R.id.firstLine);
-        TextView secondLine = (TextView) row.findViewById(R.id.secondLine);
-        StringBuilder first = new StringBuilder();
-        first.append(mDataController.getInputType(e.mActivityType))
-                .append(": ")
-                .append(mDataController.getActivityType(e.mActivityType, getResources()))
-                .append(", ")
-                .append(e.mDateTime.toString());
-        firstLine.setText(first.toString());
-        Log.d("RUNS", first.toString());
-        StringBuilder second = new StringBuilder();
-        second.append(e.mDistance + " Miles, ");
-        if (e.mDuration == 0) {
-            second.append("0secs");
-        } else {
-            second.append(e.mDuration + "min 0secs");
-        }
-        secondLine.setText(second.toString());
-        Log.d("RUNS", second.toString());
-        return row;
-    }
-
+    /**
+     * Asynchronously refresh the ListView with new data from database.
+     */
     public void getExerciseEntriesFromDB() {
         new GetExerciseEntriesFromDB().execute();
     }
 
+    /**
+     * Helper method called by async task to update the master list of ExerciseEntries
+     * stored in the DataController
+     * @param entries New list of all exercise entries
+     */
     private void fillExerciseEntriesFromDB(ArrayList<ExerciseEntry> entries) {
         mDataController.entries = entries;
     }
 
+    /**
+     * Asynchronous task for getting exercise entries from database and subsequently
+     * updating the UI
+     */
     private class GetExerciseEntriesFromDB extends AsyncTask<Void, Void, ArrayList<ExerciseEntry>> {
 
         @Override
@@ -109,5 +79,43 @@ public class HistoryFragment extends Fragment {
             super.onPostExecute(exerciseEntries);
         }
     }
+
+    //    private void initTable(View v) {
+//        TableLayout layout = (TableLayout) v.findViewById(R.id.runsTable);
+//        // for each entry in mDataController.entries, create a table entry
+//        // and place two rows of text
+//        int tableIndex = 0;
+//        for (ExerciseEntry entry : mDataController.entries) {
+//            View row = initRow(v, entry);
+//            layout.addView(row, tableIndex);
+//            tableIndex++;
+//        }
+//    }
+//
+//    private View initRow(View v, ExerciseEntry e) {
+//        TableRow tr = new TableRow(v.getContext());
+//        View row = LayoutInflater.from(v.getContext())
+//                .inflate(R.layout.history_table_row, tr, false);
+//        TextView firstLine = (TextView) row.findViewById(R.id.firstLine);
+//        TextView secondLine = (TextView) row.findViewById(R.id.secondLine);
+//        StringBuilder first = new StringBuilder();
+//        first.append(mDataController.getInputType(e.mActivityType))
+//                .append(": ")
+//                .append(mDataController.getActivityType(e.mActivityType, getResources()))
+//                .append(", ")
+//                .append(e.mDateTime.toString());
+//        firstLine.setText(first.toString());
+//        Log.d("RUNS", first.toString());
+//        StringBuilder second = new StringBuilder();
+//        second.append(e.mDistance + " Miles, ");
+//        if (e.mDuration == 0) {
+//            second.append("0secs");
+//        } else {
+//            second.append(e.mDuration + "min 0secs");
+//        }
+//        secondLine.setText(second.toString());
+//        Log.d("RUNS", second.toString());
+//        return row;
+//    }
 
 }

@@ -44,11 +44,11 @@ public class ActivityEntriesAdapter extends ArrayAdapter<ExerciseEntry> {
         TextView secondLine = (TextView) convertView.findViewById(R.id.secondLine);
         ExerciseEntry e = mDataController.entries.get(position);
         StringBuilder first = new StringBuilder();
-        first.append(mDataController.getInputType(e.mActivityType))
+        first.append(ExerciseEntry.getInputType(e.mActivityType))
                 .append(": ")
-                .append(mDataController.getActivityType(e.mActivityType, parent.getResources()))
+                .append(ExerciseEntry.getActivityType(e.mActivityType, parent.getResources()))
                 .append(", ")
-                .append(e.mDateTime.toString());
+                .append(e.getDate());
         firstLine.setText(first.toString());
         Log.d("RUNS", first.toString());
         StringBuilder second = new StringBuilder();
