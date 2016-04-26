@@ -44,7 +44,7 @@ public class ActivityEntriesAdapter extends ArrayAdapter<ExerciseEntry> {
         TextView secondLine = (TextView) convertView.findViewById(R.id.secondLine);
         ExerciseEntry e = mDataController.entries.get(position);
         StringBuilder first = new StringBuilder();
-        first.append(ExerciseEntry.getInputType(e.mActivityType))
+        first.append(ExerciseEntry.getInputType(e.mInputType))
                 .append(": ")
                 .append(ExerciseEntry.getActivityType(e.mActivityType, parent.getResources()))
                 .append(", ")
