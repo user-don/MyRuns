@@ -45,7 +45,7 @@ public class ExerciseEntryDbHelper extends SQLiteOpenHelper {
     public static final String HEARTRATE = "heartrate";
     public static final String COMMENT = "comment";
     public static final String GPS_DATA = "gps_data";
-    private static final int DATABASE_VERSION = 1;
+    private static final int DATABASE_VERSION = 2;
 
     private String[] allColumns = { COLUMN_ID, INPUT_TYPE, ACTIVITY_TYPE, DATE_TIME,
         DURATION, DISTANCE, AVG_PACE, AVG_SPEED, CALORIES, CLIMB, HEARTRATE, COMMENT,
@@ -130,7 +130,7 @@ public class ExerciseEntryDbHelper extends SQLiteOpenHelper {
 //        values.put(GPS_DATA, bb.toString());
 
         long resultCode = db.insert(TABLE_ENTRIES, null, values);
-        db.close();
+        //db.close();
         return resultCode;
     }
 
@@ -160,7 +160,7 @@ public class ExerciseEntryDbHelper extends SQLiteOpenHelper {
         entry.mInputType = query.getInt(query.getColumnIndex(INPUT_TYPE));
         entry.mActivityType = query.getInt(query.getColumnIndex(ACTIVITY_TYPE));
         // Do calendar mDateTime specially
-        int timeFromEpoch = query.getInt(query.getColumnIndex(DATE_TIME));
+        long timeFromEpoch = query.getInt(query.getColumnIndex(DATE_TIME));
 //        Calendar cal = Calendar.getInstance(TimeZone.getDefault());
 //        cal.setTimeInMillis(timeFromEpoch);
         entry.mDateTime = new DateTime(timeFromEpoch * 1000);
