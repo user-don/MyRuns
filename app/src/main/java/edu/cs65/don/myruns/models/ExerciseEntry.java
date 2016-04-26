@@ -20,6 +20,7 @@ import java.util.TimeZone;
 import edu.cs65.don.myruns.R;
 
 /**
+ * ExerciseEntry
  * Created by don on 4/22/16.
  */
 public class ExerciseEntry {
@@ -88,17 +89,6 @@ public class ExerciseEntry {
         DateTime dateTime = new DateTime(mDateTime);
         DateTimeFormatter fmd = DateTimeFormat.forPattern("HH:mm:ss MMM dd yyyy");
         return fmd.print(dateTime);
-//        SimpleDateFormat formatter = new SimpleDateFormat("HH:mm:ss MMM dd yyyy");
-//        String date = formatter.format(mDateTime.getTime());
-//        return date;
-//        StringBuilder sb = new StringBuilder();
-//        sb.append(String.valueOf(mDateTime.get(Calendar.HOUR_OF_DAY)))
-//                .append(":")
-//                .append(String.valueOf(mDateTime.get(Calendar.MINUTE)))
-//                .append(":")
-//                .append(String.valueOf(mDateTime.get(Calendar.SECOND)))
-//                .append(" ")
-//                .append()
     }
 
     public long storeDateTime() {

@@ -2,6 +2,8 @@ package edu.cs65.don.myruns.adapters;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -43,23 +45,51 @@ public class ActivityEntriesAdapter extends ArrayAdapter<ExerciseEntry> {
         TextView firstLine = (TextView) convertView.findViewById(R.id.firstLine);
         TextView secondLine = (TextView) convertView.findViewById(R.id.secondLine);
         ExerciseEntry e = mDataController.entries.get(position);
+        String first = buildFirstString(e);
+        firstLine.setText(first);
+        Log.d("RUNS", first);
+        String second = buildSecondString(e);
+        secondLine.setText(second);
+        Log.d("RUNS", second);
+        return convertView;
+    }
+
+    private String buildFirstString(ExerciseEntry e) {
         StringBuilder first = new StringBuilder();
         first.append(ExerciseEntry.getInputType(e.mInputType))
                 .append(": ")
-                .append(ExerciseEntry.getActivityType(e.mActivityType, parent.getResources()))
+                .append(ExerciseEntry.getActivityType(e.mActivityType, context.getResources()))
                 .append(", ")
                 .append(e.getDate());
-        firstLine.setText(first.toString());
-        Log.d("RUNS", first.toString());
+        return first.toString();
+    }
+
+    private String buildSecondString(ExerciseEntry e) {
         StringBuilder second = new StringBuilder();
-        second.append(e.mDistance + " Miles, ");
+        String unit_preference = getUnitPreferences();
+        String[] unit_prefs = context.getResources()
+                .getStringArray(R.array.entryvalues_unit_preference);
+        if (unit_preference.equals(unit_prefs[0])) {
+            // metric
+            second.append(String.valueOf(milesToKm(e.mDistance)) + " Kilometers, ");
+        } else {
+            // imperial
+            second.append(String.valueOf(e.mDistance) + " Miles, ");
+        }
         if (e.mDuration == 0) {
             second.append("0secs");
         } else {
             second.append(e.mDuration + "min 0secs");
         }
-        secondLine.setText(second.toString());
-        Log.d("RUNS", second.toString());
-        return convertView;
+        return second.toString();
+    }
+
+    private String getUnitPreferences() {
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+        return prefs.getString("unit_preference", "Imperial"); // Imperial if not available
+    }
+
+    private double milesToKm(double miles) {
+        return miles * 1.609;
     }
 }

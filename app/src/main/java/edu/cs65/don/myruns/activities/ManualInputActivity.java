@@ -10,6 +10,7 @@ import android.widget.ListView;
 import android.widget.Toast;
 
 import org.joda.time.DateTime;
+import org.joda.time.DateTimeFieldType;
 import org.joda.time.MutableDateTime;
 
 import java.util.Calendar;
@@ -125,15 +126,20 @@ public class ManualInputActivity extends AppCompatActivity
         // if only time is specified, use that time with current date
         MutableDateTime dateTime = new MutableDateTime(); // initialized to current time/date
         if (dateSelected && timeSelected) {
-            dateTime.setDateTime(year, monthOfYear, dayOfMonth, hourOfDay, minute, 0, 0);
+            // JodaTime has one-indexed months, so we need to add one to the results that we get
+            // from the DatePickerDialog (which indexes at zero). Not fun.
+            dateTime.setDateTime(year, monthOfYear + 1, dayOfMonth, hourOfDay, minute, 0, 0);
             return dateTime.toDateTime();
         } else if (dateSelected) {
             // only date specified. show date with current time (which we get by default
             // with the getInstance() method)
-            dateTime.setDate(year, monthOfYear, dayOfMonth);
+            dateTime.setDateTime(year, monthOfYear + 1, dayOfMonth, dateTime.getHourOfDay(),
+                    dateTime.getMinuteOfHour(), 0, 0);
+            return dateTime.toDateTime();
+        } else if (timeSelected) {
+            dateTime.set(DateTimeFieldType.secondOfMinute(), 0);
             return dateTime.toDateTime();
         } else {
-            // return current date/time if either none specified or only time specified
             return dateTime.toDateTime();
         }
     }
@@ -150,7 +156,7 @@ public class ManualInputActivity extends AppCompatActivity
     public void onTimeSelected(int hourOfDay, int minute) {
         this.hourOfDay = hourOfDay;
         this.minute = minute;
-        timeSelected = false;
+        timeSelected = true;
     }
 
     @Override

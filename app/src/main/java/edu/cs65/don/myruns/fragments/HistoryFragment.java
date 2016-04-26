@@ -3,6 +3,7 @@ package edu.cs65.don.myruns.fragments;
 
 import android.app.LoaderManager;
 import android.content.Loader;
+import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.app.Fragment;

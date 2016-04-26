@@ -172,7 +172,6 @@ public class ExerciseEntryDbHelper extends SQLiteOpenHelper {
         entry.mClimb = query.getDouble(query.getColumnIndex(CLIMB));
         entry.mHeartRate = query.getInt(query.getColumnIndex(HEARTRATE));
         entry.mComment = query.getString(query.getColumnIndex(COMMENT));
-        // do location list specially
         String gpsData = query.getString(query.getColumnIndex(GPS_DATA));
         byte[] bytes = gpsData.getBytes();
         ArrayList<LatLng> mLocationList = new ArrayList<>();
