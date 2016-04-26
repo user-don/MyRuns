@@ -9,6 +9,9 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import org.joda.time.DateTime;
+import org.joda.time.MutableDateTime;
+
 import java.util.Calendar;
 import java.util.TimeZone;
 
@@ -115,23 +118,29 @@ public class ManualInputActivity extends AppCompatActivity
         }
     }
 
-    private Calendar buildCalendar() {
+    private DateTime buildCalendar() {
         // build calendar using given information.
         // if neither date nor time is specified, default to current date and time
         // if only date is specified, show that date but with current time
         // if only time is specified, use that time with current date
+        MutableDateTime dateTime = new MutableDateTime();
         Calendar cal = Calendar.getInstance(TimeZone.getDefault());
         if (dateSelected && timeSelected) {
-            cal.set(year, monthOfYear, dayOfMonth, hourOfDay, minute);
-            return cal;
+            dateTime.setDateTime(year, monthOfYear, dayOfMonth, hourOfDay, minute, 0, 0);
+            //cal.set(year, monthOfYear, dayOfMonth, hourOfDay, minute);
+            //return cal;
+            return dateTime.toDateTime();
         } else if (dateSelected) {
             // only date specified. show date with current time (which we get by default
             // with the getInstance() method)
-            cal.set(year, monthOfYear, dayOfMonth);
-            return cal;
+            //cal.set(year, monthOfYear, dayOfMonth);
+            dateTime.setDate(year, monthOfYear, dayOfMonth);
+            return dateTime.toDateTime();
+            //return cal;
         } else {
+            return dateTime.toDateTime();
             // return current date/time if either none specified or only time specified
-            return cal;
+            //return cal;
         }
     }
 

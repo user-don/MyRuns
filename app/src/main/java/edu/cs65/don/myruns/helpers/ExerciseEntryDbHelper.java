@@ -10,6 +10,7 @@ import android.util.Log;
 
 import com.google.android.gms.maps.model.LatLng;
 
+import org.joda.time.DateTime;
 import org.json.JSONObject;
 
 import java.io.IOException;
@@ -160,9 +161,9 @@ public class ExerciseEntryDbHelper extends SQLiteOpenHelper {
         entry.mActivityType = query.getInt(query.getColumnIndex(ACTIVITY_TYPE));
         // Do calendar mDateTime specially
         int timeFromEpoch = query.getInt(query.getColumnIndex(DATE_TIME));
-        Calendar cal = Calendar.getInstance(TimeZone.getDefault());
-        cal.setTimeInMillis(timeFromEpoch);
-        entry.mDateTime = cal;
+//        Calendar cal = Calendar.getInstance(TimeZone.getDefault());
+//        cal.setTimeInMillis(timeFromEpoch);
+        entry.mDateTime = new DateTime(timeFromEpoch * 1000);
         entry.mDuration = query.getInt(query.getColumnIndex(DURATION));
         entry.mDistance = query.getDouble(query.getColumnIndex(DISTANCE));
         entry.mAvgPace = query.getDouble(query.getColumnIndex(AVG_PACE));
@@ -198,10 +199,10 @@ public class ExerciseEntryDbHelper extends SQLiteOpenHelper {
                 entry.mInputType = query.getInt(query.getColumnIndex(INPUT_TYPE));
                 entry.mActivityType = query.getInt(query.getColumnIndex(ACTIVITY_TYPE));
                 // Do calendar mDateTime specially
-                int timeFromEpoch = query.getInt(query.getColumnIndex(DATE_TIME));
-                Calendar cal = Calendar.getInstance(TimeZone.getDefault());
-                cal.setTimeInMillis(timeFromEpoch);
-                entry.mDateTime = cal;
+                long timeFromEpoch = query.getInt(query.getColumnIndex(DATE_TIME));
+//                Calendar cal = Calendar.getInstance(TimeZone.getDefault());
+//                cal.setTimeInMillis(timeFromEpoch * 1000);
+                entry.mDateTime = new DateTime(timeFromEpoch * 1000);
                 entry.mDuration = query.getInt(query.getColumnIndex(DURATION));
                 entry.mDistance = query.getDouble(query.getColumnIndex(DISTANCE));
                 entry.mAvgPace = query.getDouble(query.getColumnIndex(AVG_PACE));

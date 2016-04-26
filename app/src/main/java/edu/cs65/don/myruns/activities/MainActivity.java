@@ -12,6 +12,8 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 
+import net.danlew.android.joda.JodaTimeAndroid;
+
 import java.util.ArrayList;
 
 import edu.cs65.don.myruns.R;
@@ -45,6 +47,7 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        JodaTimeAndroid.init(getApplicationContext());
         // instantiate the data controller as a singleton
         mDataController = DataController.getInstance(getApplicationContext());
         // initialize data in the dataController
@@ -85,8 +88,8 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onPageSelected(int position) {
+                // Reload database every time the history page is selected
                 if (position == HISTORY_FRAGMENT_POSITION) {
-                    // history tab.
                     HistoryFragment frag = (HistoryFragment)
                             getFragmentManager().findFragmentByTag("android:switcher:"
                             + R.id.viewpager + ":" + HISTORY_FRAGMENT_POSITION);
