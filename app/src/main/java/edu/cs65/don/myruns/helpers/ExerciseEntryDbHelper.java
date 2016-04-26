@@ -152,7 +152,7 @@ public class ExerciseEntryDbHelper extends SQLiteOpenHelper {
     public ExerciseEntry fetchEntryByIndex(long rowId) {
         SQLiteDatabase db = getReadableDatabase();
         String rowIdStr = Long.toString(rowId);
-        String selection = COLUMN_ID + " = " + String.valueOf(rowId);
+        String selection = COLUMN_ID + " = " + rowIdStr;
         Cursor query = db.query(TABLE_ENTRIES, allColumns, selection,
                 null, null, null, null);
         ExerciseEntry entry = new ExerciseEntry();

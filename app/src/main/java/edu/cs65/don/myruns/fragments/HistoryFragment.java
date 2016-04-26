@@ -2,6 +2,7 @@ package edu.cs65.don.myruns.fragments;
 
 
 import android.app.LoaderManager;
+import android.content.Intent;
 import android.content.Loader;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
@@ -11,6 +12,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.TableLayout;
 import android.widget.TableRow;
@@ -19,6 +21,7 @@ import android.widget.TextView;
 import java.util.ArrayList;
 
 import edu.cs65.don.myruns.R;
+import edu.cs65.don.myruns.activities.DisplayEntryActivity;
 import edu.cs65.don.myruns.adapters.ActivityEntriesAdapter;
 import edu.cs65.don.myruns.controllers.DataController;
 import edu.cs65.don.myruns.helpers.DataLoader;
@@ -75,10 +78,22 @@ public class HistoryFragment extends Fragment
                 R.layout.history_table_row, mDataController.entries);
         final ListView history = (ListView) mView.findViewById(R.id.historyList);
         history.setAdapter(adapter);
+        history.setOnItemClickListener(clickListener);
     }
 
     @Override
     public void onLoaderReset(Loader<ArrayList<ExerciseEntry>> loader) {
         // do nothing here
     }
+
+    private final AdapterView.OnItemClickListener clickListener = new AdapterView.OnItemClickListener() {
+
+        @Override
+        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+            Intent intent = new Intent(getActivity(), DisplayEntryActivity.class);
+            ExerciseEntry entry = mDataController.entries.get(position);
+            intent.putExtra("id", entry.id);
+            startActivity(intent);
+        }
+    };
 }
