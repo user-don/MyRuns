@@ -58,35 +58,27 @@ public class ManualInputActivity extends AppCompatActivity
         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
             switch(position) {
                 case 0:
-//                    Log.d("RUNS", "Position " + String.valueOf(position));
                     displayDialog(MyRunsDialogFragment.DATE, "date_dialog_fragment");
                     return;
                 case 1:
-//                    Log.d("RUNS", "Position " + String.valueOf(position));
                     displayDialog(MyRunsDialogFragment.TIME, "time_dialog_fragment");
                     return;
                 case 2:
-//                    Log.d("RUNS", "Position " + String.valueOf(position));
                     displayDialog(MyRunsDialogFragment.DURATION, "duration_dialog_fragment");
                     return;
                 case 3:
-//                    Log.d("RUNS", "Position " + String.valueOf(position));
                     displayDialog(MyRunsDialogFragment.DISTANCE, "distance_dialog_fragment");
                     return;
                 case 4:
-//                    Log.d("RUNS", "Position " + String.valueOf(position));
                     displayDialog(MyRunsDialogFragment.CALORIES, "calories_dialog_fragment");
                     return;
                 case 5:
-//                    Log.d("RUNS", "Position " + String.valueOf(position));
                     displayDialog(MyRunsDialogFragment.HEART_RATE, "heart_rate_dialog_fragment");
                     return;
                 case 6:
-//                    Log.d("RUNS", "Position " + String.valueOf(position));
                     displayDialog(MyRunsDialogFragment.COMMENT, "comment_dialog_fragment");
                     return;
                 default:
-                    // do nothing
             }
         }
     };
@@ -108,7 +100,6 @@ public class ManualInputActivity extends AppCompatActivity
      */
     public void onSaveCancelClicked(View v) {
         if (v.getId() == R.id.manual_entry_save_button) {
-            // TODO: Save to database
             // build calendar object if available
             entry.mDateTime = buildCalendar();
             mDataController.saveToDbAsync(entry);

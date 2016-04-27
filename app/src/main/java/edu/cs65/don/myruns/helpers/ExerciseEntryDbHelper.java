@@ -105,7 +105,7 @@ public class ExerciseEntryDbHelper extends SQLiteOpenHelper {
     }
 
     // Insert a item given each column value
-    public void insertEntry(ExerciseEntry entry) {
+    public Long insertEntry(ExerciseEntry entry) {
         SQLiteDatabase db = getWritableDatabase();
         ContentValues values = new ContentValues();
         values.put(INPUT_TYPE, entry.mInputType);
@@ -129,10 +129,10 @@ public class ExerciseEntryDbHelper extends SQLiteOpenHelper {
 //        }
 //        ByteBuffer bb = ByteBuffer.wrap(ba);
 //        values.put(GPS_DATA, bb.toString());
-        // TODO: Save the result code?? Yes do that...
         entry.id = db.insert(TABLE_ENTRIES, null, values);
         Log.d("RUNS", "Saved entry at " + entry.id);
         //db.close();
+        return entry.id;
     }
 
     // Remove an entry by giving its index

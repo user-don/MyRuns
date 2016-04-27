@@ -5,6 +5,7 @@ import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.os.AsyncTask;
 import android.preference.PreferenceManager;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -43,24 +44,22 @@ public class DataController {
         this.context = context.getApplicationContext();
     }
 
-
-
     public void saveToDbAsync(ExerciseEntry entry) {
         new SaveToDB().execute(entry);
     }
 
-    private class SaveToDB extends AsyncTask<ExerciseEntry, Void, Void> {
+    private class SaveToDB extends AsyncTask<ExerciseEntry, Void, Long> {
 
         @Override
-        protected Void doInBackground(ExerciseEntry... params) {
-            dbHelper.insertEntry(params[0]);
-            return null;
+        protected Long doInBackground(ExerciseEntry... params) {
+            return dbHelper.insertEntry(params[0]);
         }
 
         @Override
-        protected void onPostExecute(Void result) {
+        protected void onPostExecute(Long result) {
             super.onPostExecute(result);
-            // do nothing...
+            Toast.makeText(context.getApplicationContext(),
+                    "Entry #" + String.valueOf(result) + " saved.", Toast.LENGTH_LONG).show();
         }
     }
 

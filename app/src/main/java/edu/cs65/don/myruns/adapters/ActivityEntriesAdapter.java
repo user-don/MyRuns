@@ -18,7 +18,7 @@ import edu.cs65.don.myruns.controllers.DataController;
 import edu.cs65.don.myruns.models.ExerciseEntry;
 
 /**
- * ActionEntriesAdapter
+ * ActivityEntriesAdapter: For building the listview displayed in history fragment
  * Created by don on 4/25/16.
  */
 public class ActivityEntriesAdapter extends ArrayAdapter<ExerciseEntry> {

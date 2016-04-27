@@ -50,7 +50,6 @@ public class HistoryFragment extends Fragment
         final View view = inflater.inflate(R.layout.fragment_history, container, false);
         // instantiate the data controller as a singleton
         mDataController = DataController.getInstance(getActivity().getApplicationContext());
-        //getExerciseEntriesFromDB();
         mView = view;
         return view;
 

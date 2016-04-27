@@ -47,6 +47,9 @@ public class DisplayEntryActivity extends AppCompatActivity
         getLoaderManager().initLoader(0, args, this);
     }
 
+    /**
+     * Show data using non-editable EditText views
+     */
     private void initializeData() {
         // this should be called after onLoadFinished to initialize the data
         EditText et = (EditText) findViewById(R.id.input_type);

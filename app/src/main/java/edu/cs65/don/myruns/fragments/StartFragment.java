@@ -106,7 +106,4 @@ public class StartFragment extends Fragment {
         adapter.setDropDownViewResource(R.layout.support_simple_spinner_dropdown_item);
         activity_type_spinner.setAdapter(adapter);
     }
-
-    // TODO: Pass activity type to new activities by putting value in intent's extras
-
 }
