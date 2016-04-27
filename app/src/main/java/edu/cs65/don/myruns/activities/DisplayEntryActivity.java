@@ -7,6 +7,10 @@ import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
+import android.view.View;
 import android.widget.EditText;
 
 import org.joda.time.format.DateTimeFormat;
@@ -22,6 +26,13 @@ public class DisplayEntryActivity extends AppCompatActivity
 
     ExerciseEntry e;
     private static DataController mDataController;
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.display_entry_menu, menu);
+        return true;
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -62,8 +73,25 @@ public class DisplayEntryActivity extends AppCompatActivity
         et.setKeyListener(null);
     }
 
+    public void deleteEntry(MenuItem v) {
+        Runnable delete = new Runnable() {
+            @Override
+            public void run() {
+                // This isn't running on the UI thread, so we can't directly modify
+                // UI objects such as View objects.
+                // http://developer.android.com/training/multiple-threads/define-runnable.html
+                mDataController.dbHelper.removeEntry(e.id);
+            }
+        };
+        delete.run();
+        // close out DisplayEntryActivity when deleting the exercise entry
+        finish();
+    }
+
     @Override
     public Loader<ExerciseEntry> onCreateLoader(int id, Bundle args) {
+        // get exercise entry ID from bundle and use to call our loader that will
+        // pull this entry from the database
         long dbId = args.getLong("id");
         return new SingleEntryLoader(this, dbId);
     }
@@ -79,6 +107,12 @@ public class DisplayEntryActivity extends AppCompatActivity
     public void onLoaderReset(Loader<ExerciseEntry> loader) {
         // do nothing
     }
+
+    // Private helper methods for displaying information that is pulled from the
+    // exercise entries. Since some display logic depends on context, which should
+    // not be stored within our ExerciseEntry object, we put the methods here
+    // or copy over to anywhere else where the information stored in our ExerciseEntry
+    // object needs to be displayed in a different format.
 
     private String durationToString(int duration) {
         if (duration == 0) {
