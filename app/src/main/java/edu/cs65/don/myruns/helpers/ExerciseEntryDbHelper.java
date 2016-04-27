@@ -21,6 +21,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.TimeZone;
 
+import edu.cs65.don.myruns.controllers.DataController;
 import edu.cs65.don.myruns.models.ExerciseEntry;
 
 /**
@@ -45,7 +46,7 @@ public class ExerciseEntryDbHelper extends SQLiteOpenHelper {
     public static final String HEARTRATE = "heartrate";
     public static final String COMMENT = "comment";
     public static final String GPS_DATA = "gps_data";
-    private static final int DATABASE_VERSION = 2;
+    private static final int DATABASE_VERSION = 3;
 
     private String[] allColumns = { COLUMN_ID, INPUT_TYPE, ACTIVITY_TYPE, DATE_TIME,
         DURATION, DISTANCE, AVG_PACE, AVG_SPEED, CALORIES, CLIMB, HEARTRATE, COMMENT,
@@ -104,7 +105,7 @@ public class ExerciseEntryDbHelper extends SQLiteOpenHelper {
     }
 
     // Insert a item given each column value
-    public long insertEntry(ExerciseEntry entry) {
+    public void insertEntry(ExerciseEntry entry) {
         SQLiteDatabase db = getWritableDatabase();
         ContentValues values = new ContentValues();
         values.put(INPUT_TYPE, entry.mInputType);
@@ -128,10 +129,10 @@ public class ExerciseEntryDbHelper extends SQLiteOpenHelper {
 //        }
 //        ByteBuffer bb = ByteBuffer.wrap(ba);
 //        values.put(GPS_DATA, bb.toString());
-
-        long resultCode = db.insert(TABLE_ENTRIES, null, values);
+        // TODO: Save the result code?? Yes do that...
+        entry.id = db.insert(TABLE_ENTRIES, null, values);
+        Log.d("RUNS", "Saved entry at " + entry.id);
         //db.close();
-        return resultCode;
     }
 
     // Remove an entry by giving its index
@@ -152,35 +153,41 @@ public class ExerciseEntryDbHelper extends SQLiteOpenHelper {
     public ExerciseEntry fetchEntryByIndex(long rowId) {
         SQLiteDatabase db = getReadableDatabase();
         String rowIdStr = Long.toString(rowId);
-        String selection = COLUMN_ID + " = " + rowIdStr;
+        String selection = COLUMN_ID + " = " + rowId;
+        Log.d("RUNS", "Fetching entry at row " + rowId);
         Cursor query = db.query(TABLE_ENTRIES, allColumns, selection,
                 null, null, null, null);
         ExerciseEntry entry = new ExerciseEntry();
-        entry.id = query.getLong(query.getColumnIndex(COLUMN_ID));
-        entry.mInputType = query.getInt(query.getColumnIndex(INPUT_TYPE));
-        entry.mActivityType = query.getInt(query.getColumnIndex(ACTIVITY_TYPE));
-        // Do calendar mDateTime specially
-        long timeFromEpoch = query.getInt(query.getColumnIndex(DATE_TIME));
-//        Calendar cal = Calendar.getInstance(TimeZone.getDefault());
-//        cal.setTimeInMillis(timeFromEpoch);
-        entry.mDateTime = new DateTime(timeFromEpoch * 1000);
-        entry.mDuration = query.getInt(query.getColumnIndex(DURATION));
-        entry.mDistance = query.getDouble(query.getColumnIndex(DISTANCE));
-        entry.mAvgPace = query.getDouble(query.getColumnIndex(AVG_PACE));
-        entry.mAvgSpeed = query.getDouble(query.getColumnIndex(AVG_SPEED));
-        entry.mCalorie = query.getInt(query.getColumnIndex(CALORIES));
-        entry.mClimb = query.getDouble(query.getColumnIndex(CLIMB));
-        entry.mHeartRate = query.getInt(query.getColumnIndex(HEARTRATE));
-        entry.mComment = query.getString(query.getColumnIndex(COMMENT));
-        String gpsData = query.getString(query.getColumnIndex(GPS_DATA));
-        byte[] bytes = gpsData.getBytes();
-        ArrayList<LatLng> mLocationList = new ArrayList<>();
-        try {
-             mLocationList = Serializer.deserializeToArraylist(bytes);
-        } catch (Exception e) {
-            e.printStackTrace();
+        if (query != null && query.moveToFirst()) {
+            entry.id = query.getLong(query.getColumnIndex(COLUMN_ID));
+            entry.mInputType = query.getInt(query.getColumnIndex(INPUT_TYPE));
+            entry.mActivityType = query.getInt(query.getColumnIndex(ACTIVITY_TYPE));
+            // Do calendar mDateTime specially
+            long timeFromEpoch = query.getInt(query.getColumnIndex(DATE_TIME));
+            //        Calendar cal = Calendar.getInstance(TimeZone.getDefault());
+            //        cal.setTimeInMillis(timeFromEpoch);
+            entry.mDateTime = new DateTime(timeFromEpoch * 1000);
+            entry.mDuration = query.getInt(query.getColumnIndex(DURATION));
+            entry.mDistance = query.getDouble(query.getColumnIndex(DISTANCE));
+            entry.mAvgPace = query.getDouble(query.getColumnIndex(AVG_PACE));
+            entry.mAvgSpeed = query.getDouble(query.getColumnIndex(AVG_SPEED));
+            entry.mCalorie = query.getInt(query.getColumnIndex(CALORIES));
+            entry.mClimb = query.getDouble(query.getColumnIndex(CLIMB));
+            entry.mHeartRate = query.getInt(query.getColumnIndex(HEARTRATE));
+            entry.mComment = query.getString(query.getColumnIndex(COMMENT));
+            //        String gpsData = query.getString(query.getColumnIndex(GPS_DATA));
+            //        byte[] bytes = gpsData.getBytes();
+            //        ArrayList<LatLng> mLocationList = new ArrayList<>();
+            //        try {
+            //             mLocationList = Serializer.deserializeToArraylist(bytes);
+            //        } catch (Exception e) {
+            //            e.printStackTrace();
+            //        }
+            //        entry.mLocationList = mLocationList;
+            query.close();
+        } else {
+            throw new Error("SHIT IS NOT WORKING");
         }
-        entry.mLocationList = mLocationList;
         return entry;
     }
 
@@ -191,10 +198,11 @@ public class ExerciseEntryDbHelper extends SQLiteOpenHelper {
 //        Cursor query = db.query(TABLE_ENTRIES, allColumns, null,
 //                null, null, null, null);
         ArrayList<ExerciseEntry> entries = new ArrayList<>();
-        if (query.moveToFirst()) {
+        if (query != null && query.moveToFirst()) {
             while (!query.isAfterLast()) {
                 ExerciseEntry entry = new ExerciseEntry();
                 entry.id = query.getLong(query.getColumnIndex(COLUMN_ID));
+                Log.d("RUNS", "Entry ID retrieved: " + entry.id);
                 entry.mInputType = query.getInt(query.getColumnIndex(INPUT_TYPE));
                 entry.mActivityType = query.getInt(query.getColumnIndex(ACTIVITY_TYPE));
                 // Do calendar mDateTime specially
@@ -223,8 +231,8 @@ public class ExerciseEntryDbHelper extends SQLiteOpenHelper {
                 entries.add(entry);
                 query.moveToNext();
             }
+            query.close();
         }
-        query.close();
         return entries;
     }
 }

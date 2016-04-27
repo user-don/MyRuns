@@ -6,6 +6,7 @@ import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.EditText;
 
 import org.joda.time.format.DateTimeFormat;
@@ -29,9 +30,9 @@ public class DisplayEntryActivity extends AppCompatActivity
         setContentView(R.layout.activity_display_entry);
         // Take row ID from one bundle and pass to the next for asynchronous load!
         Bundle extras = getIntent().getExtras();
-        int id = extras.getInt("id");
+        long id = extras.getLong("id");
         Bundle args = new Bundle();
-        args.putInt("id", id);
+        args.putLong("id", id);
         getLoaderManager().initLoader(0, args, this);
     }
 
@@ -39,24 +40,31 @@ public class DisplayEntryActivity extends AppCompatActivity
         // this should be called after onLoadFinished to initialize the data
         EditText et = (EditText) findViewById(R.id.input_type);
         et.setText(ExerciseEntry.getInputType(e.mInputType));
+        et.setKeyListener(null);
         et = (EditText) findViewById(R.id.activity_type);
         et.setText(ExerciseEntry.getActivityType(e.mActivityType, getResources()));
+        et.setKeyListener(null);
         et = (EditText) findViewById(R.id.date_and_time);
         String dateAndTime = e.getDate();
         et.setText(dateAndTime);
+        et.setKeyListener(null);
         et = (EditText) findViewById(R.id.duration);
         et.setText(durationToString(e.mDuration));
+        et.setKeyListener(null);
         et = (EditText) findViewById(R.id.distance);
         et.setText(distanceToString(e.mDistance));
+        et.setKeyListener(null);
         et = (EditText) findViewById(R.id.calories);
         et.setText(String.valueOf(e.mCalorie) + " cals");
+        et.setKeyListener(null);
         et = (EditText) findViewById(R.id.heart_rate);
         et.setText(String.valueOf(e.mHeartRate) + " bpm");
+        et.setKeyListener(null);
     }
 
     @Override
     public Loader<ExerciseEntry> onCreateLoader(int id, Bundle args) {
-        int dbId = args.getInt("id");
+        long dbId = args.getLong("id");
         return new SingleEntryLoader(this, dbId);
     }
 

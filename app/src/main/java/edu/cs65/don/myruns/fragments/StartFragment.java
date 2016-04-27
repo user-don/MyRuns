@@ -50,7 +50,6 @@ public class StartFragment extends Fragment {
         start_button.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 // launch activity
-                Log.d(RUNS, "start tapped");
                 String [] input_type_array = getResources().getStringArray(R.array.input_type);
                 String input_type = input_type_spinner.getSelectedItem().toString();
                 if (input_type.equals(input_type_array[0])) {

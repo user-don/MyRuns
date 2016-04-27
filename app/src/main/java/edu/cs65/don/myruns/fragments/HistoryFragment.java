@@ -63,6 +63,9 @@ public class HistoryFragment extends Fragment
      */
     private void fillExerciseEntriesFromDB(ArrayList<ExerciseEntry> entries) {
         mDataController.entries = entries;
+        for (int i = 0; i < entries.size(); i++) {
+            Log.d("RUNS", "IDs of entry " + i + ": " + entries.get(i).id);
+        }
     }
 
     @Override
@@ -93,6 +96,7 @@ public class HistoryFragment extends Fragment
             Intent intent = new Intent(getActivity(), DisplayEntryActivity.class);
             ExerciseEntry entry = mDataController.entries.get(position);
             intent.putExtra("id", entry.id);
+            Log.d("RUNS", "Entry ID sent from HistoryFragment" + entry.id);
             startActivity(intent);
         }
     };

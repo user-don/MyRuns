@@ -48,10 +48,8 @@ public class ActivityEntriesAdapter extends ArrayAdapter<ExerciseEntry> {
         ExerciseEntry e = mDataController.entries.get(position);
         String first = buildFirstString(e);
         firstLine.setText(first);
-        Log.d("RUNS", first);
         String second = buildSecondString(e);
         secondLine.setText(second);
-        Log.d("RUNS", second);
         return convertView;
     }
 

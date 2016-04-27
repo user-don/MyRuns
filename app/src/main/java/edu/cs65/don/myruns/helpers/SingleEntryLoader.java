@@ -2,6 +2,7 @@ package edu.cs65.don.myruns.helpers;
 
 import android.content.AsyncTaskLoader;
 import android.content.Context;
+import android.util.Log;
 
 import edu.cs65.don.myruns.controllers.DataController;
 import edu.cs65.don.myruns.models.ExerciseEntry;
@@ -11,14 +12,15 @@ import edu.cs65.don.myruns.models.ExerciseEntry;
  */
 public class SingleEntryLoader extends AsyncTaskLoader<ExerciseEntry> {
     private static DataController mDataController;
-    int id;
+    long id;
 
 
-    public SingleEntryLoader(Context context, int id) {
+    public SingleEntryLoader(Context context, long id) {
         super(context);
         // instantiate the data controller as a singleton
         mDataController = DataController.getInstance(context.getApplicationContext());
         this.id = id;
+        Log.d("RUNS", "ID passed to SingleEntryLoader: " + id);
     }
 
     @Override

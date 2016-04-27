@@ -79,7 +79,7 @@ public class AccountPreferencesActivity extends AppCompatActivity {
         // This bundle has also been passed to onCreate.
         // Will only be called if the Activity has been
         // killed by the system since it was last visible.
-        Log.d(RUNS, "onRestoreInstanceState called");
+//        Log.d(RUNS, "onRestoreInstanceState called");
     }
 
     /**
@@ -90,7 +90,7 @@ public class AccountPreferencesActivity extends AppCompatActivity {
         super.onRestart();
         // Load changes knowing that the Activity has already
         // been visible within this process.
-        Log.d(RUNS, "onRestart called");
+//        Log.d(RUNS, "onRestart called");
     }
 
     // Called at the start of the visible lifetime.
@@ -98,7 +98,7 @@ public class AccountPreferencesActivity extends AppCompatActivity {
     public void onStart(){
         super.onStart();
         // Apply any required UI change now that the Activity is visible.
-        Log.d(RUNS, "onStart called");
+//        Log.d(RUNS, "onStart called");
     }
 
     // Called at the start of the active lifetime.
@@ -107,7 +107,7 @@ public class AccountPreferencesActivity extends AppCompatActivity {
         super.onResume();
         // Resume any paused UI updates, threads, or processes required
         // by the Activity but suspended when it was inactive.
-        Log.d(RUNS, "onResume called");
+//        Log.d(RUNS, "onResume called");
     }
 
     // Called to save UI state changes at the
@@ -119,7 +119,7 @@ public class AccountPreferencesActivity extends AppCompatActivity {
         // onRestoreInstanceState if the process is
         // killed and restarted by the run time.
         super.onSaveInstanceState(savedInstanceState);
-        Log.d("app", "onSaveInstanceState called");
+//        Log.d("app", "onSaveInstanceState called");
         savedInstanceState.putParcelable(URI_INSTANCE_STATE_KEY, tempImageUri);
     }
 
@@ -129,7 +129,7 @@ public class AccountPreferencesActivity extends AppCompatActivity {
         // Suspend UI updates, threads, or CPU intensive processes
         // that don't need to be updated when the Activity isn't
         // the active foreground Activity.
-        Log.d(RUNS, "onPause called");
+//        Log.d(RUNS, "onPause called");
         super.onPause();
     }
 
@@ -140,7 +140,7 @@ public class AccountPreferencesActivity extends AppCompatActivity {
         // that aren't required when the Activity isn't visible.
         // Persist all edits or state changes
         // as after this call the process is likely to be killed.
-        Log.d(RUNS, "onStop called");
+//        Log.d(RUNS, "onStop called");
         super.onStop();
     }
 
@@ -149,7 +149,7 @@ public class AccountPreferencesActivity extends AppCompatActivity {
     public void onDestroy(){
         // Clean up any resources including ending threads,
         // closing database connections etc.
-        Log.d(RUNS, "onDestroy called");
+//        Log.d(RUNS, "onDestroy called");
         super.onDestroy();
     }
 
@@ -157,7 +157,7 @@ public class AccountPreferencesActivity extends AppCompatActivity {
      * Display photo picker dialog box
      */
     public void displayPhotoDialog(@SuppressWarnings("UnusedParameters") View v) {
-        Log.d(RUNS, "display photo dialog called");
+//        Log.d(RUNS, "display photo dialog called");
         displayDialog();
     }
 
@@ -276,7 +276,6 @@ public class AccountPreferencesActivity extends AppCompatActivity {
      */
     @SuppressWarnings("ConstantConditions")
     private void saveProfile() {
-        Log.d(RUNS, "save profile");
         // Get shared preferences editor
         String mKey = getString(R.string.preference_name);
         SharedPreferences mPrefs = getSharedPreferences(mKey, MODE_PRIVATE);
@@ -336,7 +335,7 @@ public class AccountPreferencesActivity extends AppCompatActivity {
      */
     @SuppressWarnings("ConstantConditions")
     private void loadProfile(@SuppressWarnings("UnusedParameters") Bundle savedInstanceState) {
-        Log.d(RUNS, "load user profile");
+//        Log.d(RUNS, "load user profile");
         // get sharedPreferences
         String mKey = getString(R.string.preference_name);
         SharedPreferences mPrefs = getSharedPreferences(mKey, MODE_PRIVATE);
@@ -437,7 +436,7 @@ public class AccountPreferencesActivity extends AppCompatActivity {
             // to force re-draw
             mImageView.setImageDrawable(null);
             mImageView.setImageURI(tempImageUri);
-            Log.d(RUNS, "tempImageUri set to " + String.valueOf(tempImageUri));
+//            Log.d(RUNS, "tempImageUri set to " + String.valueOf(tempImageUri));
         } else if (resultCode == Crop.RESULT_ERROR) {
             //noinspection ThrowableResultOfMethodCallIgnored
             Toast.makeText(this, Crop.getError(result).getMessage(), Toast.LENGTH_SHORT).show();
