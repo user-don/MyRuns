@@ -26,6 +26,7 @@ import edu.cs65.don.myruns.R;
  * Fragment for dialog box of selecting profile image
  */
 public class MyRunsDialogFragment extends DialogFragment {
+    MyRunsDialogListener mCallback;
     private static final String DIALOG_ID_KEY = "id_key";
     public static final int DIALOG_ID_PHOTO_PICKER = 0;
 
@@ -44,6 +45,29 @@ public class MyRunsDialogFragment extends DialogFragment {
 
     // instantiate variables
     private AlertDialog.Builder builder;
+
+    public interface MyRunsDialogListener {
+        public void onDateSelected(int year, int monthOfYear, int dayOfMonth);
+        public void onTimeSelected(int hourOfDay, int minute);
+        public void onDurationSelected(int duration);
+        public void onDistanceSelected(double distance);
+        public void onCaloriesSelected(int calories);
+        public void onHeartRateSelected(int heartRate);
+        public void onCommentSelected(String comment);
+    }
+
+    @Override
+    public void onAttach(Activity activity) {
+        super.onAttach(activity);
+        // This makes sure that the container activity has implemented
+        // the callback interface. If not, it throws an exception
+        try {
+            mCallback = (MyRunsDialogListener) activity;
+        } catch (ClassCastException e) {
+            throw new ClassCastException(activity.toString()
+                    + " must implement OnHeadlineSelectedListener");
+        }
+    }
 
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
@@ -104,6 +128,7 @@ public class MyRunsDialogFragment extends DialogFragment {
      * @return AlertDialog Builder
      */
     private AlertDialog.Builder constructSimpleDialogWithStringInput(int title, int inputType) {
+        final int finalTitle = title;
         AlertDialog.Builder b = new AlertDialog.Builder(getActivity());
         final EditText input = new EditText(getActivity());
         input.setInputType(inputType);
@@ -117,8 +142,22 @@ public class MyRunsDialogFragment extends DialogFragment {
 
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                String text = input.getText().toString();
-                Log.d("RUNS", "text input is: " + text);
+                switch(finalTitle) {
+                    case R.string.manual_entry_duration:
+                        mCallback.onDurationSelected(Integer.parseInt(input.getText().toString()));
+                        return;
+                    case R.string.manual_entry_distance:
+                        mCallback.onDistanceSelected(Double.parseDouble(input.getText().toString()));
+                        return;
+                    case R.string.manual_entry_calories:
+                        mCallback.onCaloriesSelected(Integer.parseInt(input.getText().toString()));
+                        return;
+                    case R.string.manual_entry_heart_rate:
+                        mCallback.onHeartRateSelected(Integer.parseInt(input.getText().toString()));
+                        return;
+                    case R.string.manual_entry_comment:
+                        mCallback.onCommentSelected(input.getText().toString());
+                }
             }
         });
         b.setNegativeButton("CANCEL", new DialogInterface.OnClickListener() {
@@ -141,7 +180,7 @@ public class MyRunsDialogFragment extends DialogFragment {
 
                     @Override
                     public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
-                        // grab data somehow
+                        mCallback.onDateSelected(year, monthOfYear, dayOfMonth);
                     }
                 };
         Calendar calendar = Calendar.getInstance();
@@ -160,7 +199,7 @@ public class MyRunsDialogFragment extends DialogFragment {
                 new TimePickerDialog.OnTimeSetListener() {
                     @Override
                     public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
-                        // grab data
+                        mCallback.onTimeSelected(hourOfDay, minute);
                     }
                 };
         Calendar calendar = Calendar.getInstance();

@@ -50,7 +50,6 @@ public class StartFragment extends Fragment {
         start_button.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 // launch activity
-                Log.d(RUNS, "start tapped");
                 String [] input_type_array = getResources().getStringArray(R.array.input_type);
                 String input_type = input_type_spinner.getSelectedItem().toString();
                 if (input_type.equals(input_type_array[0])) {
@@ -58,8 +57,8 @@ public class StartFragment extends Fragment {
                     // in the bundle
                     Intent intent = new Intent(getActivity(), ManualInputActivity.class);
                     Bundle extras = new Bundle();
-                    extras.putString("activity_type",
-                            activity_type_spinner.getSelectedItem().toString());
+                    extras.putInt("activity_type",
+                            activity_type_spinner.getSelectedItemPosition());
                     intent.putExtras(extras);
                     startActivity(intent);
                 }
@@ -68,8 +67,8 @@ public class StartFragment extends Fragment {
                     // TODO: Eventually differentiate Automatic mode
                     Intent intent = new Intent(getActivity(), GPSModeActivity.class);
                     Bundle extras = new Bundle();
-                    extras.putString("activity_type",
-                            activity_type_spinner.getSelectedItem().toString());
+                    extras.putInt("activity_type",
+                            activity_type_spinner.getSelectedItemPosition());
                     intent.putExtras(extras);
                     startActivity(intent);
                 }
@@ -107,7 +106,4 @@ public class StartFragment extends Fragment {
         adapter.setDropDownViewResource(R.layout.support_simple_spinner_dropdown_item);
         activity_type_spinner.setAdapter(adapter);
     }
-
-    // TODO: Pass activity type to new activities by putting value in intent's extras
-
 }
