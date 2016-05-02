@@ -4,6 +4,7 @@ import com.google.android.gms.maps.model.LatLng;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -17,14 +18,15 @@ import edu.cs65.don.myruns.models.ExerciseEntry;
  */
 public class Serializer {
 
-    public static byte[] serialize(Object obj) throws IOException {
+    public static byte[] serialize(String str) throws IOException {
         try(ByteArrayOutputStream b = new ByteArrayOutputStream()){
-            try(ObjectOutputStream o = new ObjectOutputStream(b)){
-                o.writeObject(obj);
+            try(DataOutputStream o = new DataOutputStream(b)){
+                o.writeUTF(obj);
             }
             return b.toByteArray();
         }
     }
+
 
     public static Object deserialize(byte[] bytes) throws IOException, ClassNotFoundException {
         try(ByteArrayInputStream b = new ByteArrayInputStream(bytes)){

@@ -13,6 +13,8 @@ import com.google.android.gms.maps.model.LatLng;
 import org.joda.time.DateTime;
 import org.json.JSONObject;
 
+import java.io.ByteArrayOutputStream;
+import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.Serializable;
 import java.nio.ByteBuffer;
@@ -105,7 +107,7 @@ public class ExerciseEntryDbHelper extends SQLiteOpenHelper {
     }
 
     // Insert a item given each column value
-    public Long insertEntry(ExerciseEntry entry) {
+    public Long insertEntry(ExerciseEntry entry) throws IOException {
         SQLiteDatabase db = getWritableDatabase();
         ContentValues values = new ContentValues();
         values.put(INPUT_TYPE, entry.mInputType);
@@ -121,6 +123,16 @@ public class ExerciseEntryDbHelper extends SQLiteOpenHelper {
         values.put(HEARTRATE, entry.mHeartRate);
         values.put(COMMENT, entry.mComment);
         // put ArrayList in as a blob
+
+        ByteArrayOutputStream b = new ByteArrayOutputStream();
+        DataOutputStream o = new DataOutputStream(b);
+        for (LatLng loc : entry.mLocationList) {
+            o.writeUTF(loc.latitude + "$" + loc.latitude);
+        }
+        byte[] ba = b.toByteArray();
+        
+
+
 //        byte[] ba = {};
 //        try {
 //            ba = Serializer.serialize(entry.mLocationList);
@@ -170,6 +182,10 @@ public class ExerciseEntryDbHelper extends SQLiteOpenHelper {
             entry.mClimb = query.getDouble(query.getColumnIndex(CLIMB));
             entry.mHeartRate = query.getInt(query.getColumnIndex(HEARTRATE));
             entry.mComment = query.getString(query.getColumnIndex(COMMENT));
+
+
+
+
             //        String gpsData = query.getString(query.getColumnIndex(GPS_DATA));
             //        byte[] bytes = gpsData.getBytes();
             //        ArrayList<LatLng> mLocationList = new ArrayList<>();
