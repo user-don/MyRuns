@@ -107,7 +107,7 @@ public class ExerciseEntryDbHelper extends SQLiteOpenHelper {
     }
 
     // Insert a item given each column value
-    public Long insertEntry(ExerciseEntry entry) throws IOException {
+    public Long insertEntry(ExerciseEntry entry) {
         SQLiteDatabase db = getWritableDatabase();
         ContentValues values = new ContentValues();
         values.put(INPUT_TYPE, entry.mInputType);
@@ -124,23 +124,23 @@ public class ExerciseEntryDbHelper extends SQLiteOpenHelper {
         values.put(COMMENT, entry.mComment);
         // put ArrayList in as a blob
 
-        ByteArrayOutputStream b = new ByteArrayOutputStream();
-        DataOutputStream o = new DataOutputStream(b);
-        for (LatLng loc : entry.mLocationList) {
-            o.writeUTF(loc.latitude + "$" + loc.latitude);
-        }
-        byte[] ba = b.toByteArray();
-        
-
-
-//        byte[] ba = {};
-//        try {
-//            ba = Serializer.serialize(entry.mLocationList);
-//        } catch (IOException e) {
-//            e.printStackTrace();
+//        ByteArrayOutputStream b = new ByteArrayOutputStream();
+//        DataOutputStream o = new DataOutputStream(b);
+//        for (LatLng loc : entry.mLocationList) {
+//            o.writeUTF(loc.latitude + "$" + loc.latitude);
 //        }
-//        ByteBuffer bb = ByteBuffer.wrap(ba);
-//        values.put(GPS_DATA, bb.toString());
+//        byte[] ba = b.toByteArray();
+//
+
+
+        byte[] ba = {};
+        try {
+            ba = Serializer.serialize(entry.mLocationList);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        ByteBuffer bb = ByteBuffer.wrap(ba);
+        values.put(GPS_DATA, bb.array());
         entry.id = db.insert(TABLE_ENTRIES, null, values);
         Log.d("RUNS", "Saved entry at " + entry.id);
         //db.close();
@@ -186,15 +186,14 @@ public class ExerciseEntryDbHelper extends SQLiteOpenHelper {
 
 
 
-            //        String gpsData = query.getString(query.getColumnIndex(GPS_DATA));
-            //        byte[] bytes = gpsData.getBytes();
-            //        ArrayList<LatLng> mLocationList = new ArrayList<>();
-            //        try {
-            //             mLocationList = Serializer.deserializeToArraylist(bytes);
-            //        } catch (Exception e) {
-            //            e.printStackTrace();
-            //        }
-            //        entry.mLocationList = mLocationList;
+            byte[] gpsData = query.getBlob(query.getColumnIndex(GPS_DATA));
+            ArrayList<LatLng> mLocationList = new ArrayList<>();
+            try {
+                 mLocationList = Serializer.deserializeToArraylist(gpsData);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            entry.mLocationList = mLocationList;
             query.close();
         } else {
             throw new Error("SHIT IS NOT WORKING");
@@ -224,15 +223,14 @@ public class ExerciseEntryDbHelper extends SQLiteOpenHelper {
                 entry.mClimb = query.getDouble(query.getColumnIndex(CLIMB));
                 entry.mHeartRate = query.getInt(query.getColumnIndex(HEARTRATE));
                 entry.mComment = query.getString(query.getColumnIndex(COMMENT));
-//                String gpsData = query.getString(query.getColumnIndex(GPS_DATA));
-//                byte[] bytes = gpsData.getBytes();
-//                ArrayList<LatLng> mLocationList = new ArrayList<>();
-//                try {
-//                    mLocationList = Serializer.deserializeToArraylist(bytes);
-//                } catch (Exception e) {
-//                    e.printStackTrace();
-//                }
-//                entry.mLocationList = mLocationList;
+                byte[] gpsData = query.getBlob(query.getColumnIndex(GPS_DATA));
+                ArrayList<LatLng> mLocationList = new ArrayList<>();
+                try {
+                    mLocationList = Serializer.deserializeToArraylist(gpsData);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                entry.mLocationList = mLocationList;
                 entries.add(entry);
                 query.moveToNext();
             }

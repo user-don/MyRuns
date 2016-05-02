@@ -61,6 +61,7 @@ public class ExerciseEntry {
         // initialize default values
         mActivityType = 0; mDuration = 0; mDistance = 0; mAvgPace = 0; mAvgSpeed = 0;
         mCalorie = 0; mClimb = 0; mHeartRate = 0; mComment = "";
+        mLocationList = new ArrayList<>();
     }
 
     /**
