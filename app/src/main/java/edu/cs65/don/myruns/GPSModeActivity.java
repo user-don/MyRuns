@@ -1,4 +1,4 @@
-package edu.cs65.don.myruns.activities;
+package edu.cs65.don.myruns;
 
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;

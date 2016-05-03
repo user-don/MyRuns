@@ -4,24 +4,18 @@ package edu.cs65.don.myruns.fragments;
 import android.app.LoaderManager;
 import android.content.Intent;
 import android.content.Loader;
-import android.content.SharedPreferences;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.app.Fragment;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ListView;
-import android.widget.TableLayout;
-import android.widget.TableRow;
-import android.widget.TextView;
 
 import java.util.ArrayList;
 
 import edu.cs65.don.myruns.R;
-import edu.cs65.don.myruns.activities.DisplayEntryActivity;
+import edu.cs65.don.myruns.DisplayEntryActivity;
 import edu.cs65.don.myruns.adapters.ActivityEntriesAdapter;
 import edu.cs65.don.myruns.controllers.DataController;
 import edu.cs65.don.myruns.helpers.DataLoader;

@@ -4,7 +4,6 @@ package edu.cs65.don.myruns.fragments;
 import android.app.Fragment;
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,8 +12,8 @@ import android.widget.Button;
 import android.widget.Spinner;
 
 import edu.cs65.don.myruns.R;
-import edu.cs65.don.myruns.activities.GPSModeActivity;
-import edu.cs65.don.myruns.activities.ManualInputActivity;
+import edu.cs65.don.myruns.GPSModeActivity;
+import edu.cs65.don.myruns.ManualInputActivity;
 
 /**
  * {@link Fragment} subclass for displaying the start screen of our runs app
