@@ -34,7 +34,7 @@
         <activity android:name="com.soundcloud.android.crop.CropImageActivity" />
         <activity android:name=".ManualInputActivity" />
         <activity
-            android:name=".GPSModeActivity"
+            android:name=".MapDisplayActivity"
             android:label="@string/title_activity_gpsmode">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"

@@ -12,7 +12,7 @@ import android.widget.Button;
 import android.widget.Spinner;
 
 import edu.cs65.don.myruns.R;
-import edu.cs65.don.myruns.GPSModeActivity;
+import edu.cs65.don.myruns.MapDisplayActivity;
 import edu.cs65.don.myruns.ManualInputActivity;
 
 /**
@@ -64,7 +64,7 @@ public class StartFragment extends Fragment {
                 else {
                     // GPS or Automatic, pull up GPS mode for both
                     // TODO: Eventually differentiate Automatic mode
-                    Intent intent = new Intent(getActivity(), GPSModeActivity.class);
+                    Intent intent = new Intent(getActivity(), MapDisplayActivity.class);
                     Bundle extras = new Bundle();
                     extras.putInt("activity_type",
                             activity_type_spinner.getSelectedItemPosition());

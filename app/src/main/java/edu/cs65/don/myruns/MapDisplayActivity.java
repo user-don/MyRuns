@@ -12,7 +12,7 @@ import com.google.android.gms.maps.model.MarkerOptions;
 
 import edu.cs65.don.myruns.R;
 
-public class GPSModeActivity extends AppCompatActivity implements OnMapReadyCallback {
+public class MapDisplayActivity extends AppCompatActivity implements OnMapReadyCallback {
 
     @SuppressWarnings("FieldCanBeLocal")
     private GoogleMap mMap;
