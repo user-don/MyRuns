@@ -53,15 +53,29 @@ public class ExerciseEntry {
     public int mHeartRate;        // Heart rate
     public String mComment;       // Comments
     public ArrayList<LatLng> mLocationList; // Location list
+    public DateTime lastUpdated;  // Last time entry was updated
 
     public TimeZone timeZone;
 
     public ExerciseEntry() {
         timeZone = TimeZone.getDefault();
         // initialize default values
+        initValues();
+    }
+
+    public ExerciseEntry(String type) {
+        initValues();
+        if ("GPS".equals(type)) {
+            // set date and time to current date and time
+            mDateTime = new DateTime();
+        }
+    }
+
+    private void initValues() {
         mActivityType = 0; mDuration = 0; mDistance = 0; mAvgPace = 0; mAvgSpeed = 0;
         mCalorie = 0; mClimb = 0; mHeartRate = 0; mComment = "";
         mLocationList = new ArrayList<>();
+        lastUpdated = new DateTime();
     }
 
     /**

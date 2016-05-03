@@ -7,6 +7,8 @@ import android.os.AsyncTask;
 import android.preference.PreferenceManager;
 import android.widget.Toast;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.InputMismatchException;
@@ -61,6 +63,28 @@ public class DataController {
             Toast.makeText(context.getApplicationContext(),
                     "Entry #" + String.valueOf(result) + " saved.", Toast.LENGTH_LONG).show();
         }
+    }
+
+    public String getUnitPreferences() {
+        SharedPreferences prefs = PreferenceManager
+                .getDefaultSharedPreferences(context);
+        return prefs.getString("unit_preference", "Imperial"); // Imperial if not available
+    }
+
+    public double milesToKm(double miles) {
+        return miles * 1.609;
+    }
+
+    public double mphToKph(double mph) {
+        return mph * 1.60934;
+    }
+
+    public double round(double value, int places) {
+        if (places < 0) throw new IllegalArgumentException();
+
+        BigDecimal bd = new BigDecimal(value);
+        bd = bd.setScale(places, RoundingMode.HALF_UP);
+        return bd.doubleValue();
     }
 
 
