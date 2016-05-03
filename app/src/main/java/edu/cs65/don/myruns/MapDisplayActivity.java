@@ -1,12 +1,17 @@
 package edu.cs65.don.myruns;
 
 import android.content.BroadcastReceiver;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.ServiceConnection;
 import android.location.Location;
 import android.location.LocationManager;
 import android.os.Bundle;
+import android.os.IBinder;
+import android.support.v4.app.FragmentActivity;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -21,9 +26,10 @@ import org.joda.time.Duration;
 
 import edu.cs65.don.myruns.R;
 import edu.cs65.don.myruns.controllers.DataController;
+import edu.cs65.don.myruns.helpers.TrackingService;
 import edu.cs65.don.myruns.models.ExerciseEntry;
 
-public class MapDisplayActivity extends AppCompatActivity implements OnMapReadyCallback {
+public class MapDisplayActivity extends FragmentActivity implements OnMapReadyCallback {
 
     @SuppressWarnings("FieldCanBeLocal")
     private GoogleMap mMap;
@@ -32,6 +38,25 @@ public class MapDisplayActivity extends AppCompatActivity implements OnMapReadyC
     private String unit_preference;
     private String[] unit_prefs;
     private LocationManager lm;
+    TrackingService mService;
+    boolean mBound = false;
+
+    public ServiceConnection mServiceConnection = new ServiceConnection() {
+        @Override
+        public void onServiceConnected(ComponentName name, IBinder service) {
+            // initialize the service and bind to the tracking service
+            Log.d(getClass().getName(), "onServiceConnected");
+            TrackingService.TrackingBinder binder = (TrackingService.TrackingBinder) service;
+            mService = binder.getService();
+            mBound = true;
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName name) {
+            Log.d(getClass().getName(), "onServiceDisconnected");
+            disconnect();
+        }
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,6 +71,10 @@ public class MapDisplayActivity extends AppCompatActivity implements OnMapReadyC
         entry.mInputType = mDataController.INPUT_TYPE_MANUAL;
         entry.mActivityType = getIntent().getExtras().getInt("activity_type");
         getPreferences();
+        // set up service
+        Intent i = new Intent(this, TrackingService.class);
+        getApplicationContext().bindService(i, mServiceConnection, Context.BIND_AUTO_CREATE);
+
     }
 
 
@@ -86,6 +115,7 @@ public class MapDisplayActivity extends AppCompatActivity implements OnMapReadyC
         mMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
         mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
     }
+
 
     public class EntityUpDateReceiver extends BroadcastReceiver {
 
@@ -204,5 +234,12 @@ public class MapDisplayActivity extends AppCompatActivity implements OnMapReadyC
     private double calculateAverageSpeed() {
         // get total distance between markers
         return 0;
+    }
+
+    /**
+     * Disconnect from service
+     */
+    private void disconnect() {
+        mBound = false;
     }
 }

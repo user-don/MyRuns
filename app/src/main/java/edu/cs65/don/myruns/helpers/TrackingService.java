@@ -4,6 +4,7 @@ import android.app.Service;
 import android.content.Intent;
 import android.location.Location;
 import android.location.LocationListener;
+import android.os.Binder;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.support.annotation.NonNull;
@@ -14,6 +15,8 @@ import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
 
+import edu.cs65.don.myruns.models.ExerciseEntry;
+
 /**
  * Created by don on 5/2/16.
  */
@@ -22,6 +25,7 @@ public class TrackingService extends Service implements GoogleApiClient.Connecti
 
     private GoogleApiClient mGoogleApiClient;
     private LocationRequest mLocationRequest;
+    private ExerciseEntry entry;
 
 
     @Override
@@ -37,8 +41,18 @@ public class TrackingService extends Service implements GoogleApiClient.Connecti
         mLocationRequest = LocationRequest.create();
         mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
         mLocationRequest.setInterval(1000); // Update location every second
-        
 
+
+    }
+
+    public ExerciseEntry getEntry() {
+        return entry;
+    }
+
+    public class TrackingBinder extends Binder {
+        public TrackingService getService() {
+            return TrackingService.this;
+        }
     }
 
     @Override
