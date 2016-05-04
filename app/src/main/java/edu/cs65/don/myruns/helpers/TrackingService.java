@@ -1,6 +1,10 @@
 package edu.cs65.don.myruns.helpers;
 
+import android.app.Notification;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.app.Service;
+import android.content.Context;
 import android.content.Intent;
 import android.location.Location;
 import android.os.Binder;
@@ -21,6 +25,7 @@ import org.joda.time.DateTime;
 import org.joda.time.Duration;
 
 import edu.cs65.don.myruns.MapDisplayActivity;
+import edu.cs65.don.myruns.R;
 import edu.cs65.don.myruns.controllers.DataController;
 import edu.cs65.don.myruns.models.ExerciseEntry;
 
@@ -34,11 +39,13 @@ public class TrackingService extends Service implements GoogleApiClient.Connecti
 
     private GoogleApiClient mGoogleApiClient;
     private LocationRequest mLocationRequest;
-    private ExerciseEntry entry;
+    protected ExerciseEntry entry;
     private final IBinder mBinder = new TrackingBinder();
     private boolean startTracking = false;
     private boolean onLocationChangedCalled = false;
     private static DataController mDataController;
+    private Notification notification;
+    private NotificationManager nm;
 
     @Nullable
     @Override
@@ -59,6 +66,24 @@ public class TrackingService extends Service implements GoogleApiClient.Connecti
         // Connect the client.
         mGoogleApiClient.connect();
         mDataController = DataController.getInstance(getApplicationContext());
+        // set up notification in bar
+        String notificationTitle = "MyRuns";
+        String notificationText = "Recording your path now";
+        Intent i = new Intent(getApplicationContext(), MapDisplayActivity.class);
+        i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+        PendingIntent pi = PendingIntent.getActivity(getApplicationContext(), 0,
+                i, 0);
+
+        notification = new Notification.Builder(getApplicationContext())
+                .setContentTitle(notificationTitle)
+                .setContentText(notificationText)
+                .setSmallIcon(R.drawable.dartlogo)
+                .setContentIntent(pi).build();
+        nm = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+        notification.flags = notification.flags | Notification.FLAG_ONGOING_EVENT;
+        //notification.flags |= Notification.FLAG_AUTO_CANCEL;
+        nm.notify(0, notification);
+
         return super.onStartCommand(intent, flags, startId);
     }
 
@@ -87,7 +112,7 @@ public class TrackingService extends Service implements GoogleApiClient.Connecti
         // set activity type
     }
 
-    private void updateEntry(Location location) {
+    protected void updateEntry(Location location) {
         double del = 0.00001;
         LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
         if (entry.mLocationList.isEmpty()) {
@@ -148,6 +173,11 @@ public class TrackingService extends Service implements GoogleApiClient.Connecti
         }
     }
 
+    @Override
+    public void onDestroy() {
+        nm.cancelAll();
+        super.onDestroy();
+    }
 
     @Override
     public void onLocationChanged(Location location) {
