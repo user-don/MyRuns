@@ -12,7 +12,10 @@ import android.os.Bundle;
 import android.os.IBinder;
 import android.support.v4.app.FragmentActivity;
 import android.util.Log;
+import android.view.View;
+import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -216,8 +219,6 @@ public class MapDisplayActivity extends FragmentActivity implements OnMapReadyCa
     @Override
     public void onBackPressed() {
         super.onBackPressed();
-        //doUnbindService();
-        //doUnregisterReceiver();
         Intent i = new Intent(this, TrackingService.class);
         stopService(i);
         finish();
@@ -226,15 +227,6 @@ public class MapDisplayActivity extends FragmentActivity implements OnMapReadyCa
     @Override
     protected void onPause() {
         super.onPause();
-        // if we use this activity for both displaying and recording,
-        // we check if new map task, and if so then we unregister
-        //doUnregisterReceiver();
-        // unbind tracking service
-        //doUnbindService();
-//        if (checkRegisterReceiver != null) {
-//            unregisterReceiver(entityUpdateReceiver);
-//            checkRegisterReceiver = null;
-//        }
         unregisterReceiver(entityUpdateReceiver);
         unbindService(mServiceConnection);
     }
@@ -242,18 +234,10 @@ public class MapDisplayActivity extends FragmentActivity implements OnMapReadyCa
     @Override
     protected void onResume() {
         super.onResume();
-
         // register receiver
         if (entityUpdateReceiver == null) {
             entityUpdateReceiver = new EntityUpdateReceiver();
         }
-//        if (checkRegisterReceiver == null) {
-//            IntentFilter filter = new IntentFilter();
-//            filter.addAction("edu.cs65.LOCATION_CHANGED");
-//            checkRegisterReceiver = registerReceiver(entityUpdateReceiver, filter);
-//            //isReceiverRegistered = true;
-//        }
-
         IntentFilter filter = new IntentFilter();
         filter.addAction("edu.cs65.LOCATION_CHANGED");
         checkRegisterReceiver = registerReceiver(entityUpdateReceiver, filter);
@@ -262,36 +246,29 @@ public class MapDisplayActivity extends FragmentActivity implements OnMapReadyCa
         i.putExtra("activity_type", getIntent().getExtras().getInt("activity_type"));
         startService(i);
         bindService(i, mServiceConnection, Context.BIND_AUTO_CREATE);
-
-//        mBound = getApplicationContext().bindService(new Intent(getApplicationContext(),
-//                TrackingService.class), mServiceConnection, Context.BIND_AUTO_CREATE );
-        // also re-register receiver if not already registered
-//        if (!isReceiverRegistered) {
-//            IntentFilter filter = new IntentFilter();
-//            filter.addAction("edu.cs65.LOCATION_CHANGED");
-//            registerReceiver(entityUpdateReceiver, filter);
-//            isReceiverRegistered = true;
     }
 
-    private void doUnbindService() {
-        if (mBound) {
-            unbindService(mServiceConnection);
-            mBound = false;
-        }
-    }
-
-    private void doUnregisterReceiver() {
-        if (isReceiverRegistered) {
-            unregisterReceiver(entityUpdateReceiver);
-            isReceiverRegistered = false;
+    /**
+     * Handle save and cancel button presses
+     * @param v the view corresponding to the pressed button
+     */
+    public void onSaveCancelClicked (View v) {
+        if (v.getId() == R.id.gps_entry_save_button) {
+            // save entry to db
+            dc.saveToDbAsync(entry);
+            // stop service
+            Intent i = new Intent(this, TrackingService.class);
+            stopService(i);
+            finish();
+        } else if (v.getId() == R.id.gps_entry_cancel_button) {
+            // stop service
+            Intent i = new Intent(this, TrackingService.class);
+            stopService(i);
+            Toast.makeText(getApplicationContext(), "Entry discarded.", Toast.LENGTH_SHORT).show();
+            finish();
         }
     }
 
     // TODO: unbind on save and cancel clicked
 
-//    @Override
-//    protected void onDestroy() {
-//        super.onDestroy();
-//        doUnbindService();
-//    }
 }
