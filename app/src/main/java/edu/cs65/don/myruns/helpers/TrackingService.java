@@ -35,6 +35,8 @@ public class TrackingService extends Service implements GoogleApiClient.Connecti
     private LocationRequest mLocationRequest;
     private ExerciseEntry entry;
     private final IBinder mBinder = new TrackingBinder();
+    private boolean startTracking = false;
+    private boolean onLocationChangedCalled = false;
 
     @Nullable
     @Override
@@ -142,10 +144,24 @@ public class TrackingService extends Service implements GoogleApiClient.Connecti
         // send information to the map activity
         // Tell the destination of the broadcast that there is an incoming broadcast
         updateEntry(location);
-        Intent intent = new Intent();
-        intent.setAction("edu.cs65.LOCATION_CHANGED");
-        //Intent intent = new Intent(MapDisplayActivity.EntityUpdateReceiver.class.getName());
-        this.sendBroadcast(intent);
+        if (!onLocationChangedCalled) {
+            onLocationChangedCalled = true;
+            Intent intent = new Intent();
+            intent.setAction("edu.cs65.LOCATION_CHANGED");
+            this.sendBroadcast(intent);
+        } else if (startTracking) {
+            Intent intent = new Intent();
+            intent.setAction("edu.cs65.LOCATION_CHANGED");
+            this.sendBroadcast(intent);
+        }
+    }
+
+    /**
+     * Called by MapDisplayActivity once initial zoom is complete. Prevents UI updates from new
+     * locations until initial zoom is finished.
+     */
+    public void startTrackingPosition() {
+        startTracking = true;
     }
 
     /*

@@ -18,6 +18,7 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
 import edu.cs65.don.myruns.controllers.DataController;
@@ -36,6 +37,9 @@ public class MapDisplayActivity extends FragmentActivity implements OnMapReadyCa
     TrackingService mService;
     boolean mBound = false;
     private EntityUpdateReceiver entityUpdateReceiver;
+    private Marker currentMarker;
+    private Marker startMarker;
+    private Marker finishMarker;
 
 
 
@@ -128,7 +132,16 @@ public class MapDisplayActivity extends FragmentActivity implements OnMapReadyCa
     private void updateMap() {
         LatLng currLoc = entry.getMostRecentLatLng();
         // draw path on map
-        mMap.addMarker(new MarkerOptions().position(currLoc).title("Test Marker"));
+        if (entry.mLocationList.size() == 1) {
+            // first entry, place special start pin
+            startMarker = mMap.addMarker(new MarkerOptions().position(currLoc).title("Start"));
+            currentMarker = mMap.addMarker(new MarkerOptions().position(currLoc)
+                    .title("Current").visible(false));
+        } else {
+            // other entry, remove last pin and place new one
+            currentMarker.setVisible(true);
+            currentMarker.setPosition(currLoc);
+        }
         CameraPosition cameraPosition = new CameraPosition.Builder()
                 .target(currLoc)
                 .zoom(18)                   // Sets the zoom
@@ -136,7 +149,8 @@ public class MapDisplayActivity extends FragmentActivity implements OnMapReadyCa
                 .tilt(0)                   // Sets the tilt of the camera to 0 degrees
                 .build();                   // Creates a CameraPosition from the builder
         mMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
-
+        // initial zoom complete, start location updating
+        mService.startTrackingPosition();
     }
 
     private void getPreferences() {
