@@ -1,9 +1,8 @@
-package edu.cs65.don.myruns.activities;
+package edu.cs65.don.myruns;
 
 import android.app.DialogFragment;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
@@ -13,12 +12,9 @@ import org.joda.time.DateTime;
 import org.joda.time.DateTimeFieldType;
 import org.joda.time.MutableDateTime;
 
-import java.util.Calendar;
-import java.util.TimeZone;
-
-import edu.cs65.don.myruns.R;
 import edu.cs65.don.myruns.controllers.DataController;
 import edu.cs65.don.myruns.fragments.MyRunsDialogFragment;
+import edu.cs65.don.myruns.helpers.Common;
 import edu.cs65.don.myruns.models.ExerciseEntry;
 
 public class ManualInputActivity extends AppCompatActivity
@@ -41,7 +37,7 @@ public class ManualInputActivity extends AppCompatActivity
         assert lv != null;
         lv.setOnItemClickListener(clickListener);
         entry = new ExerciseEntry();
-        entry.mInputType = mDataController.INPUT_TYPE_MANUAL;
+        entry.mInputType = Common.INPUT_TYPE_MANUAL;
         // get activity type from bundle
         Bundle extras = getIntent().getExtras();
         if (extras != null) {
@@ -152,7 +148,7 @@ public class ManualInputActivity extends AppCompatActivity
 
     @Override
     public void onDurationSelected(int duration) {
-        entry.mDuration = duration;
+        entry.mDuration = duration * 60;
     }
 
     @Override

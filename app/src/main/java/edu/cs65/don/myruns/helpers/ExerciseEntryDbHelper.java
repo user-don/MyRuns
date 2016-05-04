@@ -9,16 +9,26 @@ import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
 import com.google.android.gms.maps.model.LatLng;
+import com.google.common.base.Splitter;
+import com.google.common.collect.Lists;
 
 import org.joda.time.DateTime;
 import org.json.JSONObject;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.Serializable;
 import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
+import java.nio.DoubleBuffer;
+import java.sql.Blob;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Iterator;
 import java.util.TimeZone;
 
 import edu.cs65.don.myruns.controllers.DataController;
@@ -46,7 +56,7 @@ public class ExerciseEntryDbHelper extends SQLiteOpenHelper {
     public static final String HEARTRATE = "heartrate";
     public static final String COMMENT = "comment";
     public static final String GPS_DATA = "gps_data";
-    private static final int DATABASE_VERSION = 3;
+    private static final int DATABASE_VERSION = 8;
 
     private String[] allColumns = { COLUMN_ID, INPUT_TYPE, ACTIVITY_TYPE, DATE_TIME,
         DURATION, DISTANCE, AVG_PACE, AVG_SPEED, CALORIES, CLIMB, HEARTRATE, COMMENT,
@@ -121,18 +131,24 @@ public class ExerciseEntryDbHelper extends SQLiteOpenHelper {
         values.put(HEARTRATE, entry.mHeartRate);
         values.put(COMMENT, entry.mComment);
         // put ArrayList in as a blob
-//        byte[] ba = {};
-//        try {
-//            ba = Serializer.serialize(entry.mLocationList);
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
-//        ByteBuffer bb = ByteBuffer.wrap(ba);
-//        values.put(GPS_DATA, bb.toString());
+
+        ByteArrayOutputStream b = new ByteArrayOutputStream();
+        DataOutputStream o = new DataOutputStream(b);
+        for (LatLng loc : entry.mLocationList) {
+            try {
+                o.writeUTF(loc.latitude + "&" + loc.longitude);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        byte[] ba = b.toByteArray();
+
+        values.put(GPS_DATA, ba);
         entry.id = db.insert(TABLE_ENTRIES, null, values);
         Log.d("RUNS", "Saved entry at " + entry.id);
         //db.close();
         return entry.id;
+
     }
 
     // Remove an entry by giving its index
@@ -170,15 +186,29 @@ public class ExerciseEntryDbHelper extends SQLiteOpenHelper {
             entry.mClimb = query.getDouble(query.getColumnIndex(CLIMB));
             entry.mHeartRate = query.getInt(query.getColumnIndex(HEARTRATE));
             entry.mComment = query.getString(query.getColumnIndex(COMMENT));
-            //        String gpsData = query.getString(query.getColumnIndex(GPS_DATA));
-            //        byte[] bytes = gpsData.getBytes();
-            //        ArrayList<LatLng> mLocationList = new ArrayList<>();
-            //        try {
-            //             mLocationList = Serializer.deserializeToArraylist(bytes);
-            //        } catch (Exception e) {
-            //            e.printStackTrace();
-            //        }
-            //        entry.mLocationList = mLocationList;
+            byte[] blob = query.getBlob(query.getColumnIndex(GPS_DATA));
+
+            ByteArrayInputStream bais = new ByteArrayInputStream(blob);
+            DataInputStream dis = new DataInputStream(bais);
+            ArrayList<LatLng> locList = new ArrayList<>();
+            try {
+                while (dis.available() > 0) {
+                    String latLngStr = dis.readUTF();
+                    Iterable<String> split = Splitter.on('&')
+                            .trimResults()
+                            .omitEmptyStrings()
+                            .split(latLngStr);
+                    ArrayList<String> splitStr = Lists.newArrayList(split.iterator());
+                    double lat = Double.parseDouble(splitStr.get(0));
+                    double lon = Double.parseDouble(splitStr.get(1));
+                    Log.d("RUNS", "lat: " + String.valueOf(lat) + "lon: " + String.valueOf(lon));
+                    LatLng latLng = new LatLng(lat,lon);
+                    locList.add(latLng);
+                }
+                entry.mLocationList = locList;
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
             query.close();
         } else {
             throw new Error("SHIT IS NOT WORKING");
@@ -208,15 +238,29 @@ public class ExerciseEntryDbHelper extends SQLiteOpenHelper {
                 entry.mClimb = query.getDouble(query.getColumnIndex(CLIMB));
                 entry.mHeartRate = query.getInt(query.getColumnIndex(HEARTRATE));
                 entry.mComment = query.getString(query.getColumnIndex(COMMENT));
-//                String gpsData = query.getString(query.getColumnIndex(GPS_DATA));
-//                byte[] bytes = gpsData.getBytes();
-//                ArrayList<LatLng> mLocationList = new ArrayList<>();
-//                try {
-//                    mLocationList = Serializer.deserializeToArraylist(bytes);
-//                } catch (Exception e) {
-//                    e.printStackTrace();
-//                }
-//                entry.mLocationList = mLocationList;
+                byte[] blob = query.getBlob(query.getColumnIndex(GPS_DATA));
+                ByteArrayInputStream bais = new ByteArrayInputStream(blob);
+                DataInputStream dis = new DataInputStream(bais);
+                ArrayList<LatLng> locList = new ArrayList<>();
+                try {
+                    while (dis.available() > 0) {
+                        String latLngStr = dis.readUTF();
+                        Iterable<String> split = Splitter.on('&')
+                                .trimResults()
+                                .omitEmptyStrings()
+                                .split(latLngStr);
+                        ArrayList<String> splitStr = Lists.newArrayList(split.iterator());
+                        double lat = Double.parseDouble(splitStr.get(0));
+                        double lon = Double.parseDouble(splitStr.get(1));
+                        Log.d("RUNS", "lat: " + String.valueOf(lat) + "lon: " + String.valueOf(lon));
+                        LatLng latLng = new LatLng(lat,lon);
+                        locList.add(latLng);
+                    }
+                    entry.mLocationList = locList;
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+
                 entries.add(entry);
                 query.moveToNext();
             }

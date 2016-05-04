@@ -7,6 +7,12 @@ import android.os.AsyncTask;
 import android.preference.PreferenceManager;
 import android.widget.Toast;
 
+import com.google.android.gms.maps.model.Marker;
+import com.google.android.gms.maps.model.Polyline;
+import com.google.android.gms.maps.model.PolylineOptions;
+
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.InputMismatchException;
@@ -22,11 +28,9 @@ import edu.cs65.don.myruns.models.ExerciseEntry;
  */
 public class DataController {
 
-    public final int INPUT_TYPE_MANUAL = 0;
-    public final int INPUT_TYPE_GPS = 1;
-    public final int INPUT_TYPE_AUTOMATIC = 2;
     public ExerciseEntryDbHelper dbHelper;
     public ArrayList<ExerciseEntry> entries = new ArrayList<>();
+
     private Context context;
 
     // For instantiating as a singleton
@@ -61,6 +65,28 @@ public class DataController {
             Toast.makeText(context.getApplicationContext(),
                     "Entry #" + String.valueOf(result) + " saved.", Toast.LENGTH_LONG).show();
         }
+    }
+
+    public String getUnitPreferences() {
+        SharedPreferences prefs = PreferenceManager
+                .getDefaultSharedPreferences(context);
+        return prefs.getString("unit_preference", "Imperial"); // Imperial if not available
+    }
+
+    public double milesToKm(double miles) {
+        return miles * 1.609;
+    }
+
+    public double mphToKph(double mph) {
+        return mph * 1.60934;
+    }
+
+    public double round(double value, int places) {
+        if (places < 0) throw new IllegalArgumentException();
+
+        BigDecimal bd = new BigDecimal(value);
+        bd = bd.setScale(places, RoundingMode.HALF_UP);
+        return bd.doubleValue();
     }
 
 

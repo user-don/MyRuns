@@ -9,7 +9,7 @@ import android.preference.PreferenceFragment;
 import android.preference.PreferenceScreen;
 
 import edu.cs65.don.myruns.R;
-import edu.cs65.don.myruns.activities.AccountPreferencesActivity;
+import edu.cs65.don.myruns.AccountPreferencesActivity;
 
 
 /**

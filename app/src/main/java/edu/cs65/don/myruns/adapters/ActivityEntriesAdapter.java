@@ -11,6 +11,10 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
+import org.joda.time.Duration;
+import org.joda.time.Hours;
+import org.joda.time.format.DateTimeFormatter;
+
 import java.util.ArrayList;
 
 import edu.cs65.don.myruns.R;
@@ -70,15 +74,19 @@ public class ActivityEntriesAdapter extends ArrayAdapter<ExerciseEntry> {
                 .getStringArray(R.array.entryvalues_unit_preference);
         if (preference_choice.equals(preference_choices[0])) {
             // metric
-            second.append(String.valueOf(milesToKm(e.mDistance)) + " Kilometers, ");
+            second.append(String.valueOf(
+                    mDataController.round(milesToKm(e.mDistance),2)) + " Kilometers, ");
         } else {
             // imperial
-            second.append(String.valueOf(e.mDistance) + " Miles, ");
+            second.append(String.valueOf(
+                    mDataController.round(e.mDistance,2)) + " Miles, ");
         }
         if (e.mDuration == 0) {
             second.append("0secs");
         } else {
-            second.append(e.mDuration + "min 0secs");
+            int sec = e.mDuration % 60;
+            int min = (int) (e.mDuration / 60);
+            second.append(min + "mins " + sec + "secs");
         }
         return second.toString();
     }

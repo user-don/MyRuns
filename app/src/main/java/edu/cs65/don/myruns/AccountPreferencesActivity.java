@@ -1,4 +1,4 @@
-package edu.cs65.don.myruns.activities;
+package edu.cs65.don.myruns;
 
 import android.app.DialogFragment;
 import android.content.ActivityNotFoundException;

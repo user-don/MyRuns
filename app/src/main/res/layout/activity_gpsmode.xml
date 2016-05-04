@@ -11,7 +11,13 @@
         android:name="com.google.android.gms.maps.SupportMapFragment"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        tools:context=".activities.GPSModeActivity" />
+        tools:context=".MapDisplayActivity" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/activity_stats"
+        android:textSize="20dp" />
 
     <LinearLayout
         android:orientation="horizontal"
@@ -25,16 +31,18 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/save_text"
-            android:id="@+id/manual_entry_save_button"
+            android:id="@+id/gps_entry_save_button"
             android:layout_weight="1"
+            android:onClick="onSaveCancelClicked"
             tools:ignore="ButtonStyle" />
 
         <Button
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/cancel_text"
-            android:id="@+id/manual_entry_cancel_button"
+            android:id="@+id/gps_entry_cancel_button"
             android:layout_weight="1"
+            android:onClick="onSaveCancelClicked"
             tools:ignore="ButtonOrder,ButtonStyle" />
 
 

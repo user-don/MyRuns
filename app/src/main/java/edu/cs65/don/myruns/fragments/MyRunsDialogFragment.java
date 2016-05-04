@@ -9,7 +9,6 @@ import android.app.TimePickerDialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.text.InputType;
-import android.util.Log;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -17,7 +16,7 @@ import android.widget.TimePicker;
 
 import java.util.Calendar;
 
-import edu.cs65.don.myruns.activities.AccountPreferencesActivity;
+import edu.cs65.don.myruns.AccountPreferencesActivity;
 import edu.cs65.don.myruns.R;
 
 /**

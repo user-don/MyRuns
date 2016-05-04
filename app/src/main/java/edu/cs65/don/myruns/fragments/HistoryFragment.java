@@ -4,26 +4,22 @@ package edu.cs65.don.myruns.fragments;
 import android.app.LoaderManager;
 import android.content.Intent;
 import android.content.Loader;
-import android.content.SharedPreferences;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.app.Fragment;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ListView;
-import android.widget.TableLayout;
-import android.widget.TableRow;
-import android.widget.TextView;
 
 import java.util.ArrayList;
 
+import edu.cs65.don.myruns.MapEntryDisplayActivity;
 import edu.cs65.don.myruns.R;
-import edu.cs65.don.myruns.activities.DisplayEntryActivity;
+import edu.cs65.don.myruns.DisplayEntryActivity;
 import edu.cs65.don.myruns.adapters.ActivityEntriesAdapter;
 import edu.cs65.don.myruns.controllers.DataController;
+import edu.cs65.don.myruns.helpers.Common;
 import edu.cs65.don.myruns.helpers.DataLoader;
 import edu.cs65.don.myruns.models.ExerciseEntry;
 
@@ -89,10 +85,16 @@ public class HistoryFragment extends Fragment
 
         @Override
         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-            Intent intent = new Intent(getActivity(), DisplayEntryActivity.class);
             ExerciseEntry entry = mDataController.entries.get(position);
-            intent.putExtra("id", entry.id);
-            startActivity(intent);
+            if (entry.mInputType != Common.INPUT_TYPE_MANUAL) {
+                Intent intent = new Intent(getActivity(), MapEntryDisplayActivity.class);
+                intent.putExtra("id", entry.id);
+                startActivity(intent);
+            } else {
+                Intent intent = new Intent(getActivity(), DisplayEntryActivity.class);
+                intent.putExtra("id", entry.id);
+                startActivity(intent);
+            }
         }
     };
 }
