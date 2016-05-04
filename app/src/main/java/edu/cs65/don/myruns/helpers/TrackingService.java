@@ -81,7 +81,6 @@ public class TrackingService extends Service implements GoogleApiClient.Connecti
                 .setContentIntent(pi).build();
         nm = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
         notification.flags = notification.flags | Notification.FLAG_ONGOING_EVENT;
-        //notification.flags |= Notification.FLAG_AUTO_CANCEL;
         nm.notify(0, notification);
 
         return super.onStartCommand(intent, flags, startId);

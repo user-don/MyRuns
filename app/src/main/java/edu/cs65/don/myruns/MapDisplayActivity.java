@@ -152,6 +152,13 @@ public class MapDisplayActivity extends FragmentActivity implements OnMapReadyCa
                 currentMarker = mMap.addMarker(new MarkerOptions().position(currLoc)
                         .title("Current").visible(false));
                 plo = new PolylineOptions().add(startMarker.getPosition());
+                CameraPosition cameraPosition = new CameraPosition.Builder()
+                        .target(currLoc)
+                        .zoom(18)                   // Sets the zoom
+                        .bearing(0)                // Sets the orientation of the camera to north
+                        .tilt(0)                   // Sets the tilt of the camera to 0 degrees
+                        .build();                   // Creates a CameraPosition from the builder
+                mMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
             } else {
                 // other entry, remove last pin and place new one
                 currentMarker.setVisible(true);
@@ -160,13 +167,6 @@ public class MapDisplayActivity extends FragmentActivity implements OnMapReadyCa
             }
             plo.color(Color.BLACK);
             polyline = mMap.addPolyline(plo);
-            CameraPosition cameraPosition = new CameraPosition.Builder()
-                    .target(currLoc)
-                    .zoom(18)                   // Sets the zoom
-                    .bearing(0)                // Sets the orientation of the camera to north
-                    .tilt(0)                   // Sets the tilt of the camera to 0 degrees
-                    .build();                   // Creates a CameraPosition from the builder
-            mMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
             // initial zoom complete, start location updating
             mService.startTrackingPosition();
         }
