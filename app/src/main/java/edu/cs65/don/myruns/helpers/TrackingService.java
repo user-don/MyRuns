@@ -50,7 +50,7 @@ public class TrackingService extends Service implements GoogleApiClient.Connecti
     @Nullable
     @Override
     public IBinder onBind(Intent intent) {
-        startTracking(intent);
+        entry.mActivityType = intent.getExtras().getInt("activity_type");
         Log.d("RUNS", "Tracking service bound");
         return mBinder;
     }
@@ -86,7 +86,7 @@ public class TrackingService extends Service implements GoogleApiClient.Connecti
         entry = new ExerciseEntry("GPS");
         Log.d("RUNS", "onStartCommand");
         entry.mInputType = Common.INPUT_TYPE_GPS;
-        startTracking(intent);
+        entry.mActivityType = intent.getExtras().getInt("activity_type");
         return super.onStartCommand(intent, flags, startId);
     }
 
@@ -99,18 +99,6 @@ public class TrackingService extends Service implements GoogleApiClient.Connecti
         mLocationRequest.setInterval(1000); // Update location every second
         LocationServices.FusedLocationApi.requestLocationUpdates(
                 mGoogleApiClient, mLocationRequest, this);
-    }
-
-
-
-    private void startTracking(Intent intent) {
-        // if started do nothing
-        // if not started then mGoogleApiClient.connect()
-        // setUpNotification()
-        // create new entry
-        // is this the same intent that gets passed in MapDisplayActivity?
-        entry.mActivityType = intent.getExtras().getInt("activity_type");
-        // set activity type
     }
 
     protected void updateEntry(Location location) {
@@ -130,10 +118,7 @@ public class TrackingService extends Service implements GoogleApiClient.Connecti
             Location lastLoc = new Location("");
             lastLoc.setLatitude(last.latitude);
             lastLoc.setLongitude(last.longitude);
-            Location currLoc = new Location("");
-            currLoc.setLatitude(latLng.latitude);
-            currLoc.setLongitude(latLng.longitude);
-            double distInMeters = (double) lastLoc.distanceTo(currLoc);
+            double distInMeters = (double) entry.lastLoc.distanceTo(location);
             entry.mDistance += distInMeters * 0.000621371;
 
             // average speed in miles per hour
@@ -152,15 +137,21 @@ public class TrackingService extends Service implements GoogleApiClient.Connecti
             entry.mCurrentSpeed = (del + distInMiles) / (del + timeDelta);
 
             // climb
-            if (currLoc.getAltitude() > lastLoc.getAltitude()) {
-                entry.mClimb += currLoc.getAltitude() - lastLoc.getAltitude();
+            boolean altitudeWorking = location.getAltitude() == 0 ||
+                    entry.lastLoc.getAltitude() == 0;
+            if (location.getAltitude() > entry.lastLoc.getAltitude() && altitudeWorking) {
+                entry.mClimb += (location.getAltitude() - entry.lastLoc.getAltitude()) * 0.000621371;
             }
+            Log.d("RUNS", "mClimb: " + String.valueOf(entry.mClimb));
+            Log.d("RUNS", "Current altitude: " + String.valueOf(location.getAltitude()));
+            Log.d("RUNS", "Previous altitude: " + String.valueOf(entry.lastLoc.getAltitude()));
 
             // calories
             entry.mCalorie = (int) (entry.mDistance / 15.0);
         }
         // set last modified date for computing current speed
         entry.lastUpdated = new DateTime();
+        entry.lastLoc = location;
         entry.mLocationList.add(latLng);
     }
 

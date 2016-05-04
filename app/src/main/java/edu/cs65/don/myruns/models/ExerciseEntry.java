@@ -1,6 +1,7 @@
 package edu.cs65.don.myruns.models;
 
 import android.content.res.Resources;
+import android.location.Location;
 import android.text.format.Time;
 
 import com.google.android.gms.maps.model.LatLng;
@@ -55,6 +56,7 @@ public class ExerciseEntry {
     public ArrayList<LatLng> mLocationList; // Location list
     public DateTime lastUpdated;  // Last time entry was updated
     public double mCurrentSpeed;  // Current speed
+    public Location lastLoc;      // For climb reference
 
     public TimeZone timeZone;
 

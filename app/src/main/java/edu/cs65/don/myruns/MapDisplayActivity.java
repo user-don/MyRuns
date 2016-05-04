@@ -124,23 +124,27 @@ public class MapDisplayActivity extends FragmentActivity implements OnMapReadyCa
     }
 
     private void updateStats() {
-        entry = mService.getEntry();
-        StringBuilder sb = new StringBuilder();
-        String typeString = getTypeString();
-        String avgSpeedStr = getAverageSpeedString();
-        String currSpeedString = getCurrentSpeedString();
-        String climbString = getClimbString();
-        String calorieString = getCalorieString();
-        String distanceString = getDistanceString();
-        sb.append(typeString).append("\n").append(avgSpeedStr).append("\n")
-                .append(currSpeedString).append("\n")
-                .append(climbString).append("\n")
-                .append(calorieString).append("\n")
-                .append(distanceString).append("\n");
-        String textToDisplay = sb.toString();
+        try {
+            entry = mService.getEntry();
+            StringBuilder sb = new StringBuilder();
+            String typeString = getTypeString();
+            String avgSpeedStr = getAverageSpeedString();
+            String currSpeedString = getCurrentSpeedString();
+            String climbString = getClimbString();
+            String calorieString = getCalorieString();
+            String distanceString = getDistanceString();
+            sb.append(typeString).append("\n").append(avgSpeedStr).append("\n")
+                    .append(currSpeedString).append("\n")
+                    .append(climbString).append("\n")
+                    .append(calorieString).append("\n")
+                    .append(distanceString).append("\n");
+            String textToDisplay = sb.toString();
 
-        TextView tv = (TextView) findViewById(R.id.activity_stats);
-        tv.setText(textToDisplay);
+            TextView tv = (TextView) findViewById(R.id.activity_stats);
+            tv.setText(textToDisplay);
+        } catch (NullPointerException e) {
+            e.printStackTrace();
+        }
 
     }
 
