@@ -53,12 +53,16 @@
             android:value="@string/google_maps_key" />
 
         <activity android:name=".DisplayEntryActivity" />
+
         <service android:name=".helpers.TrackingService" />
-        <!--<receiver android:name=".MapDisplayActivity$EntityUpdateReceiver">-->
-            <!--<intent-filter>-->
-                <!--<action android:name="edu.cs65.LOCATION_CHANGED" />-->
-            <!--</intent-filter>-->
-        <!--</receiver>-->
+        <!-- <receiver android:name=".MapDisplayActivity$EntityUpdateReceiver"> -->
+        <!-- <intent-filter> -->
+        <!-- <action android:name="edu.cs65.LOCATION_CHANGED" /> -->
+        <!-- </intent-filter> -->
+        <!-- </receiver> -->
+        <activity
+            android:name=".MapEntryDisplayActivity"
+            android:label="@string/title_activity_map_entry_display"></activity>
     </application>
 
 </manifest>

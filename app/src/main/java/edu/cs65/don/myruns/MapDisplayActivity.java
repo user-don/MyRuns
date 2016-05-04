@@ -140,7 +140,7 @@ public class MapDisplayActivity extends FragmentActivity implements OnMapReadyCa
     private void updateMap() {
         LatLng currLoc = entry.getMostRecentLatLng();
         if (currLoc == null) {
-            return;
+            // do nothing
         }else {
             // draw path on map
             if (startMarker == null || currentMarker == null) {
@@ -268,7 +268,5 @@ public class MapDisplayActivity extends FragmentActivity implements OnMapReadyCa
             finish();
         }
     }
-
-    // TODO: unbind on save and cancel clicked
 
 }
