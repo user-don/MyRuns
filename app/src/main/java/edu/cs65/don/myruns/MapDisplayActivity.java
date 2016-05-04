@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
+import android.graphics.Color;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.os.IBinder;
@@ -22,6 +23,8 @@ import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.maps.model.Polyline;
+import com.google.android.gms.maps.model.PolylineOptions;
 
 import edu.cs65.don.myruns.controllers.DataController;
 import edu.cs65.don.myruns.helpers.TrackingService;
@@ -38,10 +41,13 @@ public class MapDisplayActivity extends FragmentActivity implements OnMapReadyCa
     private LocationManager lm;
     TrackingService mService;
     boolean mBound = false;
+    private boolean isReceiverRegistered = false;
     private EntityUpdateReceiver entityUpdateReceiver;
     private Marker currentMarker;
     private Marker startMarker;
     private Marker finishMarker;
+    private PolylineOptions plo;
+    private Polyline polyline;
 
 
 
@@ -60,12 +66,12 @@ public class MapDisplayActivity extends FragmentActivity implements OnMapReadyCa
         IntentFilter filter = new IntentFilter();
         filter.addAction("edu.cs65.LOCATION_CHANGED");
         registerReceiver(entityUpdateReceiver, filter);
+        isReceiverRegistered = true;
 
         Intent i = new Intent(this, TrackingService.class);
         i.putExtra("activity_type", getIntent().getExtras().getInt("activity_type"));
         startService(i);
         bindService(i, mServiceConnection, Context.BIND_AUTO_CREATE);
-        mBound = true;
     }
 
     public ServiceConnection mServiceConnection = new ServiceConnection() {
@@ -81,7 +87,7 @@ public class MapDisplayActivity extends FragmentActivity implements OnMapReadyCa
         @Override
         public void onServiceDisconnected(ComponentName name) {
             Log.d(getClass().getName(), "onServiceDisconnected");
-            disconnect();
+            mBound = false;
         }
     };
 
@@ -137,7 +143,7 @@ public class MapDisplayActivity extends FragmentActivity implements OnMapReadyCa
     private void updateMap() {
         LatLng currLoc = entry.getMostRecentLatLng();
         // draw path on map
-        if (entry.mLocationList.size() <= 1) {
+        if (startMarker == null || currentMarker == null) {
             // first entry, place special start pin
             MarkerOptions startMarkerOptions = new MarkerOptions().position(currLoc)
                     .title("Start").icon(BitmapDescriptorFactory.defaultMarker(
@@ -145,11 +151,15 @@ public class MapDisplayActivity extends FragmentActivity implements OnMapReadyCa
             startMarker = mMap.addMarker(startMarkerOptions);
             currentMarker = mMap.addMarker(new MarkerOptions().position(currLoc)
                     .title("Current").visible(false));
+            plo = new PolylineOptions().add(startMarker.getPosition());
         } else {
             // other entry, remove last pin and place new one
             currentMarker.setVisible(true);
             currentMarker.setPosition(currLoc);
+            plo.add(currentMarker.getPosition());
         }
+        plo.color(Color.BLACK);
+        polyline = mMap.addPolyline(plo);
         CameraPosition cameraPosition = new CameraPosition.Builder()
                 .target(currLoc)
                 .zoom(18)                   // Sets the zoom
@@ -209,23 +219,15 @@ public class MapDisplayActivity extends FragmentActivity implements OnMapReadyCa
     public void onBackPressed() {
         super.onBackPressed();
         doUnbindService();
+        doUnregisterReceiver();
     }
-
-    private void doUnbindService() {
-        if (mBound) {
-            unbindService(mServiceConnection);
-            mBound = false;
-        }
-    }
-
-    // TODO: unbind on save and cancel clicked
 
     @Override
     protected void onPause() {
         super.onPause();
         // if we use this activity for both displaying and recording,
         // we check if new map task, and if so then we unregister
-        unregisterReceiver(entityUpdateReceiver);
+        doUnregisterReceiver();
         // unbind tracking service
         doUnbindService();
     }
@@ -235,14 +237,30 @@ public class MapDisplayActivity extends FragmentActivity implements OnMapReadyCa
         super.onResume();
         mBound = getApplicationContext().bindService(new Intent(getApplicationContext(),
                 TrackingService.class), mServiceConnection, Context.BIND_AUTO_CREATE );
+        // also re-register receiver if not already registered
+        if (!isReceiverRegistered) {
+            IntentFilter filter = new IntentFilter();
+            filter.addAction("edu.cs65.LOCATION_CHANGED");
+            registerReceiver(entityUpdateReceiver, filter);
+            isReceiverRegistered = true;
+        }
     }
 
-    /**
-     * Disconnect from service
-     */
-    private void disconnect() {
-        mBound = false;
+    private void doUnbindService() {
+        if (mBound) {
+            unbindService(mServiceConnection);
+            mBound = false;
+        }
     }
+
+    private void doUnregisterReceiver() {
+        if (isReceiverRegistered) {
+            unregisterReceiver(entityUpdateReceiver);
+            isReceiverRegistered = false;
+        }
+    }
+
+    // TODO: unbind on save and cancel clicked
 
 //    @Override
 //    protected void onDestroy() {

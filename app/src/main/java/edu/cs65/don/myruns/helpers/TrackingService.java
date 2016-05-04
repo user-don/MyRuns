@@ -88,6 +88,7 @@ public class TrackingService extends Service implements GoogleApiClient.Connecti
     }
 
     private void updateEntry(Location location) {
+        double del = 0.00001;
         LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
         if (entry.mLocationList.isEmpty()) {
             // do nothing
@@ -111,7 +112,7 @@ public class TrackingService extends Service implements GoogleApiClient.Connecti
 
             // average speed in miles per hour
             double durationInHours = ((double) entry.mDuration) / (60 * 60);
-            entry.mAvgSpeed = entry.mDistance / durationInHours;
+            entry.mAvgSpeed = (del + entry.mDistance) / (del + durationInHours);
 
             // current speed in miles per hour
             DateTime c = new DateTime();
@@ -122,7 +123,7 @@ public class TrackingService extends Service implements GoogleApiClient.Connecti
             // timeDelta in hours
             double timeDelta = (double) d.getMillis() / 3600000;
             double distInMiles = distInMeters * 0.000621371;
-            entry.mCurrentSpeed = distInMiles / timeDelta;
+            entry.mCurrentSpeed = (del + distInMiles) / (del + timeDelta);
 
             // climb
             if (currLoc.getAltitude() > lastLoc.getAltitude()) {
