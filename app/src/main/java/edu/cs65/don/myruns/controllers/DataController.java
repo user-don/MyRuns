@@ -7,6 +7,10 @@ import android.os.AsyncTask;
 import android.preference.PreferenceManager;
 import android.widget.Toast;
 
+import com.google.android.gms.maps.model.Marker;
+import com.google.android.gms.maps.model.Polyline;
+import com.google.android.gms.maps.model.PolylineOptions;
+
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.ArrayList;
@@ -26,6 +30,7 @@ public class DataController {
 
     public ExerciseEntryDbHelper dbHelper;
     public ArrayList<ExerciseEntry> entries = new ArrayList<>();
+
     private Context context;
 
     // For instantiating as a singleton
