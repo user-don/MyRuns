@@ -13,6 +13,12 @@
         android:layout_height="match_parent"
         tools:context=".MapDisplayActivity" />
 
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/activity_stats"
+        android:textSize="20dp" />
+
     <LinearLayout
         android:orientation="horizontal"
         android:layout_width="match_parent"

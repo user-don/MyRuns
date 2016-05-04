@@ -21,6 +21,7 @@ import org.joda.time.DateTime;
 import org.joda.time.Duration;
 
 import edu.cs65.don.myruns.MapDisplayActivity;
+import edu.cs65.don.myruns.controllers.DataController;
 import edu.cs65.don.myruns.models.ExerciseEntry;
 
 /**
@@ -37,6 +38,7 @@ public class TrackingService extends Service implements GoogleApiClient.Connecti
     private final IBinder mBinder = new TrackingBinder();
     private boolean startTracking = false;
     private boolean onLocationChangedCalled = false;
+    private static DataController mDataController;
 
     @Nullable
     @Override
@@ -56,6 +58,7 @@ public class TrackingService extends Service implements GoogleApiClient.Connecti
                 .build();
         // Connect the client.
         mGoogleApiClient.connect();
+        mDataController = DataController.getInstance(getApplicationContext());
         return super.onStartCommand(intent, flags, startId);
     }
 
@@ -92,7 +95,8 @@ public class TrackingService extends Service implements GoogleApiClient.Connecti
             // update duration
             Duration duration = new Duration(entry.mDateTime, new DateTime());
             // Round to the nearest second
-            entry.mDuration = (int) (duration.getStandardSeconds() + 0.5);
+            float durationInS =
+            entry.mDuration = (int) duration.getStandardSeconds();
 
             // update distance
             LatLng last = entry.mLocationList.get(entry.mLocationList.size() - 1);
@@ -106,12 +110,17 @@ public class TrackingService extends Service implements GoogleApiClient.Connecti
             entry.mDistance += distInMeters * 0.000621371;
 
             // average speed in miles per hour
-            double durationInHours = entry.mDuration / (60 * 60);
+            double durationInHours = ((double) entry.mDuration) / (60 * 60);
             entry.mAvgSpeed = entry.mDistance / durationInHours;
 
             // current speed in miles per hour
-            Duration d = new Duration(entry.lastUpdated, new DateTime());
-            double timeDelta = (double) d.getStandardHours();
+            DateTime c = new DateTime();
+            Duration d = new Duration(entry.lastUpdated, c);
+            long td = d.getStandardHours();
+            long hh = d.getStandardSeconds();
+            long mm = d.getMillis();
+            // timeDelta in hours
+            double timeDelta = (double) d.getMillis() / 3600000;
             double distInMiles = distInMeters * 0.000621371;
             entry.mCurrentSpeed = distInMiles / timeDelta;
 

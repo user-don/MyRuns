@@ -11,11 +11,13 @@ import android.os.Bundle;
 import android.os.IBinder;
 import android.support.v4.app.FragmentActivity;
 import android.util.Log;
+import android.widget.TextView;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
@@ -30,7 +32,7 @@ public class MapDisplayActivity extends FragmentActivity implements OnMapReadyCa
     @SuppressWarnings("FieldCanBeLocal")
     private GoogleMap mMap;
     private ExerciseEntry entry;
-    private static DataController mDataController;
+    private static DataController dc;
     private String unit_preference;
     private String[] unit_prefs;
     private LocationManager lm;
@@ -45,7 +47,7 @@ public class MapDisplayActivity extends FragmentActivity implements OnMapReadyCa
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        mDataController = DataController.getInstance(getApplicationContext());
+        dc = DataController.getInstance(getApplicationContext());
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_gpsmode);
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
@@ -127,14 +129,20 @@ public class MapDisplayActivity extends FragmentActivity implements OnMapReadyCa
                 .append(distanceString).append("\n");
         String textToDisplay = sb.toString();
 
+        TextView tv = (TextView) findViewById(R.id.activity_stats);
+        tv.setText(textToDisplay);
+
     }
 
     private void updateMap() {
         LatLng currLoc = entry.getMostRecentLatLng();
         // draw path on map
-        if (entry.mLocationList.size() == 1) {
+        if (entry.mLocationList.size() <= 1) {
             // first entry, place special start pin
-            startMarker = mMap.addMarker(new MarkerOptions().position(currLoc).title("Start"));
+            MarkerOptions startMarkerOptions = new MarkerOptions().position(currLoc)
+                    .title("Start").icon(BitmapDescriptorFactory.defaultMarker(
+                            BitmapDescriptorFactory.HUE_GREEN));
+            startMarker = mMap.addMarker(startMarkerOptions);
             currentMarker = mMap.addMarker(new MarkerOptions().position(currLoc)
                     .title("Current").visible(false));
         } else {
@@ -154,7 +162,7 @@ public class MapDisplayActivity extends FragmentActivity implements OnMapReadyCa
     }
 
     private void getPreferences() {
-        unit_preference = mDataController.getUnitPreferences();
+        unit_preference = dc.getUnitPreferences();
         unit_prefs = this.getResources().getStringArray(R.array.entryvalues_unit_preference);
     }
 
@@ -165,24 +173,24 @@ public class MapDisplayActivity extends FragmentActivity implements OnMapReadyCa
 
     private String getAverageSpeedString() {
         if (unit_preference.equals(unit_prefs[0]))
-            return "Avg speed: " + String.valueOf(mDataController.mphToKph(entry.mAvgSpeed)) + " km/h";
+            return "Avg speed: " + String.valueOf(dc.round(dc.mphToKph(entry.mAvgSpeed),2)) + " km/h";
         else
-            return "Avg speed: " + String.valueOf(entry.mAvgSpeed) + " m/h";
+            return "Avg speed: " + String.valueOf(dc.round(entry.mAvgSpeed,2)) + " m/h";
     }
 
     private String getCurrentSpeedString() {
         if (unit_preference.equals(unit_prefs[0]))
-            return "Cur speed: " + String.valueOf(mDataController.mphToKph(entry.mCurrentSpeed)) + " km/h";
+            return "Cur speed: " + String.valueOf(dc.round(dc.mphToKph(entry.mCurrentSpeed),2)) + " km/h";
         else
-            return "Cur speed: " + String.valueOf(entry.mCurrentSpeed) + " m/h";
+            return "Cur speed: " + String.valueOf(dc.round(entry.mCurrentSpeed,2)) + " m/h";
     }
 
     private String getClimbString() {
         if (unit_preference.equals(unit_prefs[0])) {
-            String val = String.valueOf(mDataController.round(mDataController.milesToKm(entry.mClimb), 2));
+            String val = String.valueOf(dc.round(dc.milesToKm(entry.mClimb), 2));
             return "Climb: " + val + " Kilometers";
         } else {
-            return "Climb: " + String.valueOf(mDataController.round(entry.mClimb, 2)) + " Miles";
+            return "Climb: " + String.valueOf(dc.round(entry.mClimb, 2)) + " Miles";
         }
     }
 
@@ -192,9 +200,9 @@ public class MapDisplayActivity extends FragmentActivity implements OnMapReadyCa
 
     private String getDistanceString() {
         if (unit_preference.equals(unit_prefs[0]))
-            return "Distance: " + String.valueOf(mDataController.milesToKm(entry.mDistance)) + " Kilometers";
+            return "Distance: " + String.valueOf(dc.round(dc.milesToKm(entry.mDistance),2)) + " Kilometers";
         else
-            return "Distance: " + String.valueOf(entry.mDistance) + " Miles";
+            return "Distance: " + String.valueOf(dc.round(entry.mDistance,2)) + " Miles";
     }
 
     @Override
