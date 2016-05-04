@@ -52,6 +52,7 @@ public class MapDisplayActivity extends FragmentActivity implements OnMapReadyCa
     private PolylineOptions plo;
     private Polyline polyline;
     private Intent checkRegisterReceiver;
+    private Intent trackingIntent;
 
 
 
@@ -65,6 +66,12 @@ public class MapDisplayActivity extends FragmentActivity implements OnMapReadyCa
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
         getPreferences();
+
+        trackingIntent = new Intent(this, TrackingService.class);
+        trackingIntent.putExtra("activity_type", getIntent().getExtras().getInt("activity_type"));
+        if (savedInstanceState == null) {
+            startService(trackingIntent);
+        }
     }
 
     public ServiceConnection mServiceConnection = new ServiceConnection() {
@@ -142,6 +149,30 @@ public class MapDisplayActivity extends FragmentActivity implements OnMapReadyCa
         if (currLoc == null) {
             // do nothing
         }else {
+            if (startMarker == null && !entry.mLocationList.isEmpty()) {
+                // recovering from orientation change, re-draw everything
+                plo = new PolylineOptions().addAll(entry.mLocationList);
+                plo.color(Color.BLACK);
+                polyline = mMap.addPolyline(plo);
+                LatLng startPosition = entry.mLocationList.get(0);
+                MarkerOptions startMarkerOptions = new MarkerOptions().position(startPosition)
+                        .title("Start").icon(BitmapDescriptorFactory.defaultMarker(
+                                BitmapDescriptorFactory.HUE_GREEN));
+                LatLng currentPosition = entry.mLocationList.get(entry.mLocationList.size() - 1);
+                MarkerOptions currentMarkerOptions = new MarkerOptions().position(currentPosition)
+                        .title("Finish").icon(BitmapDescriptorFactory.defaultMarker(
+                                BitmapDescriptorFactory.HUE_RED));
+                startMarker = mMap.addMarker(startMarkerOptions);
+                currentMarker = mMap.addMarker(currentMarkerOptions);
+                CameraPosition cameraPosition = new CameraPosition.Builder()
+                        .target(startPosition)
+                        .zoom(18)                   // Sets the zoom
+                        .bearing(0)                // Sets the orientation of the camera to north
+                        .tilt(0)                   // Sets the tilt of the camera to 0 degrees
+                        .build();                   // Creates a CameraPosition from the builder
+                mMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
+
+            }
             // draw path on map
             if (startMarker == null || currentMarker == null) {
                 // first entry, place special start pin
@@ -163,7 +194,8 @@ public class MapDisplayActivity extends FragmentActivity implements OnMapReadyCa
                 // other entry, remove last pin and place new one
                 currentMarker.setVisible(true);
                 currentMarker.setPosition(currLoc);
-                plo.add(currentMarker.getPosition());
+                plo = new PolylineOptions().addAll(entry.mLocationList);
+                //plo.add(currentMarker.getPosition());
             }
             plo.color(Color.BLACK);
             polyline = mMap.addPolyline(plo);
@@ -242,10 +274,7 @@ public class MapDisplayActivity extends FragmentActivity implements OnMapReadyCa
         filter.addAction("edu.cs65.LOCATION_CHANGED");
         checkRegisterReceiver = registerReceiver(entityUpdateReceiver, filter);
 
-        Intent i = new Intent(this, TrackingService.class);
-        i.putExtra("activity_type", getIntent().getExtras().getInt("activity_type"));
-        startService(i);
-        bindService(i, mServiceConnection, Context.BIND_AUTO_CREATE);
+        bindService(trackingIntent, mServiceConnection, Context.BIND_AUTO_CREATE);
     }
 
     /**

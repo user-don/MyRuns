@@ -52,7 +52,9 @@ public class TrackingServiceUnitTest {
         service.entry = entry;
         service.updateEntry(loc);
 
+
         assertThat("calories", entry.mCalorie, is(not(0)));
+        assertThat("distance", entry.mCalorie != 0);
         Log.d("RUNS", String.valueOf(entry.mCalorie));
     }
 }

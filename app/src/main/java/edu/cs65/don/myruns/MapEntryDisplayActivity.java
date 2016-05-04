@@ -7,6 +7,7 @@ import android.graphics.Color;
 import android.preference.PreferenceManager;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -28,7 +29,7 @@ import edu.cs65.don.myruns.controllers.DataController;
 import edu.cs65.don.myruns.helpers.SingleEntryLoader;
 import edu.cs65.don.myruns.models.ExerciseEntry;
 
-public class MapEntryDisplayActivity extends FragmentActivity implements OnMapReadyCallback,
+public class MapEntryDisplayActivity extends AppCompatActivity implements OnMapReadyCallback,
         LoaderManager.LoaderCallbacks<ExerciseEntry> {
 
     private GoogleMap mMap;
@@ -158,7 +159,7 @@ public class MapEntryDisplayActivity extends FragmentActivity implements OnMapRe
         startMarker = mMap.addMarker(startMarkerOptions);
         finishMarker = mMap.addMarker(finishMarkerOptions);
         CameraPosition cameraPosition = new CameraPosition.Builder()
-                .target(startPosition)
+                .target(finalPosition)
                 .zoom(18)                   // Sets the zoom
                 .bearing(0)                // Sets the orientation of the camera to north
                 .tilt(0)                   // Sets the tilt of the camera to 0 degrees

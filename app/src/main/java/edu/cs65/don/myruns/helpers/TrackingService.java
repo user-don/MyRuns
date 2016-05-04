@@ -57,7 +57,7 @@ public class TrackingService extends Service implements GoogleApiClient.Connecti
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        startTracking(intent);
+
         mGoogleApiClient = new GoogleApiClient.Builder(this)
                 .addApi(LocationServices.API)
                 .addConnectionCallbacks(this)
@@ -83,6 +83,10 @@ public class TrackingService extends Service implements GoogleApiClient.Connecti
         notification.flags = notification.flags | Notification.FLAG_ONGOING_EVENT;
         nm.notify(0, notification);
 
+        entry = new ExerciseEntry("GPS");
+        Log.d("RUNS", "onStartCommand");
+        entry.mInputType = Common.INPUT_TYPE_GPS;
+        startTracking(intent);
         return super.onStartCommand(intent, flags, startId);
     }
 
@@ -104,8 +108,6 @@ public class TrackingService extends Service implements GoogleApiClient.Connecti
         // if not started then mGoogleApiClient.connect()
         // setUpNotification()
         // create new entry
-        entry = new ExerciseEntry("GPS");
-        entry.mInputType = Common.INPUT_TYPE_GPS;
         // is this the same intent that gets passed in MapDisplayActivity?
         entry.mActivityType = intent.getExtras().getInt("activity_type");
         // set activity type
@@ -175,6 +177,7 @@ public class TrackingService extends Service implements GoogleApiClient.Connecti
     @Override
     public void onDestroy() {
         nm.cancelAll();
+        Log.d("RUNS", "service destroyed");
         super.onDestroy();
     }
 

@@ -148,7 +148,7 @@ public class ManualInputActivity extends AppCompatActivity
 
     @Override
     public void onDurationSelected(int duration) {
-        entry.mDuration = duration;
+        entry.mDuration = duration * 60;
     }
 
     @Override
