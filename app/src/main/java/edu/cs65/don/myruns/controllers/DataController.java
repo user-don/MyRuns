@@ -24,9 +24,6 @@ import edu.cs65.don.myruns.models.ExerciseEntry;
  */
 public class DataController {
 
-    public final int INPUT_TYPE_MANUAL = 0;
-    public final int INPUT_TYPE_GPS = 1;
-    public final int INPUT_TYPE_AUTOMATIC = 2;
     public ExerciseEntryDbHelper dbHelper;
     public ArrayList<ExerciseEntry> entries = new ArrayList<>();
     private Context context;

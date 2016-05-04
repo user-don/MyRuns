@@ -54,6 +54,7 @@ public class ExerciseEntry {
     public String mComment;       // Comments
     public ArrayList<LatLng> mLocationList; // Location list
     public DateTime lastUpdated;  // Last time entry was updated
+    public double mCurrentSpeed;  // Current speed
 
     public TimeZone timeZone;
 
@@ -61,6 +62,10 @@ public class ExerciseEntry {
         timeZone = TimeZone.getDefault();
         // initialize default values
         initValues();
+    }
+
+    public LatLng getMostRecentLatLng() {
+        return mLocationList.isEmpty() ? null : mLocationList.get(mLocationList.size() - 1);
     }
 
     public ExerciseEntry(String type) {
@@ -74,7 +79,7 @@ public class ExerciseEntry {
     private void initValues() {
         mActivityType = 0; mDuration = 0; mDistance = 0; mAvgPace = 0; mAvgSpeed = 0;
         mCalorie = 0; mClimb = 0; mHeartRate = 0; mComment = "";
-        mLocationList = new ArrayList<>();
+        mLocationList = new ArrayList<>(); mCurrentSpeed = 0;
         lastUpdated = new DateTime();
     }
 

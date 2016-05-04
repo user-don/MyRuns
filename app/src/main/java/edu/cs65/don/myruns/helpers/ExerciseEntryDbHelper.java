@@ -227,8 +227,10 @@ public class ExerciseEntryDbHelper extends SQLiteOpenHelper {
                 ArrayList<LatLng> mLocationList = new ArrayList<>();
                 try {
                     mLocationList = Serializer.deserializeToArraylist(gpsData);
-                } catch (Exception e) {
+                } catch (ClassNotFoundException | IOException e) {
                     e.printStackTrace();
+                } catch (NullPointerException e) {
+                    // do nothing
                 }
                 entry.mLocationList = mLocationList;
                 entries.add(entry);

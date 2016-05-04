@@ -4,13 +4,12 @@ import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.ServiceConnection;
-import android.location.Location;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.support.v4.app.FragmentActivity;
-import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -21,10 +20,6 @@ import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 
-import org.joda.time.DateTime;
-import org.joda.time.Duration;
-
-import edu.cs65.don.myruns.R;
 import edu.cs65.don.myruns.controllers.DataController;
 import edu.cs65.don.myruns.helpers.TrackingService;
 import edu.cs65.don.myruns.models.ExerciseEntry;
@@ -40,6 +35,32 @@ public class MapDisplayActivity extends FragmentActivity implements OnMapReadyCa
     private LocationManager lm;
     TrackingService mService;
     boolean mBound = false;
+    private EntityUpdateReceiver entityUpdateReceiver;
+
+
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        mDataController = DataController.getInstance(getApplicationContext());
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_gpsmode);
+        // Obtain the SupportMapFragment and get notified when the map is ready to be used.
+        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
+                .findFragmentById(R.id.map);
+        mapFragment.getMapAsync(this);
+        getPreferences();
+        // register receiver
+        entityUpdateReceiver = new EntityUpdateReceiver();
+        IntentFilter filter = new IntentFilter();
+        filter.addAction("edu.cs65.LOCATION_CHANGED");
+        registerReceiver(entityUpdateReceiver, filter);
+
+        Intent i = new Intent(this, TrackingService.class);
+        i.putExtra("activity_type", getIntent().getExtras().getInt("activity_type"));
+        startService(i);
+        bindService(i, mServiceConnection, Context.BIND_AUTO_CREATE);
+        mBound = true;
+    }
 
     public ServiceConnection mServiceConnection = new ServiceConnection() {
         @Override
@@ -58,25 +79,6 @@ public class MapDisplayActivity extends FragmentActivity implements OnMapReadyCa
         }
     };
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        mDataController = DataController.getInstance(getApplicationContext());
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_gpsmode);
-        // Obtain the SupportMapFragment and get notified when the map is ready to be used.
-        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
-                .findFragmentById(R.id.map);
-        mapFragment.getMapAsync(this);
-        entry = new ExerciseEntry("GPS");
-        entry.mInputType = mDataController.INPUT_TYPE_MANUAL;
-        entry.mActivityType = getIntent().getExtras().getInt("activity_type");
-        getPreferences();
-        // set up service
-        Intent i = new Intent(this, TrackingService.class);
-        getApplicationContext().bindService(i, mServiceConnection, Context.BIND_AUTO_CREATE);
-
-    }
-
 
     /**
      * Manipulates the map once available.
@@ -90,131 +92,61 @@ public class MapDisplayActivity extends FragmentActivity implements OnMapReadyCa
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
-        lm = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
-        mMap.setMyLocationEnabled(true);
-
-        // code for getting location
-//        Location location = mMap.getMyLocation();
-//        LatLng myLocation;
-//        if (location != null) {
-//            myLocation = new LatLng(location.getLatitude(),
-//                    location.getLongitude());
-//            myLatLng = myLocation;
-//
-//            CameraPosition cameraPosition = new CameraPosition.Builder()
-//                    .target(myLocation)      // Sets the center of the map
-//                    .zoom(16)                   // Sets the zoom
-//                    .bearing(0)                // Sets the orientation of the camera to north
-//                    .tilt(0)                   // Sets the tilt of the camera to 0 degrees
-//                    .build();                   // Creates a CameraPosition from the builder
-//            map.moveCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
-//        }
-
-        // Add a marker in Sydney and move the camera
-        LatLng sydney = new LatLng(-34, 151);
-        mMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
-        mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
+        //mMap.setMyLocationEnabled(true);
     }
 
 
-    public class EntityUpDateReceiver extends BroadcastReceiver {
+    public class EntityUpdateReceiver extends BroadcastReceiver {
 
         @Override
         public void onReceive(Context context, Intent intent) {
             // update everything
             // draw path on the map
-            if (entry.mLocationList.isEmpty()) {
-                //entry.mLocationList.add(latLng);
-                //entry.lastUpdated = new DateTime();
-            } else {
-                //updateLocation(latLng);
-            }
+            entry = mService.getEntry();
+            updateStats();
+            updateMap();
         }
     }
 
-    private void updateLocation(LatLng latLng) {
-        // update duration
-        Duration duration = new Duration(entry.mDateTime, new DateTime());
-        // Round to the nearest second
-        entry.mDuration = (int) (duration.getStandardSeconds() + 0.5);
-
-        // update distance
-        LatLng last = entry.mLocationList.get(entry.mLocationList.size()-1);
-        Location lastLoc = new Location("");
-        lastLoc.setLatitude(last.latitude);
-        lastLoc.setLongitude(last.longitude);
-        Location currLoc = new Location("");
-        currLoc.setLatitude(latLng.latitude);
-        currLoc.setLongitude(latLng.longitude);
-        double distInMeters = (double) lastLoc.distanceTo(currLoc);
-        entry.mDistance += distInMeters * 0.000621371;
-        String distanceStr = getDistanceString(entry.mDistance);
-
-        // average speed in miles per hour
-        double durationInHours = entry.mDuration / (60*60);
-        entry.mAvgSpeed = entry.mDistance / durationInHours;
+    private void updateStats() {
+        StringBuilder sb = new StringBuilder();
+        String typeString = getTypeString();
         String avgSpeedStr = getAverageSpeedString();
+        String currSpeedString = getCurrentSpeedString();
+        String climbString = getClimbString();
+        String calorieString = getCalorieString();
+        String distanceString = getDistanceString();
+        sb.append(typeString).append("\n").append(avgSpeedStr).append("\n")
+                .append(currSpeedString).append("\n")
+                .append(climbString).append("\n")
+                .append(calorieString).append("\n")
+                .append(distanceString).append("\n");
+        String textToDisplay = sb.toString();
 
-        // current speed in miles per hour
-        Duration d = new Duration(entry.lastUpdated, new DateTime());
-        double timeDelta = (double) d.getStandardHours();
-        double distInMiles = distInMeters * 0.000621371;
-        double currSpeed = distInMiles / timeDelta;
-        String currSpeedString = getCurrentSpeedString(currSpeed);
+    }
 
-        // climb
-        if (currLoc.getAltitude() > lastLoc.getAltitude()) {
-            entry.mClimb += currLoc.getAltitude() - lastLoc.getAltitude();
-        }
-        String climbString = getClimbString(entry.mClimb);
-
-        // calories
-        entry.mCalorie = (int) (entry.mDistance/ 15.0);
-        String calorieString = getCalorieString(entry.mCalorie);
-
-        // set last modified date for computing current speed
-        entry.lastUpdated = new DateTime();
-        // update the location
-        entry.mLocationList.add(latLng);
+    private void updateMap() {
+        LatLng currLoc = entry.getMostRecentLatLng();
         // draw path on map
-
+        mMap.addMarker(new MarkerOptions().position(currLoc).title("Test Marker"));
         CameraPosition cameraPosition = new CameraPosition.Builder()
-                .target(latLng)
+                .target(currLoc)
                 .zoom(18)                   // Sets the zoom
                 .bearing(0)                // Sets the orientation of the camera to north
                 .tilt(0)                   // Sets the tilt of the camera to 0 degrees
                 .build();                   // Creates a CameraPosition from the builder
         mMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
-        //mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, 18));
-
 
     }
-
-
 
     private void getPreferences() {
         unit_preference = mDataController.getUnitPreferences();
         unit_prefs = this.getResources().getStringArray(R.array.entryvalues_unit_preference);
     }
 
-    private String getCalorieString(int calories) {
-        return "Calorie: " + String.valueOf(calories);
-    }
-
-    private String getClimbString(double climb) {
-        if (unit_preference.equals(unit_prefs[0])) {
-            String val = String.valueOf(mDataController.round(mDataController.milesToKm(climb), 2));
-            return "Climb: " + val + " Kilometers";
-        } else {
-            return "Climb: " + String.valueOf(mDataController.round(climb, 2)) + " Miles";
-        }
-    }
-
-    private String getCurrentSpeedString(double speed) {
-        if (unit_preference.equals(unit_prefs[0]))
-            return "Cur speed: " + String.valueOf(mDataController.mphToKph(speed)) + " km/h";
-        else
-            return "Cur speed: " + String.valueOf(speed) + " m/h";
+    private String getTypeString() {
+        String type = getResources().getStringArray(R.array.activity_type)[entry.mActivityType];
+        return "Type: " + type;
     }
 
     private String getAverageSpeedString() {
@@ -224,16 +156,63 @@ public class MapDisplayActivity extends FragmentActivity implements OnMapReadyCa
             return "Avg speed: " + String.valueOf(entry.mAvgSpeed) + " m/h";
     }
 
-    private String getDistanceString(double distance) {
+    private String getCurrentSpeedString() {
         if (unit_preference.equals(unit_prefs[0]))
-            return "Distance: " + String.valueOf(mDataController.milesToKm(distance)) + " Kilometers";
+            return "Cur speed: " + String.valueOf(mDataController.mphToKph(entry.mCurrentSpeed)) + " km/h";
         else
-            return "Distance: " + String.valueOf(distance) + " Miles";
+            return "Cur speed: " + String.valueOf(entry.mCurrentSpeed) + " m/h";
     }
 
-    private double calculateAverageSpeed() {
-        // get total distance between markers
-        return 0;
+    private String getClimbString() {
+        if (unit_preference.equals(unit_prefs[0])) {
+            String val = String.valueOf(mDataController.round(mDataController.milesToKm(entry.mClimb), 2));
+            return "Climb: " + val + " Kilometers";
+        } else {
+            return "Climb: " + String.valueOf(mDataController.round(entry.mClimb, 2)) + " Miles";
+        }
+    }
+
+    private String getCalorieString() {
+        return "Calorie: " + String.valueOf(entry.mCalorie);
+    }
+
+    private String getDistanceString() {
+        if (unit_preference.equals(unit_prefs[0]))
+            return "Distance: " + String.valueOf(mDataController.milesToKm(entry.mDistance)) + " Kilometers";
+        else
+            return "Distance: " + String.valueOf(entry.mDistance) + " Miles";
+    }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        doUnbindService();
+    }
+
+    private void doUnbindService() {
+        if (mBound) {
+            unbindService(mServiceConnection);
+            mBound = false;
+        }
+    }
+
+    // TODO: unbind on save and cancel clicked
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        // if we use this activity for both displaying and recording,
+        // we check if new map task, and if so then we unregister
+        unregisterReceiver(entityUpdateReceiver);
+        // unbind tracking service
+        doUnbindService();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        mBound = getApplicationContext().bindService(new Intent(getApplicationContext(),
+                TrackingService.class), mServiceConnection, Context.BIND_AUTO_CREATE );
     }
 
     /**
@@ -242,4 +221,10 @@ public class MapDisplayActivity extends FragmentActivity implements OnMapReadyCa
     private void disconnect() {
         mBound = false;
     }
+
+//    @Override
+//    protected void onDestroy() {
+//        super.onDestroy();
+//        doUnbindService();
+//    }
 }
