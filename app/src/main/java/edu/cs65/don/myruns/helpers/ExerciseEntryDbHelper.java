@@ -116,38 +116,42 @@ public class ExerciseEntryDbHelper extends SQLiteOpenHelper {
 
     // Insert a item given each column value
     public Long insertEntry(ExerciseEntry entry) {
+        ExerciseEntry e = entry;
+        if (entry == null) {
+            e = new ExerciseEntry();
+        }
         SQLiteDatabase db = getWritableDatabase();
         ContentValues values = new ContentValues();
-        values.put(INPUT_TYPE, entry.mInputType);
-        values.put(ACTIVITY_TYPE, entry.mActivityType);
+        values.put(INPUT_TYPE, e.mInputType);
+        values.put(ACTIVITY_TYPE, e.mActivityType);
         // for inserting our date object, we store as ms from epoch
-        values.put(DATE_TIME, entry.storeDateTime());
-        values.put(DURATION, entry.mDuration);
-        values.put(DISTANCE, entry.mDistance);
-        values.put(AVG_PACE, entry.mAvgPace);
-        values.put(AVG_SPEED, entry.mAvgSpeed);
-        values.put(CALORIES, entry.mCalorie);
-        values.put(CLIMB, entry.mClimb);
-        values.put(HEARTRATE, entry.mHeartRate);
-        values.put(COMMENT, entry.mComment);
+        values.put(DATE_TIME, e.storeDateTime());
+        values.put(DURATION, e.mDuration);
+        values.put(DISTANCE, e.mDistance);
+        values.put(AVG_PACE, e.mAvgPace);
+        values.put(AVG_SPEED, e.mAvgSpeed);
+        values.put(CALORIES, e.mCalorie);
+        values.put(CLIMB, e.mClimb);
+        values.put(HEARTRATE, e.mHeartRate);
+        values.put(COMMENT, e.mComment);
         // put ArrayList in as a blob
 
         ByteArrayOutputStream b = new ByteArrayOutputStream();
         DataOutputStream o = new DataOutputStream(b);
-        for (LatLng loc : entry.mLocationList) {
+        for (LatLng loc : e.mLocationList) {
             try {
                 o.writeUTF(loc.latitude + "&" + loc.longitude);
-            } catch (Exception e) {
-                e.printStackTrace();
+            } catch (Exception exception) {
+                exception.printStackTrace();
             }
         }
         byte[] ba = b.toByteArray();
 
         values.put(GPS_DATA, ba);
-        entry.id = db.insert(TABLE_ENTRIES, null, values);
-        Log.d("RUNS", "Saved entry at " + entry.id);
+        e.id = db.insert(TABLE_ENTRIES, null, values);
+        Log.d("RUNS", "Saved e at " + e.id);
         //db.close();
-        return entry.id;
+        return e.id;
 
     }
 

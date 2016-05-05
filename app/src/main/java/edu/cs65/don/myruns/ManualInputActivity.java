@@ -96,13 +96,18 @@ public class ManualInputActivity extends AppCompatActivity
      */
     public void onSaveCancelClicked(View v) {
         if (v.getId() == R.id.manual_entry_save_button) {
-            // build calendar object if available
-            entry.mDateTime = buildCalendar();
-            mDataController.saveToDbAsync(entry);
-            finish();
+            if (entry == null) {
+                Toast.makeText(getApplicationContext(), "Failed to save entry", Toast.LENGTH_LONG).show();
+                finish();
+            } else {
+                // build calendar object if available
+                entry.mDateTime = buildCalendar();
+                mDataController.saveToDbAsync(entry);
+                finish();
+            }
         } else { // cancel pressed
-            finish();
             Toast.makeText(getApplicationContext(), "Entry discarded.", Toast.LENGTH_SHORT).show();
+            finish();
         }
     }
 
