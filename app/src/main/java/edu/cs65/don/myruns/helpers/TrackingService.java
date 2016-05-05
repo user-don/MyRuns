@@ -101,6 +101,13 @@ public class TrackingService extends Service implements GoogleApiClient.Connecti
                 mGoogleApiClient, mLocationRequest, this);
     }
 
+    @Override
+    public void onTaskRemoved(Intent rootIntent){
+        Log.d("RUNS", "User Removed Task");
+        nm.cancelAll();
+        stopSelf();
+    }
+
     protected void updateEntry(Location location) {
         double del = 0.00001;
         LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
