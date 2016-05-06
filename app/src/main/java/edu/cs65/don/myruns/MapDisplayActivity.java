@@ -30,6 +30,7 @@ import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
 
 import edu.cs65.don.myruns.controllers.DataController;
+import edu.cs65.don.myruns.fragments.StartFragment;
 import edu.cs65.don.myruns.helpers.TrackingService;
 import edu.cs65.don.myruns.models.ExerciseEntry;
 
@@ -54,8 +55,6 @@ public class MapDisplayActivity extends FragmentActivity implements OnMapReadyCa
     private Intent checkRegisterReceiver;
     private Intent trackingIntent;
 
-
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         dc = DataController.getInstance(getApplicationContext());
@@ -68,7 +67,12 @@ public class MapDisplayActivity extends FragmentActivity implements OnMapReadyCa
         getPreferences();
 
         trackingIntent = new Intent(this, TrackingService.class);
-        trackingIntent.putExtra("activity_type", getIntent().getExtras().getInt("activity_type"));
+        trackingIntent.putExtra(StartFragment.INPUT_KEY,
+                getIntent().getExtras().getInt(StartFragment.INPUT_KEY));
+        trackingIntent.putExtra(StartFragment.ACTIVITY_KEY,
+                getIntent().getExtras().getInt(StartFragment.ACTIVITY_KEY));
+
+        // only start service if it doesn't already exist
         if (savedInstanceState == null) {
             startService(trackingIntent);
         }
@@ -200,6 +204,11 @@ public class MapDisplayActivity extends FragmentActivity implements OnMapReadyCa
                 currentMarker.setPosition(currLoc);
                 plo = new PolylineOptions().addAll(entry.mLocationList);
                 //plo.add(currentMarker.getPosition());
+
+                // if current map view doesn't include end marker, recenter on current position
+                if (!mMap.getProjection().getVisibleRegion().latLngBounds.contains(currentMarker.getPosition())) {
+                    mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(currentMarker.getPosition(),18));
+                }
             }
             plo.color(Color.BLACK);
             polyline = mMap.addPolyline(plo);

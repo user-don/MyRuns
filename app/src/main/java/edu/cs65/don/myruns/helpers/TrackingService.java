@@ -6,7 +6,12 @@ import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
+import android.hardware.Sensor;
+import android.hardware.SensorEvent;
+import android.hardware.SensorEventListener;
+import android.hardware.SensorManager;
 import android.location.Location;
+import android.location.LocationManager;
 import android.os.Binder;
 import android.os.Bundle;
 import android.os.IBinder;
@@ -27,6 +32,7 @@ import org.joda.time.Duration;
 import edu.cs65.don.myruns.MapDisplayActivity;
 import edu.cs65.don.myruns.R;
 import edu.cs65.don.myruns.controllers.DataController;
+import edu.cs65.don.myruns.fragments.StartFragment;
 import edu.cs65.don.myruns.models.ExerciseEntry;
 
 /**
@@ -34,11 +40,17 @@ import edu.cs65.don.myruns.models.ExerciseEntry;
  * Created by don on 5/2/16.
  */
 public class TrackingService extends Service implements GoogleApiClient.ConnectionCallbacks,
-    GoogleApiClient.OnConnectionFailedListener, LocationListener {
+    GoogleApiClient.OnConnectionFailedListener, LocationListener, SensorEventListener {
 
 
     private GoogleApiClient mGoogleApiClient;
     private LocationRequest mLocationRequest;
+
+    /* sensor locals */
+    private SensorManager mSensorManager;
+    private Sensor mAccelerometer;
+    //private OnSensorChangedTask mAsyncTask;         // processes sensor data
+
     protected ExerciseEntry entry;
     private final IBinder mBinder = new TrackingBinder();
     private boolean startTracking = false;
@@ -50,8 +62,9 @@ public class TrackingService extends Service implements GoogleApiClient.Connecti
     @Nullable
     @Override
     public IBinder onBind(Intent intent) {
-        entry.mActivityType = intent.getExtras().getInt("activity_type");
-        //Log.d("RUNS", "Tracking service bound");
+        // why reassign?
+        // entry.mActivityType = intent.getExtras().getInt("activity_type");
+        Log.d("RUNS", "Tracking service bound");
         return mBinder;
     }
 
@@ -66,6 +79,7 @@ public class TrackingService extends Service implements GoogleApiClient.Connecti
         // Connect the client.
         mGoogleApiClient.connect();
         mDataController = DataController.getInstance(getApplicationContext());
+
         // set up notification in bar
         String notificationTitle = "MyRuns";
         String notificationText = "Recording your path now";
@@ -83,42 +97,68 @@ public class TrackingService extends Service implements GoogleApiClient.Connecti
         notification.flags = notification.flags | Notification.FLAG_ONGOING_EVENT;
         nm.notify(0, notification);
 
-        entry = new ExerciseEntry("GPS");
-        //Log.d("RUNS", "onStartCommand");
-        entry.mInputType = Common.INPUT_TYPE_GPS;
-        entry.mActivityType = intent.getExtras().getInt("activity_type");
+        // discern between GPS and Automatic input types
+        switch (intent.getIntExtra(StartFragment.INPUT_KEY, 1)) {
+            case 1:
+                entry = new ExerciseEntry("GPS");
+                entry.mInputType = Common.INPUT_TYPE_GPS;
+                entry.mActivityType = intent.getExtras().getInt(StartFragment.ACTIVITY_KEY);
+                break;
+
+            case 2:
+                Log.d("Location tracker", "starting automatic tracking");
+                entry = new ExerciseEntry("Automatic");
+                entry.mInputType = Common.INPUT_TYPE_AUTOMATIC;
+                entry.mActivityType = intent.getExtras().getInt(StartFragment.ACTIVITY_KEY);   // will be overwrote
+
+                // set up accelerometer and register callback
+                mSensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
+                mAccelerometer = mSensorManager
+                        .getDefaultSensor(Sensor.TYPE_ACCELEROMETER);   // not TYPE_LINEAR_ACCELERATION?
+                mSensorManager.registerListener(this, mAccelerometer,
+                        SensorManager.SENSOR_DELAY_FASTEST);
+                break;
+        }
+
+        Log.d("RUNS", "onStartCommand");
         return super.onStartCommand(intent, flags, startId);
     }
 
     @Override
     public void onConnected(@Nullable Bundle bundle) {
 
-
         mLocationRequest = LocationRequest.create();
         mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
         mLocationRequest.setInterval(1000); // Update location every second
         LocationServices.FusedLocationApi.requestLocationUpdates(
                 mGoogleApiClient, mLocationRequest, this);
+
+
     }
 
+    /* -------------------------------------- GPS TASKS -------------------------------------- */
     @Override
     public void onTaskRemoved(Intent rootIntent){
         //Log.d("RUNS", "User Removed Task");
         nm.cancelAll();
+        LocationServices.FusedLocationApi.removeLocationUpdates(mGoogleApiClient, this);
+        mSensorManager.unregisterListener(this,mAccelerometer);
         stopSelf();
     }
 
     protected void updateEntry(Location location) {
         double del = 0.00001;
         LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
-        if (entry.mLocationList.isEmpty()) {
-            // do nothing
+        if (entry.mLocationList == null) {
+            Log.d("Tracking Service", "Entry is null");     // do nothing
+        } else if (entry.mLocationList.isEmpty()) {
+            Log.d("Tracking Service", "Location List is null");     // do nothing
         } else {
             // update duration
             Duration duration = new Duration(entry.mDateTime, new DateTime());
             // Round to the nearest second
             float durationInS =
-            entry.mDuration = (int) duration.getStandardSeconds();
+                entry.mDuration = (int) duration.getStandardSeconds();
 
             // update distance
             LatLng last = entry.mLocationList.get(entry.mLocationList.size() - 1);
@@ -145,6 +185,7 @@ public class TrackingService extends Service implements GoogleApiClient.Connecti
 
             // climb
             boolean altitudeWorking = !(location.getAltitude()==0 || entry.lastLoc.getAltitude()==0);
+
             if (location.getAltitude() > entry.lastLoc.getAltitude() && altitudeWorking) {
                 entry.mClimb += (location.getAltitude() - entry.lastLoc.getAltitude()) * 0.000621371;
             }
@@ -174,7 +215,9 @@ public class TrackingService extends Service implements GoogleApiClient.Connecti
     @Override
     public void onDestroy() {
         nm.cancelAll();
-        //Log.d("RUNS", "service destroyed");
+        LocationServices.FusedLocationApi.removeLocationUpdates(mGoogleApiClient, this);
+        mSensorManager.unregisterListener(this,mAccelerometer);
+        Log.d("RUNS", "service destroyed");
         super.onDestroy();
     }
 
@@ -202,6 +245,27 @@ public class TrackingService extends Service implements GoogleApiClient.Connecti
     public void startTrackingPosition() {
         startTracking = true;
     }
+
+    /* -------------------------------------- SENSOR TASKS -------------------------------------- */
+
+    public void onSensorChanged(SensorEvent event) {
+
+        // get magnitude value
+        if (event.sensor.getType() == Sensor.TYPE_ACCELEROMETER) {
+            double magnitude = event.values[0] * event.values[0] +
+                    event.values[1] * event.values[1] +
+                    event.values[2] * event.values[2];
+            Log.d("Motion Tracker", "accel magnitude: " + magnitude);
+        }
+
+
+        // add to queue of data for async task to process
+
+    }
+
+    public void onAccuracyChanged(Sensor sensor, int accuracy) {
+    }
+
 
     /*
 	                __  __    _                __         __              __
