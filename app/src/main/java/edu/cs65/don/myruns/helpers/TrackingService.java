@@ -29,6 +29,8 @@ import com.google.android.gms.location.LocationListener;
 import org.joda.time.DateTime;
 import org.joda.time.Duration;
 
+import java.util.concurrent.ArrayBlockingQueue;
+
 import edu.cs65.don.myruns.MapDisplayActivity;
 import edu.cs65.don.myruns.R;
 import edu.cs65.don.myruns.controllers.DataController;
@@ -50,6 +52,7 @@ public class TrackingService extends Service implements GoogleApiClient.Connecti
     private SensorManager mSensorManager;
     private Sensor mAccelerometer;
     //private OnSensorChangedTask mAsyncTask;         // processes sensor data
+    private ArrayBlockingQueue<Double> mSensorDataBuffer;
 
     protected ExerciseEntry entry;
     private final IBinder mBinder = new TrackingBinder();
@@ -111,6 +114,8 @@ public class TrackingService extends Service implements GoogleApiClient.Connecti
                 entry.mInputType = Common.INPUT_TYPE_AUTOMATIC;
                 entry.mActivityType = intent.getExtras().getInt(StartFragment.ACTIVITY_KEY);   // will be overwrote
 
+                mSensorDataBuffer = new ArrayBlockingQueue<Double>(1000);   // 1000 is initial size
+
                 // set up accelerometer and register callback
                 mSensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
                 mAccelerometer = mSensorManager
@@ -133,10 +138,8 @@ public class TrackingService extends Service implements GoogleApiClient.Connecti
         LocationServices.FusedLocationApi.requestLocationUpdates(
                 mGoogleApiClient, mLocationRequest, this);
 
-
     }
 
-    /* -------------------------------------- GPS TASKS -------------------------------------- */
     @Override
     public void onTaskRemoved(Intent rootIntent){
         //Log.d("RUNS", "User Removed Task");
@@ -145,6 +148,8 @@ public class TrackingService extends Service implements GoogleApiClient.Connecti
         mSensorManager.unregisterListener(this,mAccelerometer);
         stopSelf();
     }
+
+    /* -------------------------------------- GPS TASKS -------------------------------------- */
 
     protected void updateEntry(Location location) {
         double del = 0.00001;
@@ -250,17 +255,28 @@ public class TrackingService extends Service implements GoogleApiClient.Connecti
 
     public void onSensorChanged(SensorEvent event) {
 
-        // get magnitude value
         if (event.sensor.getType() == Sensor.TYPE_ACCELEROMETER) {
+
+            // get magnitude value
             double magnitude = event.values[0] * event.values[0] +
                     event.values[1] * event.values[1] +
                     event.values[2] * event.values[2];
-            Log.d("Motion Tracker", "accel magnitude: " + magnitude);
+
+
+            // add to queue of data for async task to process
+            try {
+                mSensorDataBuffer.add(magnitude);
+            } catch (IllegalStateException e) {
+                // double buffer size because current buffer is full
+                ArrayBlockingQueue<Double> newBuffer = new ArrayBlockingQueue<Double>(
+                        mSensorDataBuffer.size() * 2);
+
+                mSensorDataBuffer.drainTo(newBuffer);
+                mSensorDataBuffer = newBuffer;
+                mSensorDataBuffer.add(magnitude);
+            }
         }
-
-
-        // add to queue of data for async task to process
-
+        
     }
 
     public void onAccuracyChanged(Sensor sensor, int accuracy) {
