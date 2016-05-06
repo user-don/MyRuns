@@ -149,7 +149,7 @@ public class ExerciseEntryDbHelper extends SQLiteOpenHelper {
 
         values.put(GPS_DATA, ba);
         e.id = db.insert(TABLE_ENTRIES, null, values);
-        Log.d("RUNS", "Saved e at " + e.id);
+        //Log.d("RUNS", "Saved e at " + e.id);
         //db.close();
         return e.id;
 
@@ -205,7 +205,7 @@ public class ExerciseEntryDbHelper extends SQLiteOpenHelper {
                     ArrayList<String> splitStr = Lists.newArrayList(split.iterator());
                     double lat = Double.parseDouble(splitStr.get(0));
                     double lon = Double.parseDouble(splitStr.get(1));
-                    Log.d("RUNS", "lat: " + String.valueOf(lat) + "lon: " + String.valueOf(lon));
+                    //Log.d("RUNS", "lat: " + String.valueOf(lat) + "lon: " + String.valueOf(lon));
                     LatLng latLng = new LatLng(lat,lon);
                     locList.add(latLng);
                 }
@@ -229,7 +229,7 @@ public class ExerciseEntryDbHelper extends SQLiteOpenHelper {
             while (!query.isAfterLast()) {
                 ExerciseEntry entry = new ExerciseEntry();
                 entry.id = query.getLong(query.getColumnIndex(COLUMN_ID));
-                Log.d("RUNS", "Entry ID retrieved: " + entry.id);
+                //Log.d("RUNS", "Entry ID retrieved: " + entry.id);
                 entry.mInputType = query.getInt(query.getColumnIndex(INPUT_TYPE));
                 entry.mActivityType = query.getInt(query.getColumnIndex(ACTIVITY_TYPE));
                 long timeFromEpoch = query.getInt(query.getColumnIndex(DATE_TIME));
@@ -256,7 +256,7 @@ public class ExerciseEntryDbHelper extends SQLiteOpenHelper {
                         ArrayList<String> splitStr = Lists.newArrayList(split.iterator());
                         double lat = Double.parseDouble(splitStr.get(0));
                         double lon = Double.parseDouble(splitStr.get(1));
-                        Log.d("RUNS", "lat: " + String.valueOf(lat) + "lon: " + String.valueOf(lon));
+                        //Log.d("RUNS", "lat: " + String.valueOf(lat) + "lon: " + String.valueOf(lon));
                         LatLng latLng = new LatLng(lat,lon);
                         locList.add(latLng);
                     }

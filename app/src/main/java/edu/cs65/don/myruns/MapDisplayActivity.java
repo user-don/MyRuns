@@ -287,12 +287,21 @@ public class MapDisplayActivity extends FragmentActivity implements OnMapReadyCa
      */
     public void onSaveCancelClicked (View v) {
         if (v.getId() == R.id.gps_entry_save_button) {
-            // save entry to db
-            dc.saveToDbAsync(entry);
-            // stop service
-            Intent i = new Intent(this, TrackingService.class);
-            stopService(i);
-            finish();
+
+            if (entry == null) {
+                Toast.makeText(getApplicationContext(), "Failed to save entry", Toast.LENGTH_LONG).show();
+                // stop service
+                Intent i = new Intent(this, TrackingService.class);
+                stopService(i);
+                finish();
+            } else {
+                // save entry to db
+                dc.saveToDbAsync(entry);
+                // stop service
+                Intent i = new Intent(this, TrackingService.class);
+                stopService(i);
+                finish();
+            }
         } else if (v.getId() == R.id.gps_entry_cancel_button) {
             // stop service
             Intent i = new Intent(this, TrackingService.class);
