@@ -12,6 +12,7 @@ import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.location.Location;
 import android.location.LocationManager;
+import android.os.AsyncTask;
 import android.os.Binder;
 import android.os.Bundle;
 import android.os.IBinder;
@@ -53,6 +54,9 @@ public class TrackingService extends Service implements GoogleApiClient.Connecti
     private Sensor mAccelerometer;
     //private OnSensorChangedTask mAsyncTask;         // processes sensor data
     private ArrayBlockingQueue<Double> mSensorDataBuffer;
+
+    public static final int ACCELEROMETER_QUEUE_LENGTH = 2048;
+    public static final int ACCELEROMETER_BLOCK_CAPACITY = 64;
 
     protected ExerciseEntry entry;
     private final IBinder mBinder = new TrackingBinder();
@@ -114,7 +118,7 @@ public class TrackingService extends Service implements GoogleApiClient.Connecti
                 entry.mInputType = Common.INPUT_TYPE_AUTOMATIC;
                 entry.mActivityType = intent.getExtras().getInt(StartFragment.ACTIVITY_KEY);   // will be overwrote
 
-                mSensorDataBuffer = new ArrayBlockingQueue<Double>(1000);   // 1000 is initial size
+                mSensorDataBuffer = new ArrayBlockingQueue<Double>(ACCELEROMETER_QUEUE_LENGTH);
 
                 // set up accelerometer and register callback
                 mSensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
@@ -276,10 +280,66 @@ public class TrackingService extends Service implements GoogleApiClient.Connecti
                 mSensorDataBuffer.add(magnitude);
             }
         }
-        
+
     }
 
     public void onAccuracyChanged(Sensor sensor, int accuracy) {
+    }
+
+    /* ---------------------------------- ASYNC PROCESSING ---------------------------------- */
+
+    private class SensorClassifierWorker extends AsyncTask<Void, Void, Void> {
+
+        private static final String TAG = "Asyc Processor";
+
+        @Override
+        protected void onPreExecute() {
+
+        }
+
+        @Override
+        protected Void doInBackground(Void ... arg0) {
+
+            int blocksize = 0;
+            FFT fft = new FFT(ACCELEROMETER_BLOCK_CAPACITY);
+            double[] accelData = new double[ACCELEROMETER_BLOCK_CAPACITY];
+            double[] re = accelData; // real component
+            double[] im = new double[ACCELEROMETER_BLOCK_CAPACITY];     // imaginary component -- zero out
+
+            double maxVal = Double.MAX_VALUE;
+
+            // process data
+            while (true) {
+
+                try {
+
+                    if (isCancelled() == true) {
+                        Log.d(TAG, "ending data processing worker");
+                        return null;
+                    }
+
+                    // get data until block is full
+                    accelData[blocksize++] = mSensorDataBuffer.take().doubleValue();
+
+                    // got enough samples in block get calculate a classifier
+                    if (blocksize == ACCELEROMETER_BLOCK_CAPACITY) {
+
+
+                    }
+
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+
+        }
+
+        @Override
+        protected void onCancelled() {
+
+        }
+
+
     }
 
 
