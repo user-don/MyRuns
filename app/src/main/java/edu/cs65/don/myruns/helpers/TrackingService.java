@@ -180,9 +180,9 @@ public class TrackingService extends Service implements GoogleApiClient.Connecti
         double del = 0.00001;
         LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
         if (entry.mLocationList == null) {
-            Log.d("Tracking Service", "Entry is null");     // do nothing
-        } else if (entry.mLocationList.isEmpty()) {
-            Log.d("Tracking Service", "Location List is null");     // do nothing
+            Log.d(TAG, "Entry has null location list");     // do nothing
+        } else if (entry.mLocationList.size() == 0) {
+            Log.d(TAG, "Adding first location");
         } else {
             // update duration
             Duration duration = new Duration(entry.mDateTime, new DateTime());

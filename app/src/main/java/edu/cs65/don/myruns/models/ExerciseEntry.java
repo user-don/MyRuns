@@ -83,6 +83,7 @@ public class ExerciseEntry {
         mCalorie = 0; mClimb = 0; mHeartRate = 0; mComment = "";
         mLocationList = new ArrayList<>(); mCurrentSpeed = 0;
         lastUpdated = new DateTime();
+        mLocationList = new ArrayList<LatLng>();
     }
 
     /**
