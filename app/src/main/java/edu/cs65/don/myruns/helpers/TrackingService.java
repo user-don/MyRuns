@@ -141,6 +141,8 @@ public class TrackingService extends Service implements GoogleApiClient.Connecti
     public void onTaskRemoved(Intent rootIntent){
         //Log.d("RUNS", "User Removed Task");
         nm.cancelAll();
+        LocationServices.FusedLocationApi.removeLocationUpdates(mGoogleApiClient, this);
+        mSensorManager.unregisterListener(this,mAccelerometer);
         stopSelf();
     }
 
@@ -183,6 +185,7 @@ public class TrackingService extends Service implements GoogleApiClient.Connecti
 
             // climb
             boolean altitudeWorking = !(location.getAltitude()==0 || entry.lastLoc.getAltitude()==0);
+
             if (location.getAltitude() > entry.lastLoc.getAltitude() && altitudeWorking) {
                 entry.mClimb += (location.getAltitude() - entry.lastLoc.getAltitude()) * 0.000621371;
             }
@@ -213,6 +216,7 @@ public class TrackingService extends Service implements GoogleApiClient.Connecti
     public void onDestroy() {
         nm.cancelAll();
         LocationServices.FusedLocationApi.removeLocationUpdates(mGoogleApiClient, this);
+        mSensorManager.unregisterListener(this,mAccelerometer);
         Log.d("RUNS", "service destroyed");
         super.onDestroy();
     }
