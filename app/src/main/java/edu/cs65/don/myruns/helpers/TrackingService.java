@@ -182,9 +182,7 @@ public class TrackingService extends Service implements GoogleApiClient.Connecti
             entry.mCurrentSpeed = (del + distInMiles) / (del + timeDelta);
 
             // climb
-            boolean altitudeWorking = location.getAltitude() == 0 ||
-                    entry.lastLoc.getAltitude() == 0;
-
+            boolean altitudeWorking = !(location.getAltitude()==0 || entry.lastLoc.getAltitude()==0);
             if (location.getAltitude() > entry.lastLoc.getAltitude() && altitudeWorking) {
                 entry.mClimb += (location.getAltitude() - entry.lastLoc.getAltitude()) * 0.000621371;
             }

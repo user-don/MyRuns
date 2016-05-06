@@ -54,7 +54,7 @@ public class TrackingServiceUnitTest {
 
 
         assertThat("calories", entry.mCalorie, is(not(0)));
-        assertThat("distance", entry.mCalorie != 0);
+        assertThat("distance", entry.mDistance != 0);
         //Log.d("RUNS", String.valueOf(entry.mCalorie));
     }
 }
