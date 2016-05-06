@@ -137,6 +137,12 @@ public class TrackingService extends Service implements GoogleApiClient.Connecti
     }
 
     /* -------------------------------------- GPS TASKS -------------------------------------- */
+    @Override
+    public void onTaskRemoved(Intent rootIntent){
+        //Log.d("RUNS", "User Removed Task");
+        nm.cancelAll();
+        stopSelf();
+    }
 
     protected void updateEntry(Location location) {
         double del = 0.00001;
@@ -182,9 +188,9 @@ public class TrackingService extends Service implements GoogleApiClient.Connecti
             if (location.getAltitude() > entry.lastLoc.getAltitude() && altitudeWorking) {
                 entry.mClimb += (location.getAltitude() - entry.lastLoc.getAltitude()) * 0.000621371;
             }
-            Log.d("RUNS", "mClimb: " + String.valueOf(entry.mClimb));
-            Log.d("RUNS", "Current altitude: " + String.valueOf(location.getAltitude()));
-            Log.d("RUNS", "Previous altitude: " + String.valueOf(entry.lastLoc.getAltitude()));
+            //Log.d("RUNS", "mClimb: " + String.valueOf(entry.mClimb));
+            //Log.d("RUNS", "Current altitude: " + String.valueOf(location.getAltitude()));
+            //Log.d("RUNS", "Previous altitude: " + String.valueOf(entry.lastLoc.getAltitude()));
 
             // calories
             entry.mCalorie = (int) (entry.mDistance / 15.0);
