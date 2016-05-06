@@ -23,6 +23,8 @@ public class StartFragment extends Fragment {
     private Spinner input_type_spinner;
     private Spinner activity_type_spinner;
     private static final String RUNS = "runs";
+    public static final String INPUT_KEY = "input type";
+    public static final String ACTIVITY_KEY = "activity type";
 
     public StartFragment() {
         // Required empty public constructor
@@ -51,22 +53,24 @@ public class StartFragment extends Fragment {
                 // launch activity
                 String [] input_type_array = getResources().getStringArray(R.array.input_type);
                 String input_type = input_type_spinner.getSelectedItem().toString();
+
                 if (input_type.equals(input_type_array[0])) {
                     // Manual entry. Launch ManualInputActivity class, passing activity type
                     // in the bundle
                     Intent intent = new Intent(getActivity(), ManualInputActivity.class);
                     Bundle extras = new Bundle();
-                    extras.putInt("activity_type",
+                    extras.putInt(ACTIVITY_KEY,
                             activity_type_spinner.getSelectedItemPosition());
                     intent.putExtras(extras);
                     startActivity(intent);
-                }
-                else {
-                    // GPS or Automatic, pull up GPS mode for both
-                    // TODO: Eventually differentiate Automatic mode
+
+                } else {
+                    // GPS or Automatic, stuff selected type into bundle
                     Intent intent = new Intent(getActivity(), MapDisplayActivity.class);
                     Bundle extras = new Bundle();
-                    extras.putInt("activity_type",
+                    extras.putInt(INPUT_KEY,
+                            input_type_spinner.getSelectedItemPosition());
+                    extras.putInt(ACTIVITY_KEY,
                             activity_type_spinner.getSelectedItemPosition());
                     intent.putExtras(extras);
                     startActivity(intent);

@@ -72,7 +72,7 @@ public class ExerciseEntry {
 
     public ExerciseEntry(String type) {
         initValues();
-        if ("GPS".equals(type)) {
+        if ("GPS".equals(type) || "Automatic".equals(type)) {
             // set date and time to current date and time
             mDateTime = new DateTime();
         }
