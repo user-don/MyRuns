@@ -45,6 +45,7 @@ import edu.cs65.don.myruns.models.ExerciseEntry;
 public class TrackingService extends Service implements GoogleApiClient.ConnectionCallbacks,
     GoogleApiClient.OnConnectionFailedListener, LocationListener, SensorEventListener {
 
+    private static final String TAG = "TrackingService";
 
     private GoogleApiClient mGoogleApiClient;
     private LocationRequest mLocationRequest;
@@ -52,8 +53,9 @@ public class TrackingService extends Service implements GoogleApiClient.Connecti
     /* sensor locals */
     private SensorManager mSensorManager;
     private Sensor mAccelerometer;
-    private SensorClassifierWorker mAsyncTask;         // processes sensor data
+    private SensorClassifierWorker mAsyncTask = null;         // processes sensor data
     private ArrayBlockingQueue<Double> mSensorDataBuffer;
+    private int voteList[];
 
     public static final int ACCELEROMETER_QUEUE_LENGTH = 2048;
     public static final int ACCELEROMETER_BLOCK_CAPACITY = 64;
@@ -107,13 +109,14 @@ public class TrackingService extends Service implements GoogleApiClient.Connecti
         // discern between GPS and Automatic input types
         switch (intent.getIntExtra(StartFragment.INPUT_KEY, 1)) {
             case 1:
+                Log.d(TAG, "starting GPS tracking");
                 entry = new ExerciseEntry("GPS");
                 entry.mInputType = Common.INPUT_TYPE_GPS;
                 entry.mActivityType = intent.getExtras().getInt(StartFragment.ACTIVITY_KEY);
                 break;
 
             case 2:
-                Log.d("Location tracker", "starting automatic tracking");
+                Log.d(TAG, "starting automatic tracking");
                 entry = new ExerciseEntry("Automatic");
                 entry.mInputType = Common.INPUT_TYPE_AUTOMATIC;
                 entry.mActivityType = intent.getExtras().getInt(StartFragment.ACTIVITY_KEY);   // will be overwrote
@@ -126,6 +129,13 @@ public class TrackingService extends Service implements GoogleApiClient.Connecti
                         .getDefaultSensor(Sensor.TYPE_ACCELEROMETER);   // not TYPE_LINEAR_ACCELERATION?
                 mSensorManager.registerListener(this, mAccelerometer,
                         SensorManager.SENSOR_DELAY_FASTEST);
+
+                mAsyncTask = new SensorClassifierWorker();
+                voteList = new int[4];
+                break;
+
+            default:
+                Log.d(TAG,"Error getting input key value");
                 break;
         }
 
@@ -135,6 +145,7 @@ public class TrackingService extends Service implements GoogleApiClient.Connecti
 
     @Override
     public void onConnected(@Nullable Bundle bundle) {
+        Log.d(TAG,"Connected to client");
 
         mLocationRequest = LocationRequest.create();
         mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
@@ -143,8 +154,9 @@ public class TrackingService extends Service implements GoogleApiClient.Connecti
                 mGoogleApiClient, mLocationRequest, this);
 
         // start sensor data processor
-        mAsyncTask = new SensorClassifierWorker();
-        mAsyncTask.execute();
+        if (mAsyncTask != null) {
+            mAsyncTask.execute();
+        }
     }
 
     @Override
@@ -152,7 +164,13 @@ public class TrackingService extends Service implements GoogleApiClient.Connecti
         //Log.d("RUNS", "User Removed Task");
         nm.cancelAll();
         LocationServices.FusedLocationApi.removeLocationUpdates(mGoogleApiClient, this);
-        mSensorManager.unregisterListener(this,mAccelerometer);
+
+        // stop sensor updates
+        if (mSensorManager != null) {
+            mSensorManager.unregisterListener(this,mAccelerometer);
+            mAsyncTask.cancel(true);
+        }
+
         stopSelf();
     }
 
@@ -228,7 +246,13 @@ public class TrackingService extends Service implements GoogleApiClient.Connecti
     public void onDestroy() {
         nm.cancelAll();
         LocationServices.FusedLocationApi.removeLocationUpdates(mGoogleApiClient, this);
-        mSensorManager.unregisterListener(this,mAccelerometer);
+
+        // stop sensor updates
+        if (mSensorManager != null) {
+            mSensorManager.unregisterListener(this,mAccelerometer);
+            mAsyncTask.cancel(true);
+        }
+
         Log.d("RUNS", "service destroyed");
         super.onDestroy();
     }
@@ -266,9 +290,9 @@ public class TrackingService extends Service implements GoogleApiClient.Connecti
         if (event.sensor.getType() == Sensor.TYPE_ACCELEROMETER) {
 
             // get magnitude value
-            double magnitude = event.values[0] * event.values[0] +
+            double magnitude = Math.sqrt(event.values[0] * event.values[0] +
                     event.values[1] * event.values[1] +
-                    event.values[2] * event.values[2];
+                    event.values[2] * event.values[2]);
 
 
             // add to queue of data for async task to process
@@ -350,8 +374,21 @@ public class TrackingService extends Service implements GoogleApiClient.Connecti
 
                         // add max value of accelration
                         toClassify[ACCELEROMETER_BLOCK_CAPACITY] = maxVal;
-                        double label = WekaClassifier1.classify(toClassify);
+                        int label = (int) WekaClassifier1.classify(toClassify);
                         Log.d(TAG, "labeling -> " + label);
+
+                        // add vote and assign current label
+                        voteList[label] += 1;
+
+                        // get largest vote and assign to activity
+                        int activityVotes = 0, curActivityInd = 0;
+                        for (int i = 0; i < 3; i++) {
+                            if (voteList[i] > activityVotes) {
+                                activityVotes = voteList[i];
+                                curActivityInd = i;
+                            }
+                        }
+                        entry.mActivityType = curActivityInd;
                     }
 
                 } catch (Exception e) {
