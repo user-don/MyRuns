@@ -52,7 +52,7 @@ public class TrackingService extends Service implements GoogleApiClient.Connecti
     /* sensor locals */
     private SensorManager mSensorManager;
     private Sensor mAccelerometer;
-    //private OnSensorChangedTask mAsyncTask;         // processes sensor data
+    private SensorClassifierWorker mAsyncTask;         // processes sensor data
     private ArrayBlockingQueue<Double> mSensorDataBuffer;
 
     public static final int ACCELEROMETER_QUEUE_LENGTH = 2048;
@@ -142,6 +142,9 @@ public class TrackingService extends Service implements GoogleApiClient.Connecti
         LocationServices.FusedLocationApi.requestLocationUpdates(
                 mGoogleApiClient, mLocationRequest, this);
 
+        // start sensor data processor
+        mAsyncTask = new SensorClassifierWorker();
+        mAsyncTask.execute();
     }
 
     @Override
@@ -257,6 +260,7 @@ public class TrackingService extends Service implements GoogleApiClient.Connecti
 
     /* -------------------------------------- SENSOR TASKS -------------------------------------- */
 
+    @Override
     public void onSensorChanged(SensorEvent event) {
 
         if (event.sensor.getType() == Sensor.TYPE_ACCELEROMETER) {
@@ -300,13 +304,15 @@ public class TrackingService extends Service implements GoogleApiClient.Connecti
         @Override
         protected Void doInBackground(Void ... arg0) {
 
+            Double[] toClassify = new Double[ACCELEROMETER_BLOCK_CAPACITY + 1];
+
             int blocksize = 0;
             FFT fft = new FFT(ACCELEROMETER_BLOCK_CAPACITY);
             double[] accelData = new double[ACCELEROMETER_BLOCK_CAPACITY];
             double[] re = accelData; // real component
             double[] im = new double[ACCELEROMETER_BLOCK_CAPACITY];     // imaginary component -- zero out
 
-            double maxVal = Double.MAX_VALUE;
+            double maxVal = Double.MIN_VALUE;
 
             // process data
             while (true) {
@@ -323,8 +329,29 @@ public class TrackingService extends Service implements GoogleApiClient.Connecti
 
                     // got enough samples in block get calculate a classifier
                     if (blocksize == ACCELEROMETER_BLOCK_CAPACITY) {
+                        blocksize = 0;
 
+                        maxVal = .0;
+                        for (double val : accelData) {
+                            if (maxVal < val) {
+                                maxVal = val;
+                            }
+                        }
 
+                        // FFT on real and imaginary components
+                        fft.fft(re, im);
+
+                        // fill out FFT magnitudes
+                        for (int j = 0; j < re.length; j++) {
+                            double mag = Math.sqrt(re[j] * re[j] + im[j] * im[j]);
+                            toClassify[j] = mag;
+                            im[j] = .0; // Clear the field for next iteration
+                        }
+
+                        // add max value of accelration
+                        toClassify[ACCELEROMETER_BLOCK_CAPACITY] = maxVal;
+                        double label = WekaClassifier1.classify(toClassify);
+                        Log.d(TAG, "labeling -> " + label);
                     }
 
                 } catch (Exception e) {
