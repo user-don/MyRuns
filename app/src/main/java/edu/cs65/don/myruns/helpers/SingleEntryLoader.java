@@ -21,7 +21,7 @@ public class SingleEntryLoader extends AsyncTaskLoader<ExerciseEntry> {
         // instantiate the data controller as a singleton
         mDataController = DataController.getInstance(context.getApplicationContext());
         this.id = id;
-        Log.d("RUNS", "ID passed to SingleEntryLoader: " + id);
+        //Log.d("RUNS", "ID passed to SingleEntryLoader: " + id);
     }
 
     @Override

@@ -51,7 +51,7 @@ public class TrackingService extends Service implements GoogleApiClient.Connecti
     @Override
     public IBinder onBind(Intent intent) {
         entry.mActivityType = intent.getExtras().getInt("activity_type");
-        Log.d("RUNS", "Tracking service bound");
+        //Log.d("RUNS", "Tracking service bound");
         return mBinder;
     }
 
@@ -84,7 +84,7 @@ public class TrackingService extends Service implements GoogleApiClient.Connecti
         nm.notify(0, notification);
 
         entry = new ExerciseEntry("GPS");
-        Log.d("RUNS", "onStartCommand");
+        //Log.d("RUNS", "onStartCommand");
         entry.mInputType = Common.INPUT_TYPE_GPS;
         entry.mActivityType = intent.getExtras().getInt("activity_type");
         return super.onStartCommand(intent, flags, startId);
@@ -103,7 +103,7 @@ public class TrackingService extends Service implements GoogleApiClient.Connecti
 
     @Override
     public void onTaskRemoved(Intent rootIntent){
-        Log.d("RUNS", "User Removed Task");
+        //Log.d("RUNS", "User Removed Task");
         nm.cancelAll();
         stopSelf();
     }
@@ -149,9 +149,9 @@ public class TrackingService extends Service implements GoogleApiClient.Connecti
             if (location.getAltitude() > entry.lastLoc.getAltitude() && altitudeWorking) {
                 entry.mClimb += (location.getAltitude() - entry.lastLoc.getAltitude()) * 0.000621371;
             }
-            Log.d("RUNS", "mClimb: " + String.valueOf(entry.mClimb));
-            Log.d("RUNS", "Current altitude: " + String.valueOf(location.getAltitude()));
-            Log.d("RUNS", "Previous altitude: " + String.valueOf(entry.lastLoc.getAltitude()));
+            //Log.d("RUNS", "mClimb: " + String.valueOf(entry.mClimb));
+            //Log.d("RUNS", "Current altitude: " + String.valueOf(location.getAltitude()));
+            //Log.d("RUNS", "Previous altitude: " + String.valueOf(entry.lastLoc.getAltitude()));
 
             // calories
             entry.mCalorie = (int) (entry.mDistance / 15.0);
@@ -175,7 +175,7 @@ public class TrackingService extends Service implements GoogleApiClient.Connecti
     @Override
     public void onDestroy() {
         nm.cancelAll();
-        Log.d("RUNS", "service destroyed");
+        //Log.d("RUNS", "service destroyed");
         super.onDestroy();
     }
 
