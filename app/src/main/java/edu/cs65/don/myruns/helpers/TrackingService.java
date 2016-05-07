@@ -4,14 +4,12 @@ import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
-import android.content.Context;
 import android.content.Intent;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.location.Location;
-import android.location.LocationManager;
 import android.os.AsyncTask;
 import android.os.Binder;
 import android.os.Bundle;
@@ -64,7 +62,7 @@ public class TrackingService extends Service implements GoogleApiClient.Connecti
     private final IBinder mBinder = new TrackingBinder();
     private boolean startTracking = false;
     private boolean onLocationChangedCalled = false;
-    private static DataController mDataController;
+    private static DataController dc;
     private Notification notification;
     private NotificationManager nm;
 
@@ -87,7 +85,7 @@ public class TrackingService extends Service implements GoogleApiClient.Connecti
                 .build();
         // Connect the client.
         mGoogleApiClient.connect();
-        mDataController = DataController.getInstance(getApplicationContext());
+        dc = DataController.getInstance(getApplicationContext());
 
         // set up notification in bar
         String notificationTitle = "MyRuns";
@@ -187,8 +185,7 @@ public class TrackingService extends Service implements GoogleApiClient.Connecti
             // update duration
             Duration duration = new Duration(entry.mDateTime, new DateTime());
             // Round to the nearest second
-            float durationInS =
-                entry.mDuration = (int) duration.getStandardSeconds();
+            entry.mDuration = (int) duration.getStandardSeconds();
 
             // update distance
             LatLng last = entry.mLocationList.get(entry.mLocationList.size() - 1);
@@ -196,7 +193,7 @@ public class TrackingService extends Service implements GoogleApiClient.Connecti
             lastLoc.setLatitude(last.latitude);
             lastLoc.setLongitude(last.longitude);
             double distInMeters = (double) entry.lastLoc.distanceTo(location);
-            entry.mDistance += distInMeters * 0.000621371;
+            entry.mDistance += dc.metersToMiles(distInMeters);
 
             // average speed in miles per hour
             double durationInHours = ((double) entry.mDuration) / (60 * 60);
@@ -209,22 +206,19 @@ public class TrackingService extends Service implements GoogleApiClient.Connecti
             long hh = d.getStandardSeconds();
             long mm = d.getMillis();
             // timeDelta in hours
-            double timeDelta = (double) d.getMillis() / 3600000;
-            double distInMiles = distInMeters * 0.000621371;
+            double timeDelta = (double) dc.msToHours(d.getMillis());
+            double distInMiles = dc.metersToMiles(distInMeters);
             entry.mCurrentSpeed = (del + distInMiles) / (del + timeDelta);
 
             // climb
             boolean altitudeWorking = !(location.getAltitude()==0 || entry.lastLoc.getAltitude()==0);
-
+            // If altitude is reporting correctly and new location is higher than previous
             if (location.getAltitude() > entry.lastLoc.getAltitude() && altitudeWorking) {
                 entry.mClimb += (location.getAltitude() - entry.lastLoc.getAltitude()) * 0.000621371;
             }
-            //Log.d("RUNS", "mClimb: " + String.valueOf(entry.mClimb));
-            //Log.d("RUNS", "Current altitude: " + String.valueOf(location.getAltitude()));
-            //Log.d("RUNS", "Previous altitude: " + String.valueOf(entry.lastLoc.getAltitude()));
 
             // calories
-            entry.mCalorie = (int) (entry.mDistance / 15.0);
+            entry.mCalorie = dc.caloriesFromMiles(entry.mDistance);
         }
         // set last modified date for computing current speed
         entry.lastUpdated = new DateTime();

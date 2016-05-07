@@ -81,6 +81,18 @@ public class DataController {
         return mph * 1.60934;
     }
 
+    public double metersToMiles(double meters) {
+        return meters * 0.000621371;
+    }
+
+    public double msToHours(double ms) {
+        return ms / 3600000;
+    }
+
+    public int caloriesFromMiles(double distance) {
+        return (int) (distance / 15.0);
+    }
+
     public double round(double value, int places) {
         if (places < 0) throw new IllegalArgumentException();
 
