@@ -366,9 +366,9 @@ public class TrackingService extends Service implements GoogleApiClient.Connecti
                             im[j] = .0; // Clear the field for next iteration
                         }
 
-                        // add max value of accelration
+                        // add max value of acceleration
                         toClassify[ACCELEROMETER_BLOCK_CAPACITY] = maxVal;
-                        int label = (int) WekaClassifier1.classify(toClassify);
+                        int label = (int) WekaClassifier4.classify(toClassify);
                         Log.d(TAG, "labeling -> " + label);
 
                         // add vote and assign current label
@@ -382,7 +382,29 @@ public class TrackingService extends Service implements GoogleApiClient.Connecti
                                 curActivityInd = i;
                             }
                         }
-                        entry.mActivityType = curActivityInd;
+
+                        /**
+                         * these are mixed up from our ActivityType string indexing as defined
+                         * in strings.xml. We map as follows:
+                         * (0) Standing --> (2)
+                         * (1) Walking --> (1)
+                         * (2) Running --> (0)
+                         * (3) Other --> (13)
+                         */
+                        switch(curActivityInd) {
+                            case 0:
+                                entry.mActivityType = 2;
+                                break;
+                            case 1:
+                                entry.mActivityType = 1;
+                                break;
+                            case 2:
+                                entry.mActivityType = 0;
+                                break;
+                            case 3:
+                                entry.mActivityType = 13;
+                                break;
+                        }
                     }
 
                 } catch (Exception e) {

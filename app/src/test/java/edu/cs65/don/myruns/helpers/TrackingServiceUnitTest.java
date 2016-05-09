@@ -36,6 +36,8 @@ import static org.junit.Assert.*;
 @RunWith(RobolectricGradleTestRunner.class)
 public class TrackingServiceUnitTest {
 
+
+
     @Test
     public void testUpdateEntry() throws Exception {
         Application application = RuntimeEnvironment.application;
