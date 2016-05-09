@@ -157,6 +157,33 @@ public class TrackingService extends Service implements GoogleApiClient.Connecti
         }
     }
 
+    public ExerciseEntry getEntry() {
+        return entry;
+    }
+
+    public class TrackingBinder extends Binder {
+        public TrackingService getService() {
+            return TrackingService.this;
+        }
+    }
+
+    @Override
+    public void onLocationChanged(Location location) {
+        // send information to the map activity
+        // Tell the destination of the broadcast that there is an incoming broadcast
+        updateEntry(location);
+        if (!onLocationChangedCalled) {
+            onLocationChangedCalled = true;
+            Intent intent = new Intent();
+            intent.setAction("edu.cs65.LOCATION_CHANGED");
+            this.sendBroadcast(intent);
+        } else if (startTracking) {
+            Intent intent = new Intent();
+            intent.setAction("edu.cs65.LOCATION_CHANGED");
+            this.sendBroadcast(intent);
+        }
+    }
+
     @Override
     public void onTaskRemoved(Intent rootIntent){
         //Log.d("RUNS", "User Removed Task");
@@ -166,10 +193,26 @@ public class TrackingService extends Service implements GoogleApiClient.Connecti
         // stop sensor updates
         if (mSensorManager != null) {
             mSensorManager.unregisterListener(this,mAccelerometer);
-            mAsyncTask.cancel(true);
+            stopProcessingTask();
         }
 
         stopSelf();
+    }
+
+
+    @Override
+    public void onDestroy() {
+        nm.cancelAll();
+        LocationServices.FusedLocationApi.removeLocationUpdates(mGoogleApiClient, this);
+
+        // stop sensor updates
+        if (mSensorManager != null) {
+            mSensorManager.unregisterListener(this,mAccelerometer);
+            stopProcessingTask();
+        }
+
+        Log.d("RUNS", "service destroyed");
+        super.onDestroy();
     }
 
     /* -------------------------------------- GPS TASKS -------------------------------------- */
@@ -226,54 +269,18 @@ public class TrackingService extends Service implements GoogleApiClient.Connecti
         entry.mLocationList.add(latLng);
     }
 
-    public ExerciseEntry getEntry() {
-        return entry;
-    }
-
-    public class TrackingBinder extends Binder {
-        public TrackingService getService() {
-            return TrackingService.this;
-        }
-    }
-
-    @Override
-    public void onDestroy() {
-        nm.cancelAll();
-        LocationServices.FusedLocationApi.removeLocationUpdates(mGoogleApiClient, this);
-
-        // stop sensor updates
-        if (mSensorManager != null) {
-            mSensorManager.unregisterListener(this,mAccelerometer);
-            mAsyncTask.cancel(true);
-        }
-
-        Log.d("RUNS", "service destroyed");
-        super.onDestroy();
-    }
-
-    @Override
-    public void onLocationChanged(Location location) {
-        // send information to the map activity
-        // Tell the destination of the broadcast that there is an incoming broadcast
-        updateEntry(location);
-        if (!onLocationChangedCalled) {
-            onLocationChangedCalled = true;
-            Intent intent = new Intent();
-            intent.setAction("edu.cs65.LOCATION_CHANGED");
-            this.sendBroadcast(intent);
-        } else if (startTracking) {
-            Intent intent = new Intent();
-            intent.setAction("edu.cs65.LOCATION_CHANGED");
-            this.sendBroadcast(intent);
-        }
-    }
-
     /**
      * Called by MapDisplayActivity once initial zoom is complete. Prevents UI updates from new
      * locations until initial zoom is finished.
      */
     public void startTrackingPosition() {
         startTracking = true;
+    }
+
+    public void stopProcessingTask() {
+        if (mAsyncTask != null && !mAsyncTask.isCancelled()) {
+            mAsyncTask.cancel(true);
+        }
     }
 
     /* -------------------------------------- SENSOR TASKS -------------------------------------- */
@@ -376,7 +383,7 @@ public class TrackingService extends Service implements GoogleApiClient.Connecti
 
                         // get largest vote and assign to activity
                         int activityVotes = 0, curActivityInd = 0;
-                        for (int i = 0; i < 3; i++) {
+                        for (int i = 0; i < 4; i++) {
                             if (voteList[i] > activityVotes) {
                                 activityVotes = voteList[i];
                                 curActivityInd = i;
@@ -386,10 +393,10 @@ public class TrackingService extends Service implements GoogleApiClient.Connecti
                         /**
                          * these are mixed up from our ActivityType string indexing as defined
                          * in strings.xml. We map as follows:
-                         * (0) Standing --> (2)
-                         * (1) Walking --> (1)
-                         * (2) Running --> (0)
-                         * (3) Other --> (13)
+                         * label (0) Standing --> (2)
+                         * label (1) Walking --> (1)
+                         * label (2) Running --> (0)
+                         * label (3) Other --> (13)
                          */
                         switch(curActivityInd) {
                             case 0:
@@ -416,7 +423,7 @@ public class TrackingService extends Service implements GoogleApiClient.Connecti
 
         @Override
         protected void onCancelled() {
-
+            Log.d(TAG, "accelerometer processing task cancelled");
         }
 
 
