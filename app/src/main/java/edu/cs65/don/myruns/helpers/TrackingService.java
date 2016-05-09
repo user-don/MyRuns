@@ -382,6 +382,7 @@ public class TrackingService extends Service implements GoogleApiClient.Connecti
                                 curActivityInd = i;
                             }
                         }
+
                         /**
                          * these are mixed up from our ActivityType string indexing as defined
                          * in strings.xml. We map as follows:
