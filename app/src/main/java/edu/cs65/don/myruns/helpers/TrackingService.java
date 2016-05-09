@@ -368,7 +368,7 @@ public class TrackingService extends Service implements GoogleApiClient.Connecti
 
                         // add max value of accelration
                         toClassify[ACCELEROMETER_BLOCK_CAPACITY] = maxVal;
-                        int label = (int) WekaClassifier1.classify(toClassify);
+                        int label = (int) WekaClassifier3.classify(toClassify);
                         Log.d(TAG, "labeling -> " + label);
 
                         // add vote and assign current label
