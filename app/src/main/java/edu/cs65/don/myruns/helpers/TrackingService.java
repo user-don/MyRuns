@@ -285,38 +285,40 @@ public class TrackingService extends Service implements GoogleApiClient.Connecti
 
     public void saveEntry() {
 
-        // get largest vote and assign to activity
-        int activityVotes = 0, curActivityInd = 0;
-        for (int i = 0; i < 4; i++) {
-            if (voteList[i] > activityVotes) {
-                activityVotes = voteList[i];
-                curActivityInd = i;
+        if (entry.mInputType == Common.INPUT_TYPE_AUTOMATIC) {
+            // get largest vote and assign to activity
+            int activityVotes = 0, curActivityInd = 0;
+            for (int i = 0; i < 4; i++) {
+                if (voteList[i] > activityVotes) {
+                    activityVotes = voteList[i];
+                    curActivityInd = i;
+                }
             }
-        }
 
-        /**
-         * these are mixed up from our ActivityType string indexing as defined
-         * in strings.xml. We map as follows:
-         * label (0) Standing --> (2)
-         * label (1) Walking --> (1)
-         * label (2) Running --> (0)
-         * label (3) Other --> (13)
-         */
-        switch(curActivityInd) {
-            case 0:
-                entry.mActivityType = 2;
-                break;
-            case 1:
-                entry.mActivityType = 1;
-                break;
-            case 2:
-                entry.mActivityType = 0;
-                break;
-            case 3:
-                entry.mActivityType = 13;
-                break;
+            /**
+             * these are mixed up from our ActivityType string indexing as defined
+             * in strings.xml. We map as follows:
+             * label (0) Standing --> (2)
+             * label (1) Walking --> (1)
+             * label (2) Running --> (0)
+             * label (3) Other --> (13)
+             */
+            switch(curActivityInd) {
+                case 0:
+                    entry.mActivityType = 2;
+                    break;
+                case 1:
+                    entry.mActivityType = 1;
+                    break;
+                case 2:
+                    entry.mActivityType = 0;
+                    break;
+                case 3:
+                    entry.mActivityType = 13;
+                    break;
+            }
+            Log.d(TAG, "assigned label " + entry.mActivityType);
         }
-        Log.d(TAG, "assigned label " + entry.mActivityType);
 
         dc.saveToDbAsync(entry);
     }

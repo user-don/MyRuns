@@ -310,7 +310,6 @@ public class MapDisplayActivity extends FragmentActivity implements OnMapReadyCa
                 // save entry to db
                 mService.stopProcessingTask();
                 mService.saveEntry();   // waits until processing task has finished
-                //dc.saveToDbAsync(entry);
 
                 // stop service
                 Intent i = new Intent(this, TrackingService.class);
