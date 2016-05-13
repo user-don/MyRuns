@@ -20,6 +20,9 @@ public class MyServlet extends HttpServlet {
     @Override
     public void doPost(HttpServletRequest req, HttpServletResponse resp)
             throws IOException {
+
+        // I think we just execute a doGet() b/c we aren't support Post?
+
         String name = req.getParameter("name");
         resp.setContentType("text/plain");
         if(name == null) {
