@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    package="edu.cs65.don.myruns">
+    package="edu.cs65.don.myruns" >
 
     <uses-feature android:name="android.hardware.camera" />
 
@@ -22,8 +22,8 @@
         android:label="@string/app_name"
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
-        tools:ignore="GoogleAppIndexingWarning">
-        <activity android:name=".MainActivity">
+        tools:ignore="GoogleAppIndexingWarning" >
+        <activity android:name=".MainActivity" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -35,7 +35,7 @@
         <activity android:name=".ManualInputActivity" />
         <activity
             android:name=".MapDisplayActivity"
-            android:label="@string/title_activity_gpsmode">
+            android:label="@string/title_activity_gpsmode" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".MainActivity" />
@@ -62,7 +62,7 @@
         <!-- </receiver> -->
         <activity
             android:name=".MapEntryDisplayActivity"
-            android:label="@string/title_activity_map_entry_display"></activity>
+            android:label="@string/title_activity_map_entry_display" />
     </application>
 
 </manifest>
