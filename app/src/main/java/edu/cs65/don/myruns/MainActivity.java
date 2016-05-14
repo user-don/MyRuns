@@ -126,7 +126,7 @@ public class MainActivity extends AppCompatActivity {
         private Context context;
 
         // Changed sender id
-        private static final String SENDER_ID = "831200476299";
+        private static final String SENDER_ID = "915997460540";
 
         public GcmRegistrationAsyncTask(Context context) {
             this.context = context;

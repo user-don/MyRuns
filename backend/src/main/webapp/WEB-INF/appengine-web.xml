@@ -8,7 +8,7 @@
     <!--<&#45;&#45; Hale Aurora project in google &#45;&#45;/>-->
     <system-properties>
         <property name="java.util.logging.config.file" value="WEB-INF/logging.properties"/>
-        <property name="gcm.api.key" value="AIzaSyBMGc_kiycrj-F7vT-zmRO9yN96wo36JwM"/>
+        <property name="gcm.api.key" value="AIzaSyD_0ExV0odLb2Y8nrY11yR9DyyQaBm52Y8"/>
     </system-properties>
 
 </appengine-web-app>
