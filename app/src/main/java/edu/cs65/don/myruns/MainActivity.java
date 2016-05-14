@@ -42,6 +42,8 @@ import com.example.don.myapplication.backend.registration.Registration;
 @SuppressWarnings("FieldCanBeLocal")
 public class MainActivity extends AppCompatActivity {
 
+    public static String SERVER_ADDR = "http://10.0.2.2:8080";
+
     // for permission requests
     private static final int MY_PERMISSIONS_REQUEST_READ_EXTERNAL_DATA = 222;
     private static final int MY_PERMISSIONS_REQUEST_WRITE_EXTERNAL_DATA = 223;
@@ -126,7 +128,7 @@ public class MainActivity extends AppCompatActivity {
         private Context context;
 
         // Changed sender id
-        private static final String SENDER_ID = "831200476299";
+        private static final String SENDER_ID = "915997460540";
 
         public GcmRegistrationAsyncTask(Context context) {
             this.context = context;
