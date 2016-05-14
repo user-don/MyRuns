@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<web-app xmlns="http://java.sun.com/xml/ns/javaee" version="2.5">
+
+    <servlet>
+        <servlet-name>ViewEntriesServlet</servlet-name>
+        <servlet-class>com.example.don.myapplication.backend.ViewEntriesServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>ViewEntriesServlet</servlet-name>
+        <url-pattern>/viewEntries.do</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
+        <servlet-name>DeleteServlet</servlet-name>
+        <servlet-class>com.example.don.myapplication.backend.DeleteServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>DeleteServlet</servlet-name>
+        <url-pattern>/delete.do</url-pattern>
+    </servlet-mapping>
+
+
+    <servlet>
+        <servlet-name>MyServlet</servlet-name>
+        <servlet-class>com.example.don.myapplication.backend.MyServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>MyServlet</servlet-name>
+        <url-pattern>/hello</url-pattern>
+    </servlet-mapping>
+
+
+    <welcome-file-list>
+        <welcome-file>viewEntries.do</welcome-file>
+    </welcome-file-list>
+</web-app>
