@@ -9,28 +9,26 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 /**
- * Created by McFarland on 5/13/16.
+ * Created by McFarland on 5/14/16.
  */
-public class DeleteServlet extends HttpServlet {
+public class PostDataServlet extends HttpServlet {
 
     @Override
     public void doGet(HttpServletRequest req, HttpServletResponse resp)
             throws IOException {
-
-        /* request that the Datastore delete the entry with given ID */
-        String id = req.getParameter("name");
-        EEDataStore.deleteEntry(id);
-
-        /* TODO -- send message to client to delete entry with given ID */
-
-        /* redirect client to refreshed entry page */
-        resp.sendRedirect("/viewEntries.do");
+        /* shouldn't handle get requests */
     }
 
     @Override
     public void doPost(HttpServletRequest req, HttpServletResponse resp)
             throws IOException {
 
-        doGet(req, resp);
+        /* clear out current DataStore */
+        EEDataStore.deleteAllEntries();
+
+        /* TODO -- parse through JSON data and update data store */
+
+        /* redirect client to refreshed entry page */
+        resp.sendRedirect("/viewEntries.do");
     }
 }

@@ -30,6 +30,9 @@
                     <td><%=entry.mID%></td>
                     <td><%=entry.mInputType%></td>
                     <td><%=entry.mActivityType%></td>
+                    <td>
+                        <a href="/delete.do?id=<%=entry.mID%>">Delete</a>
+                    </td>
                 </tr>
             <% } %>
 
