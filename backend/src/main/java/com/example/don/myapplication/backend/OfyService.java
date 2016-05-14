@@ -1,6 +1,5 @@
 package com.example.don.myapplication.backend;
 
-import com.example.don.myapplication.backend.registration.model.RegistrationRecord;
 import com.googlecode.objectify.Objectify;
 import com.googlecode.objectify.ObjectifyFactory;
 import com.googlecode.objectify.ObjectifyService;

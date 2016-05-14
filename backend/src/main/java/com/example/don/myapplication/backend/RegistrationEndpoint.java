@@ -6,7 +6,6 @@
 
 package com.example.don.myapplication.backend;
 
-import com.example.don.myapplication.backend.registration.model.RegistrationRecord;
 import com.google.api.server.spi.config.Api;
 import com.google.api.server.spi.config.ApiMethod;
 import com.google.api.server.spi.config.ApiNamespace;
