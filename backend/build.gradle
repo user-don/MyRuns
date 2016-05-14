@@ -28,6 +28,8 @@ dependencies {
     compile 'com.google.appengine:appengine-endpoints-deps:1.9.14'
     compile 'com.google.appengine:appengine-api-labs:1.9.32'
     compile 'com.googlecode.objectify:objectify:5.0.3'
+    compile 'com.googlecode.objectify:objectify:4.0b3'
+    compile 'com.ganyo:gcm-server:1.0.2'
 }
 
 appengine {

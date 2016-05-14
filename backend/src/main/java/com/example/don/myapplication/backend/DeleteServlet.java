@@ -1,5 +1,7 @@
 package com.example.don.myapplication.backend;
 
+import com.example.don.myapplication.backend.data.EEDataStore;
+
 import java.io.IOException;
 
 import javax.servlet.http.HttpServlet;
@@ -16,10 +18,13 @@ public class DeleteServlet extends HttpServlet {
             throws IOException {
 
         /* request that the Datastore delete the entry with given ID */
+        String id = req.getParameter("name");
+        EEDataStore.deleteEntry(id);
 
-        /* send message to client to delete entry with given ID */
+        /* TODO -- send message to client to delete entry with given ID */
 
         /* redirect client to refreshed entry page */
+        resp.sendRedirect("/viewEntries.do");
     }
 
     @Override
@@ -27,14 +32,5 @@ public class DeleteServlet extends HttpServlet {
             throws IOException {
 
         doGet(req, resp);
-
-        // I think we just execute a doGet() b/c we aren't support Post?
-
-//        String name = req.getParameter("name");
-//        resp.setContentType("text/plain");
-//        if(name == null) {
-//            resp.getWriter().println("Please enter a name");
-//        }
-//        resp.getWriter().println("Hello " + name);
     }
 }
