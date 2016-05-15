@@ -42,7 +42,9 @@ import com.example.don.myapplication.backend.registration.Registration;
 @SuppressWarnings("FieldCanBeLocal")
 public class MainActivity extends AppCompatActivity {
 
-    public static String SERVER_ADDR = "http://10.0.2.2:8080";
+    //public static String SERVER_ADDR = "http://10.0.2.2:8080";
+    public static String SERVER_ADDR = "http://10.31.33.231:8080"; // locally running server
+    //public static String SERVER_ADDR = "http://127.0.0.1:8080";
 
     // for permission requests
     private static final int MY_PERMISSIONS_REQUEST_READ_EXTERNAL_DATA = 222;

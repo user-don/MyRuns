@@ -15,6 +15,7 @@ import com.google.appengine.api.datastore.Query.Filter;
 import com.google.appengine.api.datastore.Query.FilterOperator;
 import com.google.appengine.api.datastore.Query.FilterPredicate;
 import com.google.appengine.api.datastore.Transaction;
+import com.googlecode.objectify.annotation.Index;
 import com.sun.corba.se.spi.activation.Server;
 
 /**
@@ -32,6 +33,27 @@ public class EEDataStore {
     private static Key getKey() {
         return KeyFactory.createKey(ServerEE.EE_PARENT_ENTITY_NAME,
                 ServerEE.EE_PARENT_KEY_NAME);
+    }
+
+    public static boolean add(ServerEE entry) {
+
+        Key parentKey = getKey();
+
+        Entity entity = new Entity(entry.EE_ENTITY_NAME, entry.mID, parentKey);
+        entity.setProperty(entry.FIELD_NAME_ID, entry.mID);
+        entity.setProperty(entry.FIELD_NAME_INPUT_TYPE, entry.mInputType);
+        entity.setProperty(entry.FIELD_NAME_ACTIVITY_TYPE, entry.mActivityType);
+        entity.setProperty(entry.FIELD_NAME_DURATION, entry.mDuration);
+        entity.setProperty(entry.FIELD_NAME_DISTANCE, entry.mDistance);
+        entity.setProperty(entry.FIELD_NAME_AVG_SPEED, entry.mAvgSpeed);
+        entity.setProperty(entry.FIELD_NAME_CALORIES, entry.mCalories);
+        entity.setProperty(entry.FIELD_NAME_CLIMB, entry.mClimb);
+        entity.setProperty(entry.FIELD_NAME_HEART_RATE, entry.mHeartRate);
+        entity.setProperty(entry.FIELD_NAME_COMMENT, entry.mComment);
+
+        mDatastore.put(entity);
+
+        return true;
     }
 
     public static ServerEE getEEByID(Long ID, Transaction txn) {

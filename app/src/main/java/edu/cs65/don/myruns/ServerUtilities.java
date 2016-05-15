@@ -32,13 +32,13 @@ public final class ServerUtilities {
 	 * 
 	 * @param endpoint
 	 *            POST address.
-	 * @param msg
-	 *            GSON serialized serverEE
+	 * @param params
+	 *            mapped key values pairs
 	 * 
 	 * @throws IOException
 	 *             propagated from POST.
 	 */
-	public static String post(String endpoint, String msg)
+	public static String post(String endpoint, Map<String, String> params)
 			throws IOException {
 		URL url;
 		try {
@@ -48,22 +48,19 @@ public final class ServerUtilities {
 		}
 		StringBuilder bodyBuilder = new StringBuilder();
 
+		Iterator<Entry<String, String>> iterator = params.entrySet().iterator();
 
-//		Iterator<Entry<String, String>> iterator = params.entrySet().iterator();
-//		/* TODO -- need to layer all of the information within a single entry */
-//		// modify here -- constructs the POST body using the parameters
-//		while (iterator.hasNext()) {
-//			Entry<String, String> param = iterator.next();
-//			bodyBuilder.append(param.getKey()).append('=')
-//					.append(param.getValue());
-//			if (iterator.hasNext()) {
-//				bodyBuilder.append('&');
-//			}
-//		}
-//		// should be boilerplate below
-//		String body = bodyBuilder.toString();
+		while (iterator.hasNext()) {
+			Entry<String, String> param = iterator.next();
+			bodyBuilder.append(param.getKey()).append('=')
+					.append(param.getValue());
+			if (iterator.hasNext()) {
+				bodyBuilder.append('&');
+			}
+		}
 
-		byte[] bytes = msg.getBytes();
+		String body = bodyBuilder.toString();
+		byte[] bytes = body.getBytes();
 		HttpURLConnection conn = null;
 		try {
 			conn = (HttpURLConnection) url.openConnection();

@@ -28,6 +28,14 @@
         <url-pattern>/delete.do</url-pattern>
     </servlet-mapping>
 
+    <servlet>
+        <servlet-name>UpdateServlet</servlet-name>
+        <servlet-class>com.example.don.myapplication.backend.PostDataServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>UpdateServlet</servlet-name>
+        <url-pattern>/postData.do</url-pattern>
+    </servlet-mapping>
 
     <servlet>
         <servlet-name>MyServlet</servlet-name>
