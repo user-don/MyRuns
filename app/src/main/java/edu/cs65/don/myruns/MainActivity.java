@@ -74,6 +74,9 @@ public class MainActivity extends AppCompatActivity {
         // check for permissions
         checkForPermissions();
 
+        // register phone with GCM
+        new GcmRegistrationAsyncTask(this).execute();
+
         // Define SlidingTabLayout (shown at top) and ViewPager (shown at bottom) in the layout.
         // Get their instances.
         slidingTabLayout = (SlidingTabLayout) findViewById(R.id.tab);
