@@ -18,7 +18,7 @@ public class DeleteServlet extends HttpServlet {
             throws IOException {
 
         /* request that the Datastore delete the entry with given ID */
-        String id = req.getParameter("name");
+        String id = req.getParameter("id");
         EEDataStore.deleteEntry(id);
 
         /* TODO -- send message to client to delete entry with given ID */

@@ -21,6 +21,14 @@
                 <td>ID</td>
                 <td>Input Type</td>
                 <td>Activity Type</td>
+                <td>Date and Time</td>
+                <td>Duration</td>
+                <td>Distance</td>
+                <td>Avg Speed</td>
+                <td>Calories</td>
+                <td>Climb</td>
+                <td>Heart Rate</td>
+                <td>Comment</td>
             </tr>
 
             <%
@@ -30,6 +38,14 @@
                     <td><%=entry.mID%></td>
                     <td><%=entry.mInputType%></td>
                     <td><%=entry.mActivityType%></td>
+                    <td><%=entry.mDateTime%></td>
+                    <td><%=entry.mDuration%></td>
+                    <td><%=entry.mDistance%></td>
+                    <td><%=entry.mAvgSpeed%></td>
+                    <td><%=entry.mCalories%></td>
+                    <td><%=entry.mClimb%></td>
+                    <td><%=entry.mHeartRate%></td>
+                    <td><%=entry.mComment%></td>
                     <td>
                         <a href="/delete.do?id=<%=entry.mID%>">Delete</a>
                     </td>
