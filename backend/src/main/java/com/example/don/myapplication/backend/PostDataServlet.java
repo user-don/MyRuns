@@ -36,10 +36,10 @@ public class PostDataServlet extends HttpServlet {
         /* parse through resp for json ServeEE objects */
         String data_string = req.getParameter("DATA");  // defined in start fragment
         if (data_string != null) {
-            ArrayList<ServerEE> entries = gson.fromJson(data_string, ArrayList.class);
+            ArrayList<String> entries = gson.fromJson(data_string, ArrayList.class);
 
-            for (ServerEE entry : entries) {
-                EEDataStore.add(entry);
+            for (String entry : entries) {
+                EEDataStore.add(gson.fromJson(entry, ServerEE.class));
             }
         }
 

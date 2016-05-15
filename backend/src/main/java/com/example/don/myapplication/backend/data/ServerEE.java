@@ -46,6 +46,11 @@ public class ServerEE {
     public String mHeartRate;
     public String mComment;
 
+    public ServerEE() {
+        mID = (long)0;
+        mInputType = mActivityType = mDateTime = mDistance = mDuration = mAvgSpeed = mCalories = mClimb = mHeartRate = mComment = "";
+    }
+
     public ServerEE(Long _id, String _InputType, String _ActivityType, String _DateTime, String _Duration,
                     String _Distance, String _AvgSpeed, String _Calories, String _Climb, String _HeartRate,
                     String _Comment) {

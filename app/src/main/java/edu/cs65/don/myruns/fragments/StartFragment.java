@@ -179,6 +179,7 @@ public class StartFragment extends Fragment {
                     success = true;
                 } catch (IOException e) {
                     Log.d(TAG, "error uploading data");
+                    e.printStackTrace();
                 }
             }
 
