@@ -68,8 +68,6 @@ public class MessagingEndpoint {
         Message msg = new Message.Builder().addData("message", message).build();
         List<RegistrationRecord> records = ofy().load().type(RegistrationRecord.class).limit(10).list();
 
-        /* TODO -- should be able to send a message to client to "DELETE ID ##" */
-
         // for each of registered clients?
         for (RegistrationRecord record : records) {
             Result result = sender.send(msg, record.getRegId(), 5);

@@ -12,12 +12,15 @@ import com.google.android.gms.gcm.GoogleCloudMessaging;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import edu.cs65.don.myruns.controllers.DataController;
+
 /**
  * Created by Varun on 2/18/16.
  *
  * used GCMIntentService as model from GCM demo
  */
 public class GcmIntentService extends IntentService {
+
 
     public GcmIntentService() {
         super("GcmIntentService");
@@ -36,8 +39,20 @@ public class GcmIntentService extends IntentService {
             if (GoogleCloudMessaging.MESSAGE_TYPE_MESSAGE.equals(messageType)) {
                 Logger.getLogger("GCM_RECEIVED").log(Level.INFO, extras.toString());
 
+                //String[] messages = ((String) extras.get("message")).split(":");
+                // requestType = messages[0] ; i.e. the delete
+                // long id = Long.parseLong(message[1]);
+                // if delete then remove
+
+                String key = extras.getString("message");
+                long index = Long.valueOf(key);
+                // delete the key
+                DataController.getInstance(getApplicationContext()).dbHelper.removeEntry(index);
+                // TODO: Remove from the history list
+
                 showToast(extras.getString("message"));
             }
+
         }
         GcmBroadcastReceiver.completeWakefulIntent(intent);
     }
