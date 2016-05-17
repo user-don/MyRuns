@@ -42,13 +42,8 @@ import com.example.don.myapplication.backend.registration.Registration;
 @SuppressWarnings("FieldCanBeLocal")
 public class MainActivity extends AppCompatActivity {
 
-    public static String SERVER_ADDR = "http://10.0.2.2:8080";
-    //public static String SERVER_ADDR = "http://10.31.33.231:8080"; // locally running server
-    //public static String SERVER_ADDR = "http://127.0.0.1:8080";
-    //public static String SERVER_ADDR = "http://129.170.194.194:8080";
-    //public static String SERVER_ADDR = "http://129.170.194.167:8080";
-    //public static String SERVER_ADDR = "http://10.81.9.130:8080";
-    //public static String SERVER_ADDR = "http://10.81.9.130:8080";
+    //public static String SERVER_ADDR_LOCAL = "http://10.0.2.2:8080";
+    public static String SERVER_ADDR = "https://supple-life-127822.appspot.com";
 
     // for permission requests
     private static final int MY_PERMISSIONS_REQUEST_READ_EXTERNAL_DATA = 222;
@@ -148,17 +143,16 @@ public class MainActivity extends AppCompatActivity {
             if (regService == null) {
                 Registration.Builder builder = new Registration.Builder(AndroidHttp.newCompatibleTransport(),
                         new AndroidJsonFactory(), null)
-                        // Need setRootUrl and setGoogleClientRequestInitializer only for local testing,
-                        // otherwise they can be skipped
-                        .setRootUrl(SERVER_ADDR+"/_ah/api/")
-                        .setGoogleClientRequestInitializer(new GoogleClientRequestInitializer() {
-                            @Override
-                            public void initialize(AbstractGoogleClientRequest<?> abstractGoogleClientRequest)
-                                    throws IOException {
-                                abstractGoogleClientRequest.setDisableGZipContent(true);
-                            }
-                        });
-                // end of optional local run code
+                        .setRootUrl(SERVER_ADDR+"/_ah/api/");
+                        // UNCOMMENT TO RUN LOCALLY
+//                        .setGoogleClientRequestInitializer(new GoogleClientRequestInitializer() {
+//                            @Override
+//                            public void initialize(AbstractGoogleClientRequest<?> abstractGoogleClientRequest)
+//                                    throws IOException {
+//                                abstractGoogleClientRequest.setDisableGZipContent(true);
+//                            }
+//                        });
+                        // end of optional local run code
 
                 regService = builder.build();
             }
@@ -171,10 +165,8 @@ public class MainActivity extends AppCompatActivity {
                 String regId = gcm.register(SENDER_ID);
                 msg = "Device registered, registration ID=" + regId;
 
-                // You should send the registration ID to your server over HTTP,
-                // so it can use GCM/HTTP or CCS to send messages to your app.
-                // The request to your server should be authenticated if your app
-                // is using accounts.
+                // Send registration ID to server over HTTP so it can use GCM/HTTP
+                // to send messages to the app.
                 regService.register(regId).execute();
 
             } catch (IOException ex) {

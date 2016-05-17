@@ -13,6 +13,8 @@ import javax.servlet.http.HttpServletResponse;
 import javax.sql.rowset.serial.SerialException;
 
 /**
+ * Servlet for displaying all ExerciseEntries
+ *
  * Created by McFarland on 5/13/16.
  */
 public class ViewEntriesServlet extends HttpServlet {

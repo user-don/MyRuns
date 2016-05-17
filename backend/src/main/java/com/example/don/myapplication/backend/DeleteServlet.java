@@ -14,6 +14,9 @@ import javax.servlet.http.HttpServletResponse;
 import static com.example.don.myapplication.backend.OfyService.ofy;
 
 /**
+ * Servelet for deleting an entry and transmitting the delete message to the app using
+ * {@link MessagingEndpoint}
+ *
  * Created by McFarland on 5/13/16.
  */
 public class DeleteServlet extends HttpServlet {
@@ -28,26 +31,8 @@ public class DeleteServlet extends HttpServlet {
             EEDataStore.deleteEntry(id);
         }
 
-        /* TODO -- send message to client to delete entry with given ID */
-        // instantiate Message with List<String> of device IDs
-        // message.addData("message", "delete:" + id)
-        // sender.send()
-        // response result = sender.send(message, MAX_RETRY)
-        // then delete from the datastore
-
         MessagingEndpoint msg = new MessagingEndpoint();
         msg.sendMessage(id);
-
-//        final String API_KEY = System.getProperty("gcm.api.key");
-//        List<RegistrationRecord> records = ofy().load().type(RegistrationRecord.class).limit(10).list();
-//        Message message = new Message(records);
-//
-//        Sender sender = new Sender(API_KEY);
-//        Message msg = new Message.Builder().addData("message", message).build();
-//
-//        Message message = new Message(records);
-//        Sender sender = new Sender(API_KEY);
-
 
         /* redirect client to refreshed entry page */
         resp.sendRedirect("/viewEntries.do");

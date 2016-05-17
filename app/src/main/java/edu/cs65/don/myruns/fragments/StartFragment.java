@@ -188,7 +188,7 @@ public class StartFragment extends Fragment {
 
         @Override
         protected void onPostExecute(Void param) {
-            Toast.makeText(context, "Upload Finished", Toast.LENGTH_LONG).show();
+            Toast.makeText(context, "All entries uploaded.", Toast.LENGTH_LONG).show();
         }
     }
 }

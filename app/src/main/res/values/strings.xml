@@ -18,6 +18,7 @@
     <string name="save_text">Save</string>
     <string name="cancel_text">Cancel</string>
     <string name="select_profile_image">Select profile image</string>
+    <string name="google_app_id">915997460540</string>
 
     <string-array name="ui_profile_photo_picker_items">
         <item>Take picture from camera</item>

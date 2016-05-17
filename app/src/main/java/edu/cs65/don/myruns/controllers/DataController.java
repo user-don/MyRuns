@@ -105,6 +105,12 @@ public class DataController {
         return bd.doubleValue();
     }
 
+    /**
+     * Serialize entry into string of JSON representing all information that we must display
+     * in the cloud.
+     * @param entry the ExerciseEntry to be serialized
+     * @return String containing JSON of ExerciseEntry
+     */
     public String serializeEntry(ExerciseEntry entry) {
 
         String input_type = context.getResources().getStringArray(R.array.input_type)[entry.mInputType];

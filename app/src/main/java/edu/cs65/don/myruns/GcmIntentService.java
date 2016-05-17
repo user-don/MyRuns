@@ -15,12 +15,10 @@ import java.util.logging.Logger;
 import edu.cs65.don.myruns.controllers.DataController;
 
 /**
- * Created by Varun on 2/18/16.
- *
- * used GCMIntentService as model from GCM demo
+ * Called when the app receives a message from GCM. For now, this is exclusively
+ * delete requests.
  */
 public class GcmIntentService extends IntentService {
-
 
     public GcmIntentService() {
         super("GcmIntentService");
@@ -35,23 +33,15 @@ public class GcmIntentService extends IntentService {
         String messageType = gcm.getMessageType(intent);
 
         if (extras != null && !extras.isEmpty()) {  // has effect of unparcelling Bundle
-            // Since we're not using two way messaging, this is all we really to check for
             if (GoogleCloudMessaging.MESSAGE_TYPE_MESSAGE.equals(messageType)) {
                 Logger.getLogger("GCM_RECEIVED").log(Level.INFO, extras.toString());
-
-                //String[] messages = ((String) extras.get("message")).split(":");
-                // requestType = messages[0] ; i.e. the delete
-                // long id = Long.parseLong(message[1]);
-                // if delete then remove
-
                 String key = extras.getString("message");
                 long index = Long.valueOf(key);
                 // delete the key
                 DataController.getInstance(getApplicationContext()).dbHelper.removeEntry(index);
                 // TODO: Remove from the history list
-
-
-                showToast(extras.getString("message"));
+                String msg = "Entry " + extras.getString("message") + " deleted from cloud";
+                showToast(msg);
             }
 
         }
