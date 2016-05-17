@@ -119,7 +119,7 @@ public class MainActivity extends AppCompatActivity {
                             getFragmentManager().findFragmentByTag("android:switcher:"
                                     + R.id.viewpager + ":" + HISTORY_FRAGMENT_POSITION);
                     //frag.getExerciseEntriesFromDB();
-                    frag.getLoaderManager().initLoader(0, null, frag);
+                    frag.getLoaderManager().initLoader(0, null, frag).forceLoad();
                 }
             }
 

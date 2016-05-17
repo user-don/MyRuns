@@ -215,7 +215,7 @@ public class ExerciseEntryDbHelper extends SQLiteOpenHelper {
             }
             query.close();
         } else {
-            throw new Error("SHIT IS NOT WORKING");
+            throw new Error("Database query not formatted correctly");
         }
         return entry;
     }

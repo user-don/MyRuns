@@ -50,6 +50,7 @@ public class GcmIntentService extends IntentService {
                 DataController.getInstance(getApplicationContext()).dbHelper.removeEntry(index);
                 // TODO: Remove from the history list
 
+
                 showToast(extras.getString("message"));
             }
 
