@@ -10,6 +10,7 @@ import android.widget.Toast;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
+import com.google.appengine.api.socket.SocketServicePb;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -21,6 +22,9 @@ import java.util.TimeZone;
 import edu.cs65.don.myruns.R;
 import edu.cs65.don.myruns.helpers.ExerciseEntryDbHelper;
 import edu.cs65.don.myruns.models.ExerciseEntry;
+
+import com.google.gson.Gson;
+import com.example.don.myapplication.backend.data.ServerEE;
 
 /**
  * DataController.java
@@ -101,5 +105,35 @@ public class DataController {
         return bd.doubleValue();
     }
 
+    /**
+     * Serialize entry into string of JSON representing all information that we must display
+     * in the cloud.
+     * @param entry the ExerciseEntry to be serialized
+     * @return String containing JSON of ExerciseEntry
+     */
+    public String serializeEntry(ExerciseEntry entry) {
+
+        String input_type = context.getResources().getStringArray(R.array.input_type)[entry.mInputType];
+        String activity_type = context.getResources().getStringArray(R.array.activity_type)[entry.mActivityType];
+        String date_time = entry.getDate();
+
+        int mins = entry.mDuration / 60;
+        int secs = entry.mDuration % 60;
+        String duration = mins + " mins " + secs + " seconds";
+
+        String distance = String.valueOf(round(entry.mDistance,2)) + " Miles";
+        String avg_speed = String.valueOf(round(entry.mAvgSpeed,2)) + " m/h";
+        String calories = entry.mCalorie + "";
+        String climb = String.valueOf(round(entry.mClimb, 2)) + " Miles";
+        String heart_rate = entry.mHeartRate + "";
+        String comment = entry.mComment;
+
+        ServerEE tempEntry = new ServerEE(entry.id, input_type, activity_type, date_time, duration,
+                distance, avg_speed, calories, climb, heart_rate, comment);
+
+        Gson json = new Gson();
+        return json.toJson(tempEntry);
+
+    }
 
 }

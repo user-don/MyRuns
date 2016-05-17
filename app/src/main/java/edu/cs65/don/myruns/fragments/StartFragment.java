@@ -2,23 +2,48 @@ package edu.cs65.don.myruns.fragments;
 
 
 import android.app.Fragment;
+import android.content.Context;
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.Spinner;
+import android.widget.Toast;
 
+import com.example.don.myapplication.backend.registration.Registration;
+import com.google.android.gms.gcm.GoogleCloudMessaging;
+import com.google.api.client.extensions.android.http.AndroidHttp;
+import com.google.api.client.extensions.android.json.AndroidJsonFactory;
+import com.google.api.client.googleapis.services.AbstractGoogleClientRequest;
+import com.google.api.client.googleapis.services.GoogleClientRequestInitializer;
+import com.google.gson.Gson;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+import edu.cs65.don.myruns.MainActivity;
 import edu.cs65.don.myruns.R;
 import edu.cs65.don.myruns.MapDisplayActivity;
 import edu.cs65.don.myruns.ManualInputActivity;
+import edu.cs65.don.myruns.ServerUtilities;
+import edu.cs65.don.myruns.controllers.DataController;
+import edu.cs65.don.myruns.helpers.ExerciseEntryDbHelper;
+import edu.cs65.don.myruns.models.ExerciseEntry;
 
 /**
  * {@link Fragment} subclass for displaying the start screen of our runs app
  */
 public class StartFragment extends Fragment {
+    private final static String TAG = "Start Fragment";
 
     private Spinner input_type_spinner;
     private Spinner activity_type_spinner;
@@ -79,9 +104,11 @@ public class StartFragment extends Fragment {
 
             }
         });
+
         sync_button.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                // sync
+                Log.d(TAG, "initiating history uploader");
+                new HistoryUploaderAsyncTask(getActivity()).execute();
             }
         });
     }
@@ -108,5 +135,60 @@ public class StartFragment extends Fragment {
                 R.array.activity_type, R.layout.support_simple_spinner_dropdown_item);
         adapter.setDropDownViewResource(R.layout.support_simple_spinner_dropdown_item);
         activity_type_spinner.setAdapter(adapter);
+    }
+
+    class HistoryUploaderAsyncTask extends AsyncTask<Void, Void, Void> {
+        private static final String TAG = "History Uploader";
+
+        private Context context;
+        private DataController mDataController;
+        private ExerciseEntryDbHelper mHelper;
+        private GoogleCloudMessaging gcm;
+
+
+        public HistoryUploaderAsyncTask(Context context) {
+            this.context = context;
+            mDataController = DataController.getInstance(context);
+            mHelper = new ExerciseEntryDbHelper(context);
+            if (gcm == null) {
+                gcm = GoogleCloudMessaging.getInstance(context);
+            }
+        }
+
+        @Override
+        protected Void doInBackground(Void... params) {
+
+            ArrayList<String> data = new ArrayList<>();
+            ArrayList<ExerciseEntry> entries = mHelper.fetchEntries();
+
+            if (entries != null) {
+                for (ExerciseEntry entry : entries) {
+                    data.add(mDataController.serializeEntry(entry));
+                }
+
+                Gson gson = new Gson();
+                String list = gson.toJson(data);
+
+                Map<String, String> map = new HashMap<>();
+                map.put("DATA",list);
+
+                Boolean success = false;
+                try {
+                    String response = ServerUtilities.post(MainActivity.SERVER_ADDR + "/postData.do", map);
+                    Log.d(TAG,"Response message: " + response);
+                    success = true;
+                } catch (IOException e) {
+                    Log.d(TAG, "error uploading data");
+                    e.printStackTrace();
+                }
+            }
+
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void param) {
+            Toast.makeText(context, "All entries uploaded.", Toast.LENGTH_LONG).show();
+        }
     }
 }

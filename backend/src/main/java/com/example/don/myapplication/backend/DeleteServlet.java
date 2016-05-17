@@ -1,12 +1,22 @@
 package com.example.don.myapplication.backend;
 
+import com.example.don.myapplication.backend.data.EEDataStore;
+import com.google.android.gcm.server.Message;
+import com.google.android.gcm.server.Sender;
+
 import java.io.IOException;
+import java.util.List;
 
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import static com.example.don.myapplication.backend.OfyService.ofy;
+
 /**
+ * Servelet for deleting an entry and transmitting the delete message to the app using
+ * {@link MessagingEndpoint}
+ *
  * Created by McFarland on 5/13/16.
  */
 public class DeleteServlet extends HttpServlet {
@@ -16,10 +26,16 @@ public class DeleteServlet extends HttpServlet {
             throws IOException {
 
         /* request that the Datastore delete the entry with given ID */
+        String id = req.getParameter("id");
+        if (id != null) {
+            EEDataStore.deleteEntry(id);
+        }
 
-        /* send message to client to delete entry with given ID */
+        MessagingEndpoint msg = new MessagingEndpoint();
+        msg.sendMessage(id);
 
         /* redirect client to refreshed entry page */
+        resp.sendRedirect("/viewEntries.do");
     }
 
     @Override
@@ -27,14 +43,5 @@ public class DeleteServlet extends HttpServlet {
             throws IOException {
 
         doGet(req, resp);
-
-        // I think we just execute a doGet() b/c we aren't support Post?
-
-//        String name = req.getParameter("name");
-//        resp.setContentType("text/plain");
-//        if(name == null) {
-//            resp.getWriter().println("Please enter a name");
-//        }
-//        resp.getWriter().println("Hello " + name);
     }
 }

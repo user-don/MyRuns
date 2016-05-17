@@ -4,7 +4,10 @@
     <version>1</version>
     <threadsafe>true</threadsafe>
 
+
     <system-properties>
         <property name="java.util.logging.config.file" value="WEB-INF/logging.properties"/>
+        <property name="gcm.api.key" value="AIzaSyD_0ExV0odLb2Y8nrY11yR9DyyQaBm52Y8"/>
     </system-properties>
+
 </appengine-web-app>
